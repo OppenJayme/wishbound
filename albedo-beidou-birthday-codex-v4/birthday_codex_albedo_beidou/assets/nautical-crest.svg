@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+<g fill="none" stroke="#e0c184" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="300" cy="300" r="224" stroke-width="2" opacity=".52"/>
+<circle cx="300" cy="300" r="205" stroke-width="1" opacity=".4"/>
+<circle cx="300" cy="300" r="168" stroke-width="2" opacity=".56"/>
+<circle cx="300" cy="300" r="111" stroke-width="2" opacity=".65"/>
+<path d="M300 57V159M300 441v102M57 300h102M441 300h102" stroke-width="2" opacity=".48"/>
+<path d="M300 166l29 103 104 31-104 31-29 103-29-103-104-31 104-31z" stroke-width="3" opacity=".8"/>
+<path d="M300 224l15 61 62 15-62 15-15 61-15-61-62-15 62-15z" stroke-width="1.6" opacity=".8"/>
+<path d="M300 203v194M203 300h194" stroke-width="1.3" opacity=".55"/>
+<path d="M300 151l19-19-19-19-19 19zM448 300l19-19 19 19-19 19zM300 448l19 19-19 19-19-19zM151 300l-19-19-19 19 19 19z" stroke-width="1.5"/>
+<path d="M174 174l25 25M401 401l25 25M426 174l-25 25M199 401l-25 25" stroke-width="1.5" opacity=".6"/>
+<path d="M217 360q83-30 166 0M235 383q65-21 130 0M250 406q50-13 100 0" stroke-width="2" opacity=".55"/>
+</g>
+<g fill="#e9d19a" font-family="serif" font-size="29" text-anchor="middle" opacity=".9"><text x="300" y="54">N</text><text x="300" y="572">S</text><text x="38" y="310">W</text><text x="558" y="310">E</text></g>
+</svg>

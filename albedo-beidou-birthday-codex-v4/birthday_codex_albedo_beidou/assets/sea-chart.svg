@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1100" fill="none">
+  <defs>
+    <pattern id="grid" width="120" height="120" patternUnits="userSpaceOnUse"><path d="M120 0H0V120" stroke="#8eafac" stroke-opacity=".09"/></pattern>
+    <linearGradient id="land" x1="0" y1="0" x2="650" y2="1100" gradientUnits="userSpaceOnUse"><stop stop-color="#527572" stop-opacity=".35"/><stop offset="1" stop-color="#243f46" stop-opacity=".12"/></linearGradient>
+    <radialGradient id="sea"><stop stop-color="#46747a" stop-opacity=".1"/><stop offset="1" stop-color="#0e202d" stop-opacity="0"/></radialGradient>
+  </defs>
+  <path fill="url(#grid)" d="M0 0h1800v1100H0z"/>
+  <ellipse cx="1110" cy="550" rx="650" ry="520" fill="url(#sea)"/>
+  <!-- An original imagined coastline, not a traced game map. -->
+  <path d="M0 0H605L577 62 526 84 543 136 498 159 505 197 439 227 455 264 411 312 443 347 392 379 408 432 367 456 384 502 332 533 355 572 306 612 324 660 263 684 290 727 234 771 247 804 184 843 201 892 139 945 157 1001 101 1044 118 1100H0Z" fill="url(#land)" stroke="#b6b18a" stroke-opacity=".54" stroke-width="1.4"/>
+  <g stroke="#9bb3a0" stroke-opacity=".19">
+    <path d="M0 72 494 75 474 130 431 172 451 215 393 249 412 282 367 334 382 370 346 420 357 465 305 506 323 549 278 594 289 630 230 675 249 714 194 759 204 796 149 836 164 876 112 931 130 970 74 1030 86 1100"/>
+    <path d="M0 119 447 124 399 183 415 220 359 257 369 302 325 353 343 388 299 436 307 471 256 518 273 553 225 603 236 645 180 690 193 730 145 779 158 814 107 860 119 900 67 955 78 1000 35 1041"/>
+    <path d="m390 312 113 30 61-27 21 36-33 24-68-5-39-23M340 535l95 17 36-22 33 29-47 22-75-8M230 722l84 17 46-20 18 37-59 19-57-12"/>
+    <path d="M169 85 98 146 159 224 101 286 153 361 72 453 110 541 53 629"/>
+  </g>
+  <g stroke="#9bb3a0" stroke-opacity=".32" fill="#527572" fill-opacity=".14">
+    <path d="m1366 151 55-29 46 25-11 37-39 25-54-21-13-19Z"/>
+    <path d="m1501 282 38-19 62 11 28 41-28 43-58-15-22-33Z"/>
+    <path d="m1418 671 37-29 72 22 16 44-54 41-53-26Z"/>
+    <path d="m1558 824 28-24 37 13 12 28-37 22-33-13Z"/>
+    <path d="m1119 910 46-20 37 24-6 31-42 23-29-22Z"/>
+    <path d="m807 194 23-12 17 14-14 16-24-2Z"/>
+  </g>
+  <!-- Soundings and an imagined captain's voyage. -->
+  <g stroke="#aeb8a3" stroke-opacity=".13">
+    <path d="M420 303c165-49 199 96 390 55s219-180 432-167 237 163 424 158M347 604c146-56 252-21 394 51s222 82 441 23 309-81 522 43M277 916c204-92 273-47 434 12s399 24 581-60"/>
+    <path d="M573 253c90 77 92 156 30 238s-86 155 33 263M1690 437c-217 59-267 122-256 213"/>
+  </g>
+  <path d="M427 353C713 254 1034 416 1237 524S1550 643 1588 865" stroke="#c4a46e" stroke-width="1.5" stroke-opacity=".42" stroke-dasharray="4 12"/>
+  <g stroke="#d4b67b" stroke-opacity=".7">
+    <circle cx="427" cy="353" r="7"/><circle cx="427" cy="353" r="15" stroke-opacity=".3"/>
+    <path d="M402 354h-23m48-26v-23m0 66v20m19-38h25"/>
+    <path d="m1251 521-15-31-15 31 15-6Z" fill="#ac9567" fill-opacity=".55"/>
+    <circle cx="1588" cy="865" r="5"/>
+  </g>
+  <g transform="translate(1470 168)" stroke="#bda674" stroke-opacity=".38">
+    <circle r="105"/><circle r="87"/><circle r="20"/>
+    <path d="M0-130V130M-130 0H130M-75-75 75 75M75-75-75 75" stroke-opacity=".2"/>
+    <path d="M0-103 17-17 0 0-17-17ZM103 0 17 17 0 0 17-17ZM0 103-17 17 0 0 17 17ZM-103 0-17-17 0 0-17 17Z" fill="#bda674" fill-opacity=".08"/>
+    <text y="-143" text-anchor="middle" fill="#c9b27e" stroke="none" font-family="Georgia,serif" font-size="17">N</text>
+  </g>
+  <g fill="#bdba98" fill-opacity=".6" font-family="Georgia,serif">
+    <text x="395" y="318" font-size="21" letter-spacing="3">LIYUE</text>
+    <text x="395" y="334" font-size="10" letter-spacing="2">HARBOR CHART</text>
+    <text x="1450" y="588" font-size="16" letter-spacing="4" transform="rotate(-8 1450 588)">THE OPEN SEA</text>
+    <text x="1300" y="948" font-size="12" letter-spacing="2">A CAPTAIN'S VOYAGE</text>
+    <text x="72" y="1040" font-size="12" letter-spacing="2">FROM SEA TO SKY · VOL. I</text>
+  </g>
+  <g fill="#abb59e" fill-opacity=".25" font-family="Georgia,serif" font-size="11">
+    <text x="586" y="197">24</text><text x="668" y="276">18</text><text x="573" y="550">32</text><text x="418" y="761">16</text>
+    <text x="1294" y="369">42</text><text x="1510" y="441">38</text><text x="1635" y="694">56</text><text x="1170" y="823">29</text>
+  </g>
+</svg>

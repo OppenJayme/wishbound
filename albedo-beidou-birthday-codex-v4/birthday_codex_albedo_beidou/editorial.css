@@ -1,0 +1,151 @@
+/* Printed-keepsake typography. Display, reading, and utility type have distinct roles.
+   Keep this finish independent of the page-turn geometry in styles.css. */
+:root {
+  --type-display: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --type-reading: 'Source Serif 4', Georgia, serif;
+  --type-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ink: #302d27;
+  --ink-soft: #50483c;
+  --accent-ink: #735438;
+}
+body { font-family: var(--type-ui); background: radial-gradient(ellipse at 50% 48%, #253338, #101d23 75%); }
+.ambient, #stars { display: none; }
+.grain { opacity: .035; }
+.topbar { padding-block: 24px 18px; }
+.topbar::after { background: #ddceb221; }
+.monogram { font-family: var(--type-display); font-size: 23px; }
+.monogram span { font-size: 10px; margin-inline: 7px; }
+.topbar-center { font-family: var(--type-display); font-size: 19px; font-weight: 400; letter-spacing: 0; color: #d8d1c1; }
+.topbar-right { font-size: 9px; font-weight: 500; letter-spacing: .14em; color: #a9afa6; }
+.hero { margin: 24px 0 8px; }
+.eyebrow { font-size: 9px; letter-spacing: .15em; font-weight: 500; color: #a8afa9; }
+.hero h1 { font-family: var(--type-display); font-weight: 400; font-size: clamp(36px, 3.3vw, 48px); letter-spacing: -.025em; }
+.hero h1 em { color: #d6c29e; font-weight: 400; }
+.hero p { font-family: var(--type-reading); font-size: 14px; font-style: normal; color: #b6bbb3; }
+.page { font-family: var(--type-reading); }
+.page h2, .page h3, .showcase-copy h3 { font-family: var(--type-display); font-weight: 400; line-height: 1.08; letter-spacing: -.025em; color: var(--ink); }
+.page h2 { font-size: 2.65em; margin: .38em 0 .32em; }
+.page p { font-family: var(--type-reading); font-size: 1em; font-weight: 400; line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+.emphasis { color: var(--accent-ink); }
+.tiny-cap, .page-number, .fine-print, .cover-top, .cover-bottom, .cover-kicker, .base-detail {
+  font-family: var(--type-ui); font-weight: 500; letter-spacing: .12em;
+}
+.tiny-cap { color: #77664e; font-size: .64em; line-height: 1.65; }
+.page-number { font-size: .65em; color: #7f705b; }
+.fine-print { color: #766953; font-size: .63em; }
+.page::before { border-color: #aa92702b; }
+.parchment-chapter { background: linear-gradient(160deg, #faf4e8, #f0e5d1); }
+.chapter-page, .little-things, .timeline-page, .letter-left, .wishes-page, .last-page { justify-content: center; }
+.chapter-page { background: url('assets/alchemy-star.svg') 116% -26% / 39% auto no-repeat, linear-gradient(160deg, #faf4e8, #f0e5d1); }
+.large-initial, .calligraphy-flower, .alchemy-orbit, .cover-rune { display: none; }
+.rule { margin: 1.05em 0; background: #a98b5966; width: 52px; }
+.quote-card { border-left: 1px solid #9b6056; margin-top: 1.35em; padding-left: 1.1em; }
+.quote-card p { font-family: var(--type-display); font-size: 1.3em; line-height: 1.35; color: #644d3a; }
+.script, .signature, .salutation, .side-note, .doodle, .gallery-script, .polaroid-caption, .tile-caption, .photo-mini span, .end-script {
+  font-family: var(--type-display); font-style: italic; font-weight: 400; transform: none; color: #705a42;
+}
+.script { font-size: 1.5em; line-height: 1.25; }
+.base-left .base-message { font-family: var(--type-display); font-size: 2.5em; color: #745d3e; }
+.base-left .base-detail { font-size: .58em; }
+.halo-heart { font-family: var(--type-display); }
+.cover { background: linear-gradient(0deg, #101f2bcc, #192d36dd), url('assets/nautical-crest.svg') center / 78% auto no-repeat, #1a2c36; }
+.cover-title { font-family: var(--type-display); font-weight: 400; font-size: 4.3em; letter-spacing: -.035em; line-height: .99; text-shadow: none; }
+.cover-title em { color: #e0caa3; font-weight: 400; }
+.cover-kicker { font-size: .6em; color: #c4b592; }
+.cover-script { font-family: var(--type-display); font-style: italic; font-size: 1.45em; line-height: 1.2; transform: none; color: #c5bda9; margin: .9em auto 0; }
+.cover-top, .cover-bottom { font-size: .57em; color: #c8ba9b; }
+.cover-divider { font-size: .8em; }
+.cover .wax-seal { background: radial-gradient(circle at 35% 30%, #a65e61, #6c303e); color: #e9cdaa; box-shadow: 0 4px 8px #080e1740, inset 0 0 0 2px #c9907966; }
+.showcase-copy h3 { font-size: 2.15em; }
+.showcase-copy p { font-size: .95em; max-width: 36ch; }
+.beidou-showcase .side-note { font-size: 1.15em; }
+.figure-card { box-shadow: 0 10px 20px #30261b20; }
+.list-line { padding: .68em 0; gap: 1.2em; }
+.list-line strong { font-family: var(--type-display); font-size: 1.22em; font-weight: 500; }
+.num { font-family: var(--type-ui); font-size: .68em; padding-top: .6em; color: #846c51; }
+.timeline-row { margin: .7em 0; padding-bottom: .65em; }
+.timeline-row strong { font-family: var(--type-display); font-size: 1.28em; font-weight: 500; }
+.timeline-star { font-size: .7em; padding-top: .6em; }
+.photo-mini span, .tile-caption { font-size: 1.1em; }
+.doodle { font-size: 1.25em; bottom: 12%; left: 10%; }
+.gallery-script { font-size: 1.35em; }
+.gallery-grid { margin-block: 1.7em 1.5em; }
+.letter-left h2 { font-size: 2.8em; }
+.letter-left .envelope { height: 130px; width: 66%; margin: 1.5em auto; background: linear-gradient(155deg, #eddfc2, #ded0ad); }
+.envelope .wax-seal { font-size: 1.3em; background: radial-gradient(circle at 35% 30%, #a95e60, #713440); color: #e8c9a3; box-shadow: 0 4px 8px #4d282f30, inset 0 0 0 3px #bf887c55; }
+.reveal-btn, .wish-button {
+  font-family: var(--type-ui); font-weight: 500; font-size: .73em; letter-spacing: .02em; text-transform: none;
+  border: 1px solid #9a806256; padding: 13px 18px; border-radius: 2px;
+  background: transparent; color: #614535; box-shadow: none;
+}
+.reveal-btn span, .wish-button span { margin-left: 18px; }
+.book .reveal-btn:hover, .book .reveal-btn:active, .book .wish-button:hover, .book .wish-button:active,
+.reveal-btn:hover, .wish-button:hover { background: #c9b18d25; box-shadow: none; filter: none; transform: none; }
+.letter-right { padding: 10% 11%; background: linear-gradient(160deg, #faf5e9, #f1e8d6); }
+.letter-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; padding-bottom: 16px; border-bottom: 1px solid #a78b6040; }
+.letter-right .tiny-cap { font-size: .59em; }
+.letter-right .salutation { margin: 1.2em 0 .65em; font-size: 2.1em; line-height: 1.15; color: #473a2c; }
+.letter-right p { margin: 0 0 1em; font-size: .98em; line-height: 1.6; }
+.signature { font-size: 1.45em; line-height: 1.35; margin-top: 1.2em; white-space: pre-line; }
+.letter-sender { display: block; font-family: var(--type-reading); font-style: normal; font-size: .62em; margin-top: 5px; color: #635343; }
+.wish-item { font-family: var(--type-reading); font-size: .98em; line-height: 1.5; margin-block: .65em; }
+.wish-item span { font-size: .65em; margin-top: 4px; }
+.wishes-page .script { margin-top: .65em; }
+.primogem-cluster { display: none; }
+.constellation { font-size: 3.5em; margin-bottom: .4em; }
+.star-page p { max-width: 32ch; }
+.last-glyph, .end-flower { font-family: var(--type-display); font-size: 3.5em; color: #947c52; }
+.big-end { font-family: var(--type-display); font-size: 3.3em; }
+.end-gem, .small-heart { display: none; }
+.end-script { margin-top: 1em; font-size: 1.5em; }
+.nav-btn { border-radius: 2px; border-color: #c0b29242; }
+.chapter-label { font-size: 10px; font-weight: 500; letter-spacing: .08em; color: #c8c2b0; }
+.progress-count { font-family: var(--type-ui); color: #adb0a4; letter-spacing: .08em; }
+.bottom-hint { font-family: var(--type-ui); font-style: normal; font-size: 11px; color: #919c97; }
+.footer { font-family: var(--type-ui); font-style: normal; letter-spacing: .02em; }
+.letter-dialog { width: min(720px, calc(100vw - 32px)); background: #f8f2e5; border-radius: 2px; box-shadow: 0 22px 90px #050b1480; }
+.dialog-inner { padding: 66px 64px 56px; text-align: left; }
+.dialog-inner::before { display: none; }
+.dialog-inner .overline { font-family: var(--type-ui); font-size: 10px; color: #796b54; font-weight: 500; letter-spacing: .12em; }
+.letter-occasion { font-family: var(--type-display); font-style: italic; font-size: 17px; color: #796b54; }
+.dialog-inner h2 { font-family: var(--type-display); font-weight: 400; font-size: 36px; line-height: 1.15; color: #393029; margin: 32px 0 24px; letter-spacing: -.015em; }
+.dialog-inner p { font-family: var(--type-reading); font-size: 17px; line-height: 1.65; color: #443c32; margin: 0 0 22px; max-width: 48ch; text-wrap: pretty; }
+.dialog-inner .signature { font-family: var(--type-display); font-size: 24px; margin-top: 32px; color: #66503b; }
+.dialog-close { top: 14px; right: 17px; width: auto; height: 32px; border-radius: 2px; background: transparent; font-family: var(--type-ui); font-size: 11px; padding-inline: 10px; color: #6d6050; }
+.dialog-close span { margin-left: 8px; font-size: 18px; vertical-align: -1px; }
+.letter-dialog::backdrop { background: #071017b3; backdrop-filter: blur(4px); }
+@media (min-width: 901px) and (max-width: 1100px) {
+  .page h2 { font-size: 2.5em; }
+  .letter-right { padding: 8% 10%; }
+  .letter-left .envelope { height: 95px; margin: 1em auto; }
+  .letter-right p { line-height: 1.5; }
+  .letter-right .salutation { margin: .7em 0 .5em; }
+}
+@media (max-width: 900px) {
+  .hero h1 { font-size: clamp(34px, 6vw, 46px); }
+  .hero p { font-size: 13px; }
+  .hero { margin: 24px 0 28px; }
+  .mobile-card .page { font-size: 17px; }
+  .mobile-card .page h2 { font-size: 2.6em; }
+  .mobile-card .page p { font-size: 1em; }
+  .mobile-card .cover-title { font-size: 4em; }
+  .mobile-card .cover-script { font-size: 1.45em; }
+  .mobile-card .cover-top, .mobile-card .cover-bottom { font-size: 9px; }
+  .mobile-card .letter-left .envelope { height: 130px; width: 74%; margin-block: 2em; }
+  .mobile-card .reveal-btn, .mobile-card .wish-button { font-size: 12px; }
+  .chapter-label { font-size: 10px; }
+}
+@media (max-width: 430px) {
+  .mobile-card .page { font-size: 16px; }
+  .mobile-card .page h2 { font-size: 2.5em; }
+  .mobile-card .cover-title { font-size: 3.6em; }
+  .mobile-card .cover-script { font-size: 1.3em; }
+  .eyebrow { font-size: 8px; }
+  .dialog-inner { padding: 58px 27px 34px; }
+  .dialog-inner h2 { font-size: 31px; margin: 25px 0 21px; }
+  .dialog-inner p { font-size: 16px; line-height: 1.6; }
+  .dialog-inner .signature { font-size: 23px; }
+  .letter-occasion { font-size: 15px; }
+  .letter-heading { gap: 12px; }
+  .dialog-inner .overline { font-size: 9px; }
+}

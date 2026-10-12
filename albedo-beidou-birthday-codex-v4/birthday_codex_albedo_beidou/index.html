@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111d2b" />
+  <meta name="description" content="An immersive fantasy-inspired birthday storybook with elegant 3D page turns." />
+  <title>For You, Always — The Alchemist & the Captain — A Birthday Codex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="editorial.css" />
+  <link rel="stylesheet" href="voyage.css" />
+  <script src="story-config.js" defer></script>
+  <script src="app.js" defer></script>
+  <script src="wish.js" defer></script>
+  <script src="intro.js" defer></script>
+</head>
+<body>
+  <div class="voyage-backdrop" aria-hidden="true"><div class="chart-light"></div><div class="chart-lines"></div><div class="chart-vignette"></div></div>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div id="stars" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="monogram" href="#main" aria-label="Go to story">f<span>✦</span>y</a>
+    <div class="topbar-center">The Alchemist &amp; the Captain</div>
+    <div class="topbar-right"><button id="replayIntro" class="replay-intro" type="button" hidden>Replay the wish <span aria-hidden="true">↗</span></button></div>
+  </header>
+
+  <main id="main" class="experience">
+    <div class="hero">
+      <div class="eyebrow"><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/>A STORY IN SEVEN CHAPTERS<img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/></div>
+      <h1>Between <em>stars &amp; seas.</em></h1>
+      <p>A little universe, bound just for you.</p>
+    </div>
+
+    <section class="storybook-area" aria-label="Interactive birthday storybook">
+      <span class="ornament ornament-left" aria-hidden="true">✦</span>
+      <span class="ornament ornament-right" aria-hidden="true">✧</span>
+      <div class="scene" id="scene">
+        <div class="book-shadow" aria-hidden="true"></div>
+        <div class="scene-rings" aria-hidden="true"></div>
+        <div class="book" id="book" aria-label="Animated open book">
+          <div class="board board-left" id="leftBoard"></div>
+          <div class="board board-right" id="rightBoard"></div>
+          <div class="leather-binding" aria-hidden="true"></div>
+          <div class="paper-stack paper-stack-left" aria-hidden="true"></div>
+          <div class="paper-stack paper-stack-right" aria-hidden="true"></div>
+          <div class="turn-shadow" id="turnShadow" aria-hidden="true"></div>
+          <div id="sheets"></div>
+          <div class="ribbon" aria-hidden="true"></div>
+          <div class="book-spine" aria-hidden="true"></div>
+          <button class="page-corner corner-prev" id="cornerPrev" type="button" aria-label="Turn the previous page">↶</button>
+          <button class="page-corner corner-next" id="cornerNext" type="button" aria-label="Turn the next page">↷</button>
+        </div>
+      </div>
+      <div class="mobile-book" id="mobileBook" aria-label="Birthday story, mobile edition"></div>
+    </section>
+
+    <div class="controls" aria-label="Story controls">
+      <div class="captain-keepsake" aria-hidden="true"><img src="assets/captain-charm.svg" alt=""/><span>The captain's company</span></div>
+      <button class="nav-btn" type="button" id="prevBtn" aria-label="Previous pages"><span aria-hidden="true">←</span></button>
+      <div class="progress-wrap">
+        <div class="chapter-label" id="chapterLabel" aria-live="polite">The beginning</div>
+        <div class="pagination" id="pagination" aria-label="Page progress"></div>
+        <div class="progress-count" id="pageCount">01 / 07</div>
+      </div>
+      <button class="nav-btn nav-next" type="button" id="nextBtn" aria-label="Next pages"><span aria-hidden="true">→</span></button>
+    </div>
+    <div class="bottom-hint">Use the arrows to turn the page</div>
+  </main>
+
+  <footer class="footer"><span>An original keepsake of alchemy, starlight, and sea.</span><span>ONLY YOU &amp; ME <span class="footer-heart">♥</span></span></footer>
+
+  <dialog id="wishIntro" class="wish-intro" aria-labelledby="introTitle" data-stage="ready">
+    <button id="skipIntro" class="intro-skip" type="button">Read the book <span aria-hidden="true">↗</span></button>
+    <div class="wish-sky" aria-hidden="true"><div class="sky-orbit orbit-one"></div><div class="sky-orbit orbit-two"></div><div class="sky-dust"></div></div>
+    <div class="intro-invitation" id="introInvitation">
+      <span class="intro-overline">A BIRTHDAY WISH · FOR YOU</span>
+      <div class="wish-portal" aria-hidden="true"><div class="portal-ring"></div><div class="portal-ring ring-inner"></div><span class="portal-star">✦</span><img class="portal-captain" src="assets/captain-charm.svg" alt=""/></div>
+      <h2 id="introTitle">A wish, just for you.</h2>
+      <p>Some stars find their way to us.<br/>Some become our whole world.</p>
+      <button id="startWish" class="intro-primary wish-action" type="button"><span class="wish-action-icon" aria-hidden="true"><img class="button-gem" src="assets/primogem.svg" alt=""/></span><span>Make your wish</span></button>
+      <span class="intro-footnote">One little wish. A whole story waiting.</span>
+    </div>
+    <div class="character-stage" aria-hidden="true">
+      <div class="character-aura"></div>
+      <div class="character-halo"><img src="assets/reveal-constellation.svg" alt=""/></div>
+      <div class="character-tides"></div>
+      <div class="character-motes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="intro-reveal" id="introReveal" hidden>
+      <div class="reveal-portrait"><img id="revealPortrait" src="assets/portrait-placeholder.svg" alt=""/><div class="portrait-border" aria-hidden="true"></div><span class="portrait-star" aria-hidden="true">✦</span></div>
+      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient"></span><h2 id="revealTitle"></h2><p id="revealSubtitle"></p><button id="enterBook" class="intro-primary" type="button">Open your story <span aria-hidden="true">↗</span></button><span class="intro-footnote">The best chapters are still ahead.</span></div>
+    </div>
+    <span class="intro-status" id="introStatus" role="status" aria-live="polite"></span>
+    <div class="intro-chart-note" aria-hidden="true">LIYUE · A VOYAGE BENEATH THE STARS</div>
+  </dialog>
+
+  <dialog id="letterDialog" class="letter-dialog" aria-labelledby="letterTitle">
+    <button class="dialog-close" id="closeLetter" type="button" aria-label="Close letter">Close <span aria-hidden="true">×</span></button>
+    <div class="dialog-inner">
+      <div class="letter-heading"><span class="overline">A LETTER FOR YOU</span><span class="letter-occasion">On your birthday</span></div>
+      <h2 id="letterTitle">My dearest love,</h2>
+      <p>There are a thousand beautiful things I could wish for you today — more laughter, more peace, more moments that feel golden in hindsight.</p>
+      <p>But more than anything, I hope you always remember how deeply loved you are, not just on your birthday, but on every quiet ordinary day too.</p>
+      <p>Thank you for being the person who makes life feel lighter, warmer, and more meaningful.</p>
+      <div class="signature">All my love, always ✦</div>
+      
+    </div>
+  </dialog>
+</body>
+</html>

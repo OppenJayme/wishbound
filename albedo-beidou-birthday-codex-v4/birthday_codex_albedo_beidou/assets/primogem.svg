@@ -1,0 +1,24 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Original primogem-inspired gem icon">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c8fbff"/>
+      <stop offset="45%" stop-color="#9ae6ff"/>
+      <stop offset="100%" stop-color="#7ec6ff"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#glow)">
+    <path d="M128 12 183 56 244 128 183 200 128 244 73 200 12 128 73 56Z" fill="url(#g1)" stroke="#ebfbff" stroke-width="8"/>
+    <path d="M128 34 167 66 210 128 167 190 128 222 89 190 46 128 89 66Z" fill="none" stroke="#f4ffff" stroke-opacity=".75" stroke-width="6"/>
+    <path d="M128 52 152 72 181 128 152 184 128 204 104 184 75 128 104 72Z" fill="rgba(255,255,255,.12)" opacity=".35"/>
+    <path d="M128 28 166 59 130 96 89 61Z" fill="url(#g2)" opacity=".85"/>
+    <circle cx="128" cy="128" r="22" fill="#f5ffff" fill-opacity=".6"/>
+  </g>
+</svg>

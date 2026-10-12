@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#122736"/><stop offset="1" stop-color="#294044"/></linearGradient>
+    <radialGradient id="halo"><stop stop-color="#dcc693" stop-opacity=".5"/><stop offset="1" stop-color="#dcc693" stop-opacity="0"/></radialGradient>
+    <linearGradient id="dress" x2=".8" y2="1"><stop stop-color="#a87565"/><stop offset="1" stop-color="#542e40"/></linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h600v800H0z"/>
+  <circle cx="300" cy="305" r="250" fill="url(#halo)"/>
+  <g fill="none" stroke="#e0c58c" stroke-opacity=".35"><circle cx="300" cy="298" r="210"/><circle cx="300" cy="298" r="183"/><path d="M300 69v46m0 367v45M69 298h46m367 0h45"/></g>
+  <path d="M152 403c-37-112-16-234 66-276 57-30 144-20 182 30 52 69 45 169 18 252l-126 57Z" fill="#192329"/>
+  <path d="M239 364h122l9 89-71 67-74-67Z" fill="#c6a78e"/>
+  <path d="M167 754c-5-133 12-269 81-314l50 39 52-39c85 40 98 194 91 314Z" fill="url(#dress)"/>
+  <ellipse cx="300" cy="278" rx="88" ry="116" fill="#d0b498"/>
+  <path d="M209 305c-10-93 3-167 88-176 67-7 101 44 103 118-64-16-107-49-126-76-2 51-23 98-65 134Z" fill="#20292d"/>
+  <path d="M211 263c-28 128-47 163-34 257l61-45c-16-68-21-132-27-212m183-37c36 109 51 208 36 294l-59-37c15-85 20-171 23-257" fill="#20292d"/>
+  <path d="M249 446c20 46 80 58 103-1" fill="none" stroke="#d8bb80" stroke-width="3"/>
+  <path d="m298 479 8 12-8 12-8-12Z" fill="#d8bb80"/>
+  <g fill="#e4d0a3"><path d="m117 126 3 10 10 3-10 3-3 10-3-10-10-3 10-3ZM473 356l4 13 13 4-13 4-4 13-4-13-13-4 13-4Z"/><circle cx="434" cy="102" r="2"/><circle cx="94" cy="387" r="1.7"/></g>
+  <text x="300" y="717" text-anchor="middle" fill="#e4d5b8" font-family="Georgia,serif" font-size="18" font-style="italic">a portrait, waiting for you</text>
+</svg>
