@@ -213,3 +213,11 @@ body { background: #10212a; }
   .book .paper-stack-left { animation: none !important; }
   .wish-intro *, .wish-intro[data-stage='leaving'] { animation: none !important; transition: none !important; }
 }
+
+/* Replay is available beside the portrait's primary action. */
+.reveal-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.portrait-replay { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; padding: 12px 16px; border: 1px solid #d7b87973; border-radius: 2px; background: #10253450; color: #e6d4af; font: 500 12px var(--type-ui); cursor: pointer; }
+.portrait-replay:hover { background: #d7b87915; }
+.portrait-replay:focus-visible { outline: 2px solid #f2d697; outline-offset: 4px; }
+.portrait-replay:disabled { opacity: .5; cursor: default; }
+@media (max-width: 900px) { .reveal-actions { justify-content: center; } }

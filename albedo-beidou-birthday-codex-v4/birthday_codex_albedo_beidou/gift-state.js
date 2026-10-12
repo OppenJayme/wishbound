@@ -13,7 +13,7 @@
     introOverline: 'A BIRTHDAY WISH · FOR YOU', introFootnote: 'One little wish. A whole story waiting.',
     introChartNote: 'LIYUE · A VOYAGE BENEATH THE STARS', revealFootnote: 'The best chapters are still ahead.',
     letterOverline: 'A LETTER FOR YOU', letterOccasion: 'On your birthday', letterSignature: 'All my love,',
-    replayLabel: 'Replay the wish', skipLabel: 'Read the book', startWishLabel: 'Make your wish',
+    replayLabel: 'Replay the wish', portraitReplayLabel: 'Replay wish', skipLabel: 'Read the book', startWishLabel: 'Make your wish',
     enterBookLabel: 'Open your story', closeLetterLabel: 'Close', readLetterLabel: 'Read your letter',
     makeWishLabel: 'Make a wish'
   }, story.presentation);

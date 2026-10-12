@@ -8,6 +8,7 @@
   const enter = document.getElementById('enterBook');
   const skip = document.getElementById('skipIntro');
   const replay = document.getElementById('replayIntro');
+  const portraitReplay = document.getElementById('replayPortraitWish');
   const status = document.getElementById('introStatus');
   const portrait = document.getElementById('revealPortrait');
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -125,7 +126,7 @@
     invitation.hidden = true;
     reveal.hidden = false;
     setStage('revealed');
-    enter.disabled = false;
+    enter.disabled = false; portraitReplay.disabled = false;
     intro.setAttribute('aria-labelledby', 'revealTitle');
     status.textContent = 'Five stars. Your birthday story is ready.';
     enter.focus({preventScroll: true});
@@ -135,14 +136,14 @@
     if (!intro.open || stage !== 'wishing') return;
     invitation.hidden = true;
     reveal.hidden = false;
-    enter.disabled = true;
+    enter.disabled = true; portraitReplay.disabled = true;
     setStage('manifesting');
     status.textContent = 'Your wish, finding its way to you.';
   }
 
   function makeWish() {
     if (stage !== 'ready') return;
-    start.disabled = true;
+    start.disabled = true; portraitReplay.disabled = true;
     setStage('wishing');
     window.BIRTHDAY_WISH?.play();
     status.textContent = 'A little alchemy. A little courage.\nOne extraordinary you.';
@@ -156,6 +157,7 @@
 
   function finish(openBook) {
     if (!intro.open || stage === 'leaving') return;
+    portraitReplay.disabled = true;
     clearTimeout(revealTimer);
     clearTimeout(manifestTimer);
     window.BIRTHDAY_WISH?.stop();
@@ -190,7 +192,7 @@
     invitation.hidden = false;
     reveal.hidden = true;
     start.disabled = false;
-    enter.disabled = false;
+    enter.disabled = false; portraitReplay.disabled = true;
     status.textContent = '';
     intro.setAttribute('aria-labelledby', 'introTitle');
     setStage('ready');
@@ -204,6 +206,11 @@
   skip.addEventListener('click', () => finish(false));
   enter.addEventListener('click', () => finish(true));
   replay.addEventListener('click', () => showIntro());
+  portraitReplay.addEventListener('click', () => {
+    if (!intro.open || stage !== 'revealed') return;
+    showIntro(true);
+    makeWish();
+  });
   intro.addEventListener('cancel', event => { event.preventDefault(); finish(false); });
   intro.addEventListener('close', () => { clearTimeout(revealTimer); clearTimeout(manifestTimer); clearTimeout(leaveTimer); cleanupJourney(); window.BIRTHDAY_WISH?.stop(); document.dispatchEvent(new CustomEvent('wishbound:intro')); });
   motion.addEventListener('change', event => {

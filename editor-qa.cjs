@@ -202,6 +202,12 @@ const server = http.createServer((req, res) => {
     assert.equal(await giftPage.locator('script[src]').count(),0);
     assert(await giftPage.locator('img').evaluateAll(imgs=>imgs.every(i=>i.src.startsWith('data:image/'))));
     await giftPage.locator('#startWish').click();
+    for(let i=0;i<3;i++) {
+      await giftPage.locator('#replayPortraitWish').click();
+      assert.equal(await giftPage.locator('#wishIntro').getAttribute('data-stage'),'revealed');
+      assert.equal(await giftPage.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
+      assert.equal(await giftPage.evaluate(()=>WISHBOUND.story.reveal.portrait),portrait);
+    }
     await giftPage.locator('#enterBook').click();
     await giftPage.waitForFunction(()=>!document.getElementById('wishIntro').open);
     await giftPage.locator('#pagination button').nth(4).click();
@@ -226,6 +232,11 @@ const server = http.createServer((req, res) => {
     assert(sourceGift.includes('"recipient":"Jamie"'));
     assert.equal(await phone.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await phone.screenshot({path:'qa/editor-mobile.png'});
+    await phone.locator('#giftPreviewButton').click();
+    await phone.locator('#startWish').click();
+    await phone.locator('#replayPortraitWish').click();
+    assert.equal(await phone.locator('#wishIntro').getAttribute('data-stage'),'revealed');
+    await phone.locator('#giftBackButton').click();
     await phone.locator('#giftViewSelect').selectOption('book');
     await phone.waitForFunction(()=>!document.getElementById('wishIntro').open);
     // Mobile chapter photos refer to the corresponding desktop slots, never another chapter.
@@ -282,12 +293,33 @@ const server = http.createServer((req, res) => {
     await phone.locator('#editGift').click();
     assert.equal(await phone.locator('#giftViewSelect').inputValue(),'opening');
     assert(await phone.locator('#giftToolbar').isVisible());
+    // With normal motion, replay immediately restarts the pull and ignores a rapid second click.
+    const motionContext=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
+    const motionPage=await motionContext.newPage();motionPage.on('pageerror',e=>errors.push(e.message));
+    await motionPage.goto(base+'/ONE_FILE_PREVIEW.html');
+    await motionPage.evaluate(()=>{
+      window.replayStarts=0;const play=BIRTHDAY_WISH.play;
+      BIRTHDAY_WISH.play=()=>{window.replayStarts++;return play();};
+    });
+    await motionPage.locator('#startWish').click();
+    await motionPage.waitForFunction(()=>document.getElementById('wishIntro').dataset.stage==='revealed');
+    await motionPage.locator('#replayPortraitWish').click();
+    assert.equal(await motionPage.locator('#wishIntro').getAttribute('data-stage'),'wishing');
+    assert(await motionPage.locator('#replayPortraitWish').isDisabled());
+    await motionPage.evaluate(()=>document.getElementById('replayPortraitWish').click());
+    assert.equal(await motionPage.evaluate(()=>window.replayStarts),2);
+    await motionPage.waitForFunction(()=>document.getElementById('wishIntro').dataset.stage==='revealed');
+    assert.equal(await motionPage.locator('#replayPortraitWish').isDisabled(),false);
+    await motionPage.screenshot({path:'qa/editor-portrait-replay.png'});
+    await motionPage.locator('#skipIntro').click();await motionPage.waitForFunction(()=>!document.getElementById('wishIntro').open);
+    assert.equal(await motionPage.locator('.wish-canvas').getAttribute('data-active'),'false');
+    await motionContext.close();
     assert.deepEqual(writeRequests,[],'Editor attempted to write changes over the network');
     assert.equal(await (await page.request.get(base+'/ONE_FILE_PREVIEW.html')).text(),originalTemplate,'Public template changed after editing');
     assert.equal(fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8'),originalTemplate);
     await fresh.close();
     assert.deepEqual(errors,[]);
-    console.log('Editor checks passed: manual browser-only saving on desktop and mobile, first-screen editing, template/draft isolation on reload and new tabs, return to template, read-only network use, inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
+    console.log('Editor checks passed: portrait replay with normal/reduced motion, repeated replay and standalone gifts, manual browser-only saving on desktop and mobile, first-screen editing, template/draft isolation on reload and new tabs, return to template, read-only network use, inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
   } catch(e) {
     await page.screenshot({path:'qa/editor-failure.png',fullPage:true}).catch(()=>{}); throw e;
   } finally { await browser.close(); await new Promise(resolve=>server.close(resolve)); }
