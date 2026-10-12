@@ -33,6 +33,15 @@ const server = http.createServer((req, res) => {
     assert(await page.locator('#giftToolbar').evaluate(el=>el.parentElement.id==='wishIntro'),'Toolbar is blocked by the modal');
     await page.locator('#introTitle').click();await page.locator('#giftTextValue').fill('A wish for Alex');await page.locator('#giftTextForm button[type=submit]').click();
     assert.equal(await page.locator('#introTitle').textContent(),'A wish for Alex');
+    // The explicit save button stores the draft locally and keeps the demo original.
+    await page.locator('#giftSaveButton').click();
+    await page.waitForFunction(()=>document.getElementById('giftSaveStatus').textContent==='Saved in this browser.');
+    assert.equal(await page.locator('#giftSaveButton').isDisabled(),false);
+    await page.reload();await page.locator('#introEditGift').waitFor({state:'visible'});
+    assert.equal(await page.locator('#introTitle').textContent(),'A wish, just for you.');
+    await page.locator('#introEditGift').click();
+    assert.equal(await page.locator('#introTitle').textContent(),'A wish for Alex');
+
     await page.locator('#introTitle').focus();await page.keyboard.press('Enter');
     await page.locator('#giftTextDialog [data-close-editor]').click();
     await page.screenshot({path:'qa/editor-opening.png'});
@@ -45,7 +54,7 @@ const server = http.createServer((req, res) => {
     assert(await page.locator('.cover-title').allTextContents().then(t=>t.every(v=>v.includes('Alex Rivera'))));
     await page.locator('#giftViewSelect').selectOption('book');
     await page.waitForFunction(()=>!document.getElementById('wishIntro').open);
-    assert(await page.locator('#giftToolbar').evaluate(el=>el.parentElement===document.body));
+    await page.waitForFunction(()=>document.getElementById('giftToolbar').parentElement===document.body);
     await page.locator('#nextBtn').click();
     await page.waitForFunction(()=>document.getElementById('pageCount').textContent.startsWith('02'));
     const hostile = 'A memory <img src=x onerror="window.giftXss=1"> & </script> 🙂';
@@ -184,6 +193,7 @@ const server = http.createServer((req, res) => {
     await giftPage.goto(base+'/personalized.html');
     await giftPage.waitForFunction(()=>window.WISHBOUND_GIFT===true);
     assert.equal(await giftPage.locator('[data-editor-ui]').count(),0);
+    assert.equal(await giftPage.locator('#giftSaveButton').count(),0);
     assert.equal(await giftPage.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
     for(const [path,value] of Object.entries(photoValues)) assert.equal(await giftPage.evaluate(path=>WISHBOUND.get(path),path),value,'Photo changed in export');
     for(const [key,value] of Object.entries(edgeValues)) assert.equal(await giftPage.evaluate(key=>WISHBOUND.story.presentation[key],key),value,'Edge text changed in export');
@@ -209,6 +219,8 @@ const server = http.createServer((req, res) => {
     await phone.locator('#giftViewSelect').selectOption('reveal');
     await phone.locator('#revealRecipient').click();
     await phone.locator('#giftTextValue').fill('Jamie');await phone.locator('#giftTextForm button[type=submit]').click();
+    await phone.locator('#giftSaveButton').click();
+    await phone.waitForFunction(()=>document.getElementById('giftSaveStatus').textContent==='Saved in this browser.');
     const sourceDownload=phone.waitForEvent('download');await phone.locator('#giftDownloadButton').click();
     const sourceGift=fs.readFileSync(await (await sourceDownload).path(),'utf8');
     assert(sourceGift.includes('"recipient":"Jamie"'));
@@ -275,7 +287,7 @@ const server = http.createServer((req, res) => {
     assert.equal(fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8'),originalTemplate);
     await fresh.close();
     assert.deepEqual(errors,[]);
-    console.log('Editor checks passed: first-screen editing, template/draft isolation on reload and new tabs, return to template, read-only network use, inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
+    console.log('Editor checks passed: manual browser-only saving on desktop and mobile, first-screen editing, template/draft isolation on reload and new tabs, return to template, read-only network use, inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
   } catch(e) {
     await page.screenshot({path:'qa/editor-failure.png',fullPage:true}).catch(()=>{}); throw e;
   } finally { await browser.close(); await new Promise(resolve=>server.close(resolve)); }
