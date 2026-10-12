@@ -10,8 +10,6 @@ Originally made as a romantic gift, the sample messages can be rewritten for a p
 
 View the sample gift directly in your browser. Downloading or cloning the repository is only needed if you want to customize your own copy.
 
-**Preview setup is pending:** the repository owner needs to enable **Settings → Pages → GitHub Actions**, then run the deployment workflow. The preview link will work after the first successful deployment.
-
 ## 1. Get your copy
 
 - **To create your own GitHub repository:** select **Use this template → Create a new repository**, if that button is available. Choose **Private** if you want your personal source files hidden on GitHub.
