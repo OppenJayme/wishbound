@@ -38,7 +38,7 @@ const server = http.createServer((req, res) => {
     await page.screenshot({path:'qa/editor-opening.png'});
     await page.locator('#giftViewSelect').selectOption('reveal');
     assert(await page.locator('#revealPortrait').isVisible());
-    await page.locator('[data-story-text="recipient"]:visible').first().click();
+    await page.locator('#revealRecipient').click();
     await page.locator('#giftTextValue').fill('Alex Rivera');
     await page.locator('#giftTextForm button[type=submit]').click();
     assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
@@ -207,7 +207,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love','Draft leaked into another browser context');
     assert(await phone.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'));
     await phone.locator('#giftViewSelect').selectOption('reveal');
-    await phone.locator('[data-story-text="recipient"]:visible').click();
+    await phone.locator('#revealRecipient').click();
     await phone.locator('#giftTextValue').fill('Jamie');await phone.locator('#giftTextForm button[type=submit]').click();
     const sourceDownload=phone.waitForEvent('download');await phone.locator('#giftDownloadButton').click();
     const sourceGift=fs.readFileSync(await (await sourceDownload).path(),'utf8');
