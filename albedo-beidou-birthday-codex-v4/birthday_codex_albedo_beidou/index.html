@@ -118,17 +118,19 @@
   </dialog>
 
   <section id="giftToolbar" class="gift-toolbar" data-editor-ui aria-label="Gift editor" hidden>
-    <div class="gift-toolbar-top"><strong>Click words or photos to edit.</strong><span id="giftSaveStatus" class="gift-status" role="status" aria-live="polite">Draft stays in this browser.</span></div>
+    <div class="gift-toolbar-top"><strong>Editing your own gift</strong><span id="giftSaveStatus" class="gift-status" role="status" aria-live="polite">Only your copy changes. Saved in this browser.</span></div>
     <div class="gift-toolbar-actions">
+      <label class="gift-view-label" for="giftViewSelect">View <select id="giftViewSelect"><option value="opening">Opening wish</option><option value="reveal">Portrait reveal</option><option value="book">Storybook</option></select></label>
       <button id="giftDetailsButton" type="button">Details &amp; text</button>
       <button id="giftPhotosButton" type="button">Photos</button>
       <button id="giftLetterButton" type="button">Letter</button>
       <button id="giftPreviewButton" type="button">Preview</button>
       <button id="giftResetButton" type="button">Start over</button>
+      <button id="giftDemoButton" type="button">Back to template</button>
       <button id="giftDownloadButton" class="gift-download" type="button">Download gift</button>
     </div>
   </section>
-  <div id="giftPreviewNote" class="gift-preview-note" data-editor-ui hidden><span>Previewing your gift</span><button id="giftBackButton" class="editor-launch" type="button">Back to editing</button></div>
+  <div id="giftPreviewNote" class="gift-preview-note" data-editor-ui hidden><span>Previewing your own gift</span><button id="giftBackButton" class="editor-launch" type="button">Back to editing</button><button id="giftPreviewDemoButton" class="editor-launch" type="button">Back to template</button></div>
   <dialog id="giftTextDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftTextTitle">
     <form id="giftTextForm"><h2 id="giftTextTitle">Edit your words</h2><p id="giftTextHelp">Keep it personal. Shorter text fits the book best.</p>
       <label for="giftTextValue">Your text</label><textarea id="giftTextValue" rows="5" maxlength="5000"></textarea><p id="giftTextError" class="gift-error" role="alert" hidden></p>

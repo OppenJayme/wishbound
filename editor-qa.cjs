@@ -20,16 +20,32 @@ const server = http.createServer((req, res) => {
   const context = await browser.newContext({acceptDownloads:true, viewport:{width:1440,height:900},reducedMotion:'reduce'});
   const page = await context.newPage(); const errors=[];
   page.on('pageerror', e => errors.push(e.message));
+  const writeRequests=[];context.on('request',r=>{if(!['GET','HEAD'].includes(r.method()))writeRequests.push(r.method()+' '+r.url());});
+  const originalTemplate=fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8');
   fs.mkdirSync('qa', {recursive:true});
   try {
     await page.goto(base + '/ONE_FILE_PREVIEW.html');
+    assert.equal(await page.evaluate(()=>document.body.dataset.giftMode),'template');
     await page.locator('#introEditGift').click();
-    await page.waitForFunction(()=>!document.getElementById('wishIntro').open);
-    await page.locator('[data-story-text="recipient"]:visible').first().click();
+    assert(await page.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'),'Editing skipped the first wish screen');
+    assert.equal(await page.locator('#giftViewSelect').inputValue(),'opening');
+    assert(await page.locator('#giftToolbar').isVisible());
+    assert(await page.locator('#giftToolbar').evaluate(el=>el.parentElement.id==='wishIntro'),'Toolbar is blocked by the modal');
+    await page.locator('#introTitle').click();await page.locator('#giftTextValue').fill('A wish for Alex');await page.locator('#giftTextForm button[type=submit]').click();
+    assert.equal(await page.locator('#introTitle').textContent(),'A wish for Alex');
+    await page.locator('#introTitle').focus();await page.keyboard.press('Enter');
+    await page.locator('#giftTextDialog [data-close-editor]').click();
+    await page.screenshot({path:'qa/editor-opening.png'});
+    await page.locator('#giftViewSelect').selectOption('reveal');
+    assert(await page.locator('#revealPortrait').isVisible());
+    await page.locator('#revealRecipient').click();
     await page.locator('#giftTextValue').fill('Alex Rivera');
     await page.locator('#giftTextForm button[type=submit]').click();
     assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
     assert(await page.locator('.cover-title').allTextContents().then(t=>t.every(v=>v.includes('Alex Rivera'))));
+    await page.locator('#giftViewSelect').selectOption('book');
+    await page.waitForFunction(()=>!document.getElementById('wishIntro').open);
+    assert(await page.locator('#giftToolbar').evaluate(el=>el.parentElement===document.body));
     await page.locator('#nextBtn').click();
     await page.waitForFunction(()=>document.getElementById('pageCount').textContent.startsWith('02'));
     const hostile = 'A memory <img src=x onerror="window.giftXss=1"> & </script> 🙂';
@@ -132,16 +148,31 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('body').evaluate(b=>b.classList.contains('is-editing')),false);
     assert.equal(await page.locator('#giftToolbar').isVisible(),false);
     assert.equal(await page.locator('#editGift').isVisible(),false);
+    assert(await page.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'),'Preview must start at the beginning');
     await page.screenshot({path:'qa/editor-desktop-preview.png'});
-    await page.locator('#giftBackButton').click();
-    await page.reload();
-    await page.locator('#introEditGift').waitFor({state:'visible'});
-    await page.waitForFunction(()=>WISHBOUND.story.recipient==='Alex Rivera');
+    // Returning to the demo restores every default but retains our detached draft.
+    await page.locator('#giftPreviewDemoButton').click();
+    assert(await page.evaluate(()=>JSON.stringify(WISHBOUND.snapshot())===JSON.stringify(WISHBOUND.defaults)));
+    assert.equal(await page.evaluate(()=>document.body.dataset.giftMode),'template');
+    assert.equal(await page.locator('#giftToolbar').isVisible(),false);
+    assert(await page.locator('#introEditGift').isVisible());
+    await page.locator('#introEditGift').click();
+    assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
+    assert.equal(await page.locator('#giftViewSelect').inputValue(),'opening');
+    await page.locator('#giftDemoButton').click();
+    assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'my love');
+    await page.reload();await page.locator('#introEditGift').waitFor({state:'visible'});
+    assert(await page.evaluate(()=>JSON.stringify(WISHBOUND.snapshot())===JSON.stringify(WISHBOUND.defaults)),'Saved draft replaced the original demo on reload');
+    // A second tab in the same browser also starts with the public template.
+    const sibling=await context.newPage();await sibling.goto(base+'/ONE_FILE_PREVIEW.html');
+    await sibling.locator('#introEditGift').waitFor({state:'visible'});
+    assert.equal(await sibling.evaluate(()=>WISHBOUND.story.recipient),'my love');await sibling.close();
+    await page.locator('#introEditGift').click();
+    assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
     assert.equal(await page.evaluate(()=>WISHBOUND.story.reveal.portrait),portrait);
     for(const [path,value] of Object.entries(photoValues)) assert.equal(await page.evaluate(path=>WISHBOUND.get(path),path),value,'Photo changed on reload');
     for(const [key,value] of Object.entries(edgeValues)) assert.equal(await page.evaluate(key=>WISHBOUND.story.presentation[key],key),value,'Edge text changed on reload');
     assert.equal(await page.evaluate(()=>WISHBOUND.story.letter.paragraphs.length),4);
-    await page.locator('#introEditGift').click();
     const pending = page.waitForEvent('download');
     await page.locator('#giftDownloadButton').click();
     const download=await pending; assert.equal(download.suggestedFilename(),'wishbound-for-alex-rivera.html');
@@ -174,13 +205,17 @@ const server = http.createServer((req, res) => {
     await phone.goto(base+'/index.html');
     await phone.locator('#introEditGift').click();
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love','Draft leaked into another browser context');
-    await phone.locator('[data-story-text="recipient"]:visible').click();
+    assert(await phone.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'));
+    await phone.locator('#giftViewSelect').selectOption('reveal');
+    await phone.locator('#revealRecipient').click();
     await phone.locator('#giftTextValue').fill('Jamie');await phone.locator('#giftTextForm button[type=submit]').click();
     const sourceDownload=phone.waitForEvent('download');await phone.locator('#giftDownloadButton').click();
     const sourceGift=fs.readFileSync(await (await sourceDownload).path(),'utf8');
     assert(sourceGift.includes('"recipient":"Jamie"'));
     assert.equal(await phone.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await phone.screenshot({path:'qa/editor-mobile.png'});
+    await phone.locator('#giftViewSelect').selectOption('book');
+    await phone.waitForFunction(()=>!document.getElementById('wishIntro').open);
     // Mobile chapter photos refer to the corresponding desktop slots, never another chapter.
     for(const [chapter,paths] of [[1,['photos.3']],[2,['photos.1','photos.2']],[3,['photos.0','photos.4']]]) {
       await phone.locator('#pagination button').nth(chapter).click();
@@ -210,15 +245,37 @@ const server = http.createServer((req, res) => {
       const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('wishbound-gifts',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
       await new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').put({version:1,story:old},'current:/');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();
     });
-    await phone.reload();await phone.waitForFunction(()=>WISHBOUND.story.recipient==='Legacy draft');
+    await phone.reload();await phone.locator('#introEditGift').waitFor({state:'visible'});
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love');
+    await phone.locator('#introEditGift').click();
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'Legacy draft');
     assert(await phone.evaluate(()=>WISHBOUND.story.photos[3]===WISHBOUND.story.reveal.portrait&&WISHBOUND.story.photos[4]===WISHBOUND.story.photos[1]));
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.photoAlts[3]),'Legacy portrait');
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.photoAlts[4]),'Legacy memory');
-    await phone.locator('#introEditGift').click();await phone.locator('#giftResetButton').click();await phone.locator('#giftConfirmReset').click();
+    await phone.locator('#giftResetButton').click();await phone.locator('#giftConfirmReset').click();
     assert(await phone.evaluate(()=>JSON.stringify(WISHBOUND.snapshot())===JSON.stringify(WISHBOUND.defaults)),'Start over did not restore all photo slots and edge text');
+    // A gift with the opening disabled still starts editing at the opening,
+    // while its clean preview/export honors the setting.
+    await phone.locator('#giftDetailsButton').click();await phone.locator('#giftIntroEnabled').uncheck();
+    await phone.locator('#giftDetailsForm button[type=submit]').click();
+    await phone.locator('#giftPreviewButton').click();await phone.waitForFunction(()=>!document.getElementById('wishIntro').open);
+    await phone.locator('#giftBackButton').click();
+    await phone.locator('#giftDemoButton').click();await phone.locator('#introEditGift').click();
+    assert(await phone.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'));
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.reveal.enabled),false);
+    // Starting the editor from an already-read demo returns to the first screen.
+    await phone.locator('#giftDemoButton').click();await phone.locator('#skipIntro').click();
+    await phone.waitForFunction(()=>!document.getElementById('wishIntro').open);
+    await phone.locator('#pagination button').nth(3).click();
+    await phone.locator('#editGift').click();
+    assert.equal(await phone.locator('#giftViewSelect').inputValue(),'opening');
+    assert(await phone.locator('#giftToolbar').isVisible());
+    assert.deepEqual(writeRequests,[],'Editor attempted to write changes over the network');
+    assert.equal(await (await page.request.get(base+'/ONE_FILE_PREVIEW.html')).text(),originalTemplate,'Public template changed after editing');
+    assert.equal(fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8'),originalTemplate);
     await fresh.close();
     assert.deepEqual(errors,[]);
-    console.log('Editor checks passed: inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
+    console.log('Editor checks passed: first-screen editing, template/draft isolation on reload and new tabs, return to template, read-only network use, inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
   } catch(e) {
     await page.screenshot({path:'qa/editor-failure.png',fullPage:true}).catch(()=>{}); throw e;
   } finally { await browser.close(); await new Promise(resolve=>server.close(resolve)); }

@@ -59,3 +59,13 @@ body.is-editing { padding-bottom: 105px; }
 /* Edge labels keep their existing typography and become reachable in edit mode. */
 .monogram .monogram-letter { font: inherit; margin: 0; }
 .is-editing .captain-keepsake, .is-editing .intro-chart-note { pointer-events: auto; }
+
+.gift-view-label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.gift-view-label select { max-width: 155px; background: #1d333a; color: #f4ead7; border: 1px solid #ac98725c; border-radius: 4px; padding: 7px; font: inherit; }
+.is-editing .wish-intro, .is-gift-preview .wish-intro { padding-bottom: 155px; }
+.is-editing .intro-chart-note { bottom: 165px; }
+@media (max-width: 600px) {
+  .is-editing .wish-intro { padding-bottom: 215px; }
+  .is-editing .intro-chart-note { bottom: 225px; }
+  .gift-preview-note { width: calc(100% - 28px); flex-wrap: wrap; justify-content: center; }
+}

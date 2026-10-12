@@ -79,3 +79,5 @@ Drafts use IndexedDB, scoped to the current website path. Photos are decoded, cr
 The preview builder marks its inline scripts with `data-wishbound-source`. HTML export uses the initial template, replaces its story configuration with safely serialized values, and removes editing controls. The exported gift sets `WISHBOUND_GIFT` and skips local draft restoration. Preserve these script markers when changing the builder.
 
 `test:editor` checks text editing, crop positioning, photo replacement, draft restoration and isolation, reset, preview, and exported HTML. The GitHub Pages workflow runs this check before deploying and saves screenshots as an Actions artifact.
+
+The opening editor controls move inside the intro dialog while it is open so native modal focus remains usable. Saved drafts are read into a detached copy and applied only on entering edit mode; returning to the template restores the defaults and retains the draft.
