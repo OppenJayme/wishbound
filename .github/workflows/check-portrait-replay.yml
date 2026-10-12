@@ -1,0 +1,28 @@
+name: Check portrait Replay wish button
+on:
+  push:
+    branches: [fix/portrait-replay-button]
+permissions:
+  contents: read
+jobs:
+  editor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: node build-preview.cjs
+      - name: Test portrait replay and gift editing
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          npm install --ignore-scripts --no-save --package-lock=false playwright@1.62.1
+          node editor-qa.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: editor-screenshots
+          path: qa/editor-*.png
+          if-no-files-found: ignore
