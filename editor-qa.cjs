@@ -82,6 +82,7 @@ const server = http.createServer((req, res) => {
     await page.locator('#giftPreviewButton').click();
     assert.equal(await page.locator('body').evaluate(b=>b.classList.contains('is-editing')),false);
     assert.equal(await page.locator('#giftToolbar').isVisible(),false);
+    assert.equal(await page.locator('#editGift').isVisible(),false);
     await page.screenshot({path:'qa/editor-desktop-preview.png'});
     await page.locator('#giftBackButton').click();
     await page.reload();

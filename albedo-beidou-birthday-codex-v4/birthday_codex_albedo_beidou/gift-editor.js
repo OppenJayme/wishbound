@@ -64,6 +64,7 @@
   function setEditing(value, preview = false) {
     editing = value; document.body.classList.toggle('is-editing', value);
     $('giftToolbar').hidden = !value; $('giftPreviewNote').hidden = !preview;
+    $('editGift').hidden = $('introEditGift').hidden = value || preview;
     decorate();
   }
   function beginEditing() {

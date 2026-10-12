@@ -18,6 +18,8 @@ body.is-editing { padding-bottom: 105px; }
 .gift-toolbar button { background: transparent; color: #ede2ca; border: 1px solid #ac98725c; border-radius: 4px; padding: 8px 12px; font: inherit; cursor: pointer; }
 .gift-toolbar button:hover { background: #ffffff0d; }
 .gift-toolbar .gift-download { background: #d6b780; color: #253236; border-color: #d6b780; margin-left: auto; }
+.gift-toolbar .gift-download:hover { background: #e5c999; }
+.gift-toolbar .gift-download:disabled { opacity: .65; cursor: wait; }
 .gift-dialog { width: min(620px, calc(100vw - 28px)); max-height: 86dvh; padding: 0; overflow: auto; border: 1px solid #bba884; border-radius: 10px; background: #fbf6eb; color: #30352f; font: 15px/1.5 var(--type-ui); box-shadow: 0 25px 90px #0007; }
 .gift-dialog::backdrop { background: #061923b8; }
 .gift-dialog form, .gift-dialog-content { padding: 26px; }
