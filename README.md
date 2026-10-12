@@ -4,6 +4,14 @@ A Genshin-inspired birthday storybook you can personalize with photos, shared me
 
 Originally made as a romantic gift, the sample messages can be rewritten for a partner, a friend, or anyone you want to celebrate.
 
+## Browser preview
+
+[Open the wishbound preview](https://oppenjayme.github.io/wishbound/)
+
+View the sample gift directly in your browser. Downloading or cloning the repository is only needed if you want to customize your own copy.
+
+**Preview setup is pending:** the repository owner needs to enable **Settings → Pages → GitHub Actions**, then run the deployment workflow. The preview link will work after the first successful deployment.
+
 ## 1. Get your copy
 
 - **To create your own GitHub repository:** select **Use this template → Create a new repository**, if that button is available. Choose **Private** if you want your personal source files hidden on GitHub.
@@ -73,7 +81,9 @@ Save your changes and refresh `index.html`. Check every chapter, the letter, and
 3. Open **Actions → Deploy birthday site to GitHub Pages → Run workflow**, and run it on `main`.
 4. Once the deployment succeeds, open its website link and check the gift before sending it.
 
-The included workflow also deploys changes pushed to `main`. GitHub Pages is free for public repositories; private repositories require an eligible paid plan. A private repository hides the GitHub source, but the published Pages website and its photos and messages are public.
+The included workflow rebuilds the portable HTML from the latest source and publishes it as the home page on every push to `main`. No manual preview rebuild is needed for the hosted link. Markdown guides and development scripts are excluded from the published website.
+
+GitHub Pages is free for public repositories; private repositories require an eligible paid plan. A private repository hides the GitHub source, but the published Pages website and its photos and messages are public.
 
 ### Share one HTML file
 

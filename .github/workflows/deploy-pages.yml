@@ -24,13 +24,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Prepare website
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Build portable HTML preview
         env:
           SITE_SOURCE: albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou
         run: |
+          node build-preview.cjs
           mkdir -p _site
-          cp "$SITE_SOURCE/index.html" "$SITE_SOURCE/"*.css "$SITE_SOURCE/"*.js _site/
-          cp -R "$SITE_SOURCE/assets" _site/assets
+          cp "$SITE_SOURCE/ONE_FILE_PREVIEW.html" _site/index.html
           touch _site/.nojekyll
           test -s _site/index.html
 
