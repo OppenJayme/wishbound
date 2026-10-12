@@ -12,10 +12,13 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="editorial.css" />
   <link rel="stylesheet" href="voyage.css" />
+  <link rel="stylesheet" href="gift-editor.css" />
   <script src="story-config.js" defer></script>
+  <script src="gift-state.js" defer></script>
   <script src="app.js" defer></script>
   <script src="wish.js" defer></script>
   <script src="intro.js" defer></script>
+  <script src="gift-editor.js" defer></script>
 </head>
 <body>
   <div class="voyage-backdrop" aria-hidden="true"><div class="chart-light"></div><div class="chart-lines"></div><div class="chart-vignette"></div></div>
@@ -26,15 +29,15 @@
 
   <header class="topbar">
     <a class="monogram" href="#main" aria-label="Go to story">f<span>✦</span>y</a>
-    <div class="topbar-center">The Alchemist &amp; the Captain</div>
-    <div class="topbar-right"><button id="replayIntro" class="replay-intro" type="button" hidden>Replay the wish <span aria-hidden="true">↗</span></button></div>
+    <div class="topbar-center" data-story-text="presentation.themeTitle">The Alchemist &amp; the Captain</div>
+    <div class="topbar-right"><button id="editGift" data-editor-ui class="editor-launch" type="button" hidden>Edit your gift</button><button id="replayIntro" class="replay-intro" type="button" hidden>Replay the wish <span aria-hidden="true">↗</span></button></div>
   </header>
 
   <main id="main" class="experience">
     <div class="hero">
       <div class="eyebrow"><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/>A STORY IN SEVEN CHAPTERS<img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/></div>
-      <h1>Between <em>stars &amp; seas.</em></h1>
-      <p>A little universe, bound just for you.</p>
+      <h1><span data-story-text="presentation.heroPrefix">Between</span> <em data-story-text="presentation.heroAccent">stars &amp; seas.</em></h1>
+      <p data-story-text="presentation.heroSubtitle">A little universe, bound just for you.</p>
     </div>
 
     <section class="storybook-area" aria-label="Interactive birthday storybook">
@@ -76,13 +79,14 @@
   <footer class="footer"><span>An original keepsake of alchemy, starlight, and sea.</span><span>ONLY YOU &amp; ME <span class="footer-heart">♥</span></span></footer>
 
   <dialog id="wishIntro" class="wish-intro" aria-labelledby="introTitle" data-stage="ready">
+    <button id="introEditGift" data-editor-ui class="editor-launch intro-editor-launch" type="button" hidden>Edit your gift</button>
     <button id="skipIntro" class="intro-skip" type="button">Read the book <span aria-hidden="true">↗</span></button>
     <div class="wish-sky" aria-hidden="true"><div class="sky-orbit orbit-one"></div><div class="sky-orbit orbit-two"></div><div class="sky-dust"></div></div>
     <div class="intro-invitation" id="introInvitation">
       <span class="intro-overline">A BIRTHDAY WISH · FOR YOU</span>
       <div class="wish-portal" aria-hidden="true"><div class="portal-ring"></div><div class="portal-ring ring-inner"></div><span class="portal-star">✦</span><img class="portal-captain" src="assets/captain-charm.svg" alt=""/></div>
-      <h2 id="introTitle">A wish, just for you.</h2>
-      <p>Some stars find their way to us.<br/>Some become our whole world.</p>
+      <h2 id="introTitle" data-story-text="presentation.introTitle">A wish, just for you.</h2>
+      <p data-story-text="presentation.introMessage">Some stars find their way to us.<br/>Some become our whole world.</p>
       <button id="startWish" class="intro-primary wish-action" type="button"><span class="wish-action-icon" aria-hidden="true"><img class="button-gem" src="assets/primogem.svg" alt=""/></span><span>Make your wish</span></button>
       <span class="intro-footnote">One little wish. A whole story waiting.</span>
     </div>
@@ -93,8 +97,8 @@
       <div class="character-motes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </div>
     <div class="intro-reveal" id="introReveal" hidden>
-      <div class="reveal-portrait"><img id="revealPortrait" src="assets/portrait-placeholder.svg" alt=""/><div class="portrait-border" aria-hidden="true"></div><span class="portrait-star" aria-hidden="true">✦</span></div>
-      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient"></span><h2 id="revealTitle"></h2><p id="revealSubtitle"></p><button id="enterBook" class="intro-primary" type="button">Open your story <span aria-hidden="true">↗</span></button><span class="intro-footnote">The best chapters are still ahead.</span></div>
+      <div class="reveal-portrait"><img data-story-image="reveal.portrait" id="revealPortrait" src="assets/portrait-placeholder.svg" alt=""/><div class="portrait-border" aria-hidden="true"></div><span class="portrait-star" aria-hidden="true">✦</span></div>
+      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow" data-story-text="reveal.eyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient" data-story-text="recipient"></span><h2 id="revealTitle" data-story-text="reveal.title"></h2><p id="revealSubtitle" data-story-text="reveal.subtitle"></p><button id="enterBook" class="intro-primary" type="button">Open your story <span aria-hidden="true">↗</span></button><span class="intro-footnote">The best chapters are still ahead.</span></div>
     </div>
     <span class="intro-status" id="introStatus" role="status" aria-live="polite"></span>
     <div class="intro-chart-note" aria-hidden="true">LIYUE · A VOYAGE BENEATH THE STARS</div>
@@ -112,5 +116,48 @@
       
     </div>
   </dialog>
+
+  <section id="giftToolbar" class="gift-toolbar" data-editor-ui aria-label="Gift editor" hidden>
+    <div class="gift-toolbar-top"><strong>Click words or photos to edit.</strong><span id="giftSaveStatus" class="gift-status" role="status" aria-live="polite">Draft stays in this browser.</span></div>
+    <div class="gift-toolbar-actions">
+      <button id="giftDetailsButton" type="button">Details &amp; text</button>
+      <button id="giftPhotosButton" type="button">Photos</button>
+      <button id="giftLetterButton" type="button">Letter</button>
+      <button id="giftPreviewButton" type="button">Preview</button>
+      <button id="giftResetButton" type="button">Start over</button>
+      <button id="giftDownloadButton" class="gift-download" type="button">Download gift</button>
+    </div>
+  </section>
+  <div id="giftPreviewNote" class="gift-preview-note" data-editor-ui hidden><span>Previewing your gift</span><button id="giftBackButton" class="editor-launch" type="button">Back to editing</button></div>
+  <dialog id="giftTextDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftTextTitle">
+    <form id="giftTextForm"><h2 id="giftTextTitle">Edit your words</h2><p id="giftTextHelp">Keep it personal. Shorter text fits the book best.</p>
+      <label for="giftTextValue">Your text</label><textarea id="giftTextValue" rows="5" maxlength="5000"></textarea><p id="giftTextError" class="gift-error" role="alert" hidden></p>
+      <div class="gift-dialog-actions"><button type="button" data-close-editor>Cancel</button><button type="submit">Apply text</button></div>
+    </form>
+  </dialog>
+  <dialog id="giftDetailsDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftDetailsTitle">
+    <form id="giftDetailsForm"><h2 id="giftDetailsTitle">Make it yours</h2><p>Set the names and chapter labels. You can also edit every message here.</p>
+      <div id="giftDetailsFields"></div><details><summary>All messages</summary><div id="giftAllTextFields"></div></details>
+      <p id="giftDetailsError" class="gift-error" role="alert" hidden></p><div class="gift-dialog-actions"><button type="button" data-close-editor>Cancel</button><button type="submit">Apply changes</button></div>
+    </form>
+  </dialog>
+  <dialog id="giftPhotosDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftPhotosTitle"><div class="gift-dialog-content">
+    <h2 id="giftPhotosTitle">Your photos</h2><p>Choose a photo to replace it. Each photo updates everywhere it appears in the gift.</p><div id="giftPhotoGrid" class="gift-photo-grid"></div>
+    <div class="gift-dialog-actions"><button type="button" data-close-editor>Close</button></div>
+  </div></dialog>
+  <dialog id="giftImageDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftImageTitle"><form id="giftImageForm">
+    <h2 id="giftImageTitle">Replace photo</h2><p>Choose a JPG, PNG, or WebP image, then adjust the crop. Maximum upload: 20 MB.</p>
+    <label for="giftImageFile">Upload a photo</label><input id="giftImageFile" type="file" accept="image/jpeg,image/png,image/webp" />
+    <canvas id="giftCropPreview" class="gift-crop" width="600" height="800" hidden></canvas><div id="giftCropControls" hidden>
+      <label for="giftCropZoom">Zoom</label><input id="giftCropZoom" type="range" min="1" max="3" step="0.05" value="1" />
+      <label for="giftCropX">Horizontal position</label><input id="giftCropX" type="range" min="-100" max="100" value="0" />
+      <label for="giftCropY">Vertical position</label><input id="giftCropY" type="range" min="-100" max="100" value="0" />
+    </div><label for="giftImageAlt">Describe the photo</label><input id="giftImageAlt" type="text" maxlength="250" />
+    <p id="giftImageError" class="gift-error" role="alert" hidden></p><div class="gift-dialog-actions"><button id="giftImageDefault" type="button">Use placeholder</button><button type="button" data-close-editor>Cancel</button><button id="giftImageApply" type="submit" disabled>Use photo</button></div>
+  </form></dialog>
+  <dialog id="giftResetDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftResetTitle"><div class="gift-dialog-content">
+    <h2 id="giftResetTitle">Start a fresh gift?</h2><p>This replaces your saved draft in this browser with the sample gift. Download your current gift first if you want to keep it.</p>
+    <div class="gift-dialog-actions"><button type="button" data-close-editor>Keep editing</button><button id="giftConfirmReset" class="primary" type="button">Start over</button></div>
+  </div></dialog>
 </body>
 </html>

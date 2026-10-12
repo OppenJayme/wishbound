@@ -5,6 +5,7 @@
 'use strict';
 
 const STORY = window.BIRTHDAY_STORY;
+const storyText = path => window.WISHBOUND.text(path);
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
 const safeImage = value => {
   const url = String(value ?? '');
@@ -13,7 +14,7 @@ const safeImage = value => {
 };
 
 const [photo1, photo2, photo3] = STORY.photos.map(safeImage);
-const keepsakePortrait = `<div class="keepsake-portrait"><img src="${safeImage(STORY.reveal?.portrait || 'assets/portrait-placeholder.svg')}" alt="${escapeHTML(STORY.reveal?.portraitAlt || `A portrait of ${STORY.recipient}`)}" /></div>`;
+const keepsakePortrait = `<div class="keepsake-portrait"><img data-story-image="reveal.portrait" src="${safeImage(STORY.reveal?.portrait || 'assets/portrait-placeholder.svg')}" alt="${escapeHTML(STORY.reveal?.portraitAlt || `A portrait of ${STORY.recipient}`)}" /></div>`;
 const primogem = 'assets/primogem.svg';
 const pageLabel = n => `<span class="page-number">${String(n).padStart(2, '0')}</span>`;
 
@@ -22,8 +23,8 @@ const pages = {
     <div class="page base-left">
       <div class="arcane-sigil" aria-hidden="true"></div><div class="alchemy-orbit" aria-hidden="true">✧ &nbsp; ✦ &nbsp; ✧</div>
       <div class="halo"><div class="halo-heart">✦</div></div>
-      <div class="base-message">${escapeHTML(STORY.copy.a_journal_of_us)}</div>
-      <div class="base-detail">${escapeHTML(STORY.copy.an_alchemists_heart_a_captains)}</div>
+      <div class="base-message">${storyText('copy.a_journal_of_us')}</div>
+      <div class="base-detail">${storyText('copy.an_alchemists_heart_a_captains')}</div>
     </div>`,
 
   cover: `
@@ -35,25 +36,25 @@ const pages = {
         <img src="${primogem}" alt="" />
         <img src="${primogem}" alt="" />
       </div>
-      <div class="cover-top">${escapeHTML(STORY.copy.a_chronicle_beneath_the_stars)}</div>
+      <div class="cover-top">${storyText('copy.a_chronicle_beneath_the_stars')}</div>
       <div class="cover-divider">✦</div>
       <div>
-        <div class="cover-kicker">${escapeHTML(STORY.copy.bound_for)}</div>
-        <div class="cover-title">${escapeHTML(STORY.copy.happy)}<br/><em>${escapeHTML(STORY.copy.birthday)}</em><br/>${escapeHTML(STORY.recipient)}.</div>
-        <div class="cover-script">${escapeHTML(STORY.copy.our_favorite_adventures_written_in)}</div>
+        <div class="cover-kicker">${storyText('copy.bound_for')}</div>
+        <div class="cover-title">${storyText('copy.happy')}<br/><em>${storyText('copy.birthday')}</em><br/>${storyText('recipient')}.</div>
+        <div class="cover-script">${storyText('copy.our_favorite_adventures_written_in')}</div>
       </div>
       <div class="wax-seal" aria-hidden="true">✧</div>
-      <div class="cover-bottom">${escapeHTML(STORY.copy.set_sail_turn_the_page)}</div>
+      <div class="cover-bottom">${storyText('copy.set_sail_turn_the_page')}</div>
     </div>`,
 
   openingLeft: `
     <div class="page chapter-page parchment-chapter">
-      <div class="large-initial">${escapeHTML(STORY.copy.i)}</div>
-      <div class="tiny-cap">${escapeHTML(STORY.copy.chapter_one_where_our_paths)}</div>
-      <h2>${escapeHTML(STORY.copy.where_two_worlds)}<br/><span class="emphasis">${escapeHTML(STORY.copy.became_one)}</span></h2>
+      <div class="large-initial">${storyText('copy.i')}</div>
+      <div class="tiny-cap">${storyText('copy.chapter_one_where_our_paths')}</div>
+      <h2>${storyText('copy.where_two_worlds')}<br/><span class="emphasis">${storyText('copy.became_one')}</span></h2>
       <div class="rule"></div>
-      <p>${escapeHTML(STORY.copy.somewhere_between_the_stars_above)}</p>
-      <div class="quote-card"><p>${escapeHTML(STORY.copy.ever_since_you_life_has)}</p></div>
+      <p>${storyText('copy.somewhere_between_the_stars_above')}</p>
+      <div class="quote-card"><p>${storyText('copy.ever_since_you_life_has')}</p></div>
       <div class="calligraphy-flower">✦</div>
       ${pageLabel(1)}
     </div>`,
@@ -61,9 +62,9 @@ const pages = {
   openingRight: `
     <div class="page beidou-showcase page-framed">
       <div class="showcase-copy">
-        <span class="tiny-cap">${escapeHTML(STORY.copy.the_captain_of_the_tale)}</span>
-        <h3>${escapeHTML(STORY.copy.a_heart_as_brave)}<br/>${escapeHTML(STORY.copy.as_the_sea)}</h3>
-        <p>${escapeHTML(STORY.copy.for_your_courage_your_kindness)}</p>
+        <span class="tiny-cap">${storyText('copy.the_captain_of_the_tale')}</span>
+        <h3>${storyText('copy.a_heart_as_brave')}<br/>${storyText('copy.as_the_sea')}</h3>
+        <p>${storyText('copy.for_your_courage_your_kindness')}</p>
         <div class="gem-row" aria-hidden="true">
           <img src="${primogem}" alt="" />
           <img src="${primogem}" alt="" />
@@ -71,55 +72,55 @@ const pages = {
         </div>
       </div>
       ${keepsakePortrait}
-      <div class="side-note">${escapeHTML(STORY.copy.my_favorite_adventure_is_you)}</div>
+      <div class="side-note">${storyText('copy.my_favorite_adventure_is_you')}</div>
       ${pageLabel(2)}
     </div>`,
 
   thingsLeft: `
     <div class="page little-things parchment-chapter">
-      <span class="tiny-cap">${escapeHTML(STORY.copy.chapter_two_little_treasures)}</span>
-      <h2>${escapeHTML(STORY.copy.the_little_treasures)}<br/><span class="emphasis">${escapeHTML(STORY.copy.i_found_in_you)}</span></h2>
-      <div class="list-line"><span class="num">01</span><p><strong>${escapeHTML(STORY.copy.your_laugh)}</strong>${escapeHTML(STORY.copy.it_can_change_the_temperature)}</p></div>
-      <div class="list-line"><span class="num">02</span><p><strong>${escapeHTML(STORY.copy.your_kindness)}</strong>${escapeHTML(STORY.copy.even_the_quiet_kind_that)}</p></div>
-      <div class="list-line"><span class="num">03</span><p><strong>${escapeHTML(STORY.copy.your_presence)}</strong>${escapeHTML(STORY.copy.somehow_every_place_feels_softer)}</p></div>
+      <span class="tiny-cap">${storyText('copy.chapter_two_little_treasures')}</span>
+      <h2>${storyText('copy.the_little_treasures')}<br/><span class="emphasis">${storyText('copy.i_found_in_you')}</span></h2>
+      <div class="list-line"><span class="num">01</span><p><strong>${storyText('copy.your_laugh')}</strong>${storyText('copy.it_can_change_the_temperature')}</p></div>
+      <div class="list-line"><span class="num">02</span><p><strong>${storyText('copy.your_kindness')}</strong>${storyText('copy.even_the_quiet_kind_that')}</p></div>
+      <div class="list-line"><span class="num">03</span><p><strong>${storyText('copy.your_presence')}</strong>${storyText('copy.somehow_every_place_feels_softer')}</p></div>
       ${pageLabel(3)}
     </div>`,
 
   thingsRight: `
     <div class="page scrapbook-page page-framed">
-      <div class="tiny-cap scrapbook-title">${escapeHTML(STORY.copy.treasures_from_the_voyage)}</div>
-      <div class="photo-mini photo-a"><div class="mini-frame"><img src="${photo2}" alt="Illustrated bouquet — placeholder for your memory" /></div><span>${escapeHTML(STORY.copy.little_constellations)}</span></div>
-      <div class="photo-mini photo-b"><div class="mini-frame"><img src="${photo3}" alt="Illustrated crimson-sail ship at sea — replace with your photo" /></div><span>${escapeHTML(STORY.copy.quiet_horizons)}</span></div>
-      <span class="doodle">${escapeHTML(STORY.copy.all_the_things_that_make)}</span>
+      <div class="tiny-cap scrapbook-title">${storyText('copy.treasures_from_the_voyage')}</div>
+      <div class="photo-mini photo-a"><div class="mini-frame"><img data-story-image="photos.1" src="${photo2}" alt="Illustrated bouquet — placeholder for your memory" /></div><span>${storyText('copy.little_constellations')}</span></div>
+      <div class="photo-mini photo-b"><div class="mini-frame"><img data-story-image="photos.2" src="${photo3}" alt="Illustrated crimson-sail ship at sea — replace with your photo" /></div><span>${storyText('copy.quiet_horizons')}</span></div>
+      <span class="doodle">${storyText('copy.all_the_things_that_make')}</span>
       ${pageLabel(4)}
     </div>`,
 
   memoriesLeft: `
     <div class="page timeline-page parchment-chapter">
-      <div class="tiny-cap">${escapeHTML(STORY.copy.chapter_three_our_voyages)}</div>
-      <h2>${escapeHTML(STORY.copy.our_favorite)}<br/><span class="emphasis">${escapeHTML(STORY.copy.uncharted_waters)}</span></h2>
-      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${escapeHTML(STORY.copy.the_first_time_we_set)}</strong><p>${escapeHTML(STORY.copy.a_moment_i_would_gladly)}</p></div></div>
-      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${escapeHTML(STORY.copy.the_unexpected_detours)}</strong><p>${escapeHTML(STORY.copy.sometimes_the_best_moments_are)}</p></div></div>
-      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${escapeHTML(STORY.copy.everything_still_ahead)}</strong><p>${escapeHTML(STORY.copy.there_are_so_many_horizons)}</p></div></div>
+      <div class="tiny-cap">${storyText('copy.chapter_three_our_voyages')}</div>
+      <h2>${storyText('copy.our_favorite')}<br/><span class="emphasis">${storyText('copy.uncharted_waters')}</span></h2>
+      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.the_first_time_we_set')}</strong><p>${storyText('copy.a_moment_i_would_gladly')}</p></div></div>
+      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.the_unexpected_detours')}</strong><p>${storyText('copy.sometimes_the_best_moments_are')}</p></div></div>
+      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.everything_still_ahead')}</strong><p>${storyText('copy.there_are_so_many_horizons')}</p></div></div>
       ${pageLabel(5)}
     </div>`,
 
   memoriesRight: `
     <div class="page gallery-page page-framed">
-      <span class="tiny-cap">${escapeHTML(STORY.copy.a_gallery_of_favorites)}</span>
+      <span class="tiny-cap">${storyText('copy.a_gallery_of_favorites')}</span>
       <div class="gallery-grid">
-        <div class="photo-tile"><div class="tile-image"><img src="${photo1}" alt="Sunset illustration, replace with a couple photo" /></div><div class="tile-caption">${escapeHTML(STORY.copy.one_unforgettable_day)}</div></div>
-        <div class="photo-tile"><div class="tile-image"><img src="${photo2}" alt="Flower illustration, replace with a couple photo" /></div><div class="tile-caption">${escapeHTML(STORY.copy.one_beautiful_feeling)}</div></div>
+        <div class="photo-tile"><div class="tile-image"><img data-story-image="photos.0" src="${photo1}" alt="Sunset illustration, replace with a couple photo" /></div><div class="tile-caption">${storyText('copy.one_unforgettable_day')}</div></div>
+        <div class="photo-tile"><div class="tile-image"><img data-story-image="photos.1" src="${photo2}" alt="Flower illustration, replace with a couple photo" /></div><div class="tile-caption">${storyText('copy.one_beautiful_feeling')}</div></div>
       </div>
-      <div class="script gallery-script">${escapeHTML(STORY.copy.every_memory_becomes_brighter_with)}</div>
+      <div class="script gallery-script">${storyText('copy.every_memory_becomes_brighter_with')}</div>
       ${pageLabel(6)}
     </div>`,
 
   letterLeft: `
     <div class="page letter-left parchment-chapter">
-      <span class="tiny-cap">${escapeHTML(STORY.copy.chapter_four_a_sealed_letter)}</span>
-      <h2>${escapeHTML(STORY.copy.i_wrote_you)}<br/><span class="emphasis">${escapeHTML(STORY.copy.something_sincere)}</span></h2>
-      <p>${escapeHTML(STORY.copy.some_feelings_deserve_more_than)}</p>
+      <span class="tiny-cap">${storyText('copy.chapter_four_a_sealed_letter')}</span>
+      <h2>${storyText('copy.i_wrote_you')}<br/><span class="emphasis">${storyText('copy.something_sincere')}</span></h2>
+      <p>${storyText('copy.some_feelings_deserve_more_than')}</p>
       <div class="envelope" aria-hidden="true"><div class="wax-seal">✦</div></div>
       <button class="reveal-btn open-letter" type="button">Read your letter <span aria-hidden="true">↗</span></button>
       ${pageLabel(7)}
@@ -127,30 +128,30 @@ const pages = {
 
   letterRight: `
     <div class="page letter-right page-framed">
-      <div class="letter-heading"><span class="tiny-cap">${escapeHTML(STORY.copy.a_page_written_from_the)}</span></div>
-      <div class="salutation">${escapeHTML(STORY.copy.my_darling)}</div>
-      <p>${escapeHTML(STORY.copy.even_in_the_smallest_moments)}</p>
-      <p>${escapeHTML(STORY.copy.i_hope_this_next_year)}</p>
-      <p>${escapeHTML(STORY.copy.and_through_every_chapter_ahead)}</p>
-      <div class="signature">${escapeHTML(STORY.copy.with_all_my_love)}<span class="letter-sender">${escapeHTML(STORY.signoff)}</span></div>
+      <div class="letter-heading"><span class="tiny-cap">${storyText('copy.a_page_written_from_the')}</span></div>
+      <div class="salutation">${storyText('copy.my_darling')}</div>
+      <p>${storyText('copy.even_in_the_smallest_moments')}</p>
+      <p>${storyText('copy.i_hope_this_next_year')}</p>
+      <p>${storyText('copy.and_through_every_chapter_ahead')}</p>
+      <div class="signature">${storyText('copy.with_all_my_love')}<span class="letter-sender">${storyText('signoff')}</span></div>
       ${pageLabel(8)}
     </div>`,
 
   wishesLeft: `
     <div class="page wishes-page parchment-chapter">
-      <div class="tiny-cap">${escapeHTML(STORY.copy.chapter_five_beyond_the_horizon)}</div>
-      <h2>${escapeHTML(STORY.copy.to_every_horizon)}<br/><span class="emphasis">${escapeHTML(STORY.copy.still_ahead)}</span></h2>
-      <div class="wish-item"><span>✦</span>${escapeHTML(STORY.copy.more_long_talks_that_make)}</div>
-      <div class="wish-item"><span>✦</span>${escapeHTML(STORY.copy.more_laughter_that_sneaks_up)}</div>
-      <div class="wish-item"><span>✦</span>${escapeHTML(STORY.copy.more_places_memories_and_beautiful)}</div>
-      <div class="wish-item"><span>✦</span>${escapeHTML(STORY.copy.more_of_us_choosing_each)}</div>
-      <div class="script">${escapeHTML(STORY.copy.the_best_chapters_have_not)}</div>
+      <div class="tiny-cap">${storyText('copy.chapter_five_beyond_the_horizon')}</div>
+      <h2>${storyText('copy.to_every_horizon')}<br/><span class="emphasis">${storyText('copy.still_ahead')}</span></h2>
+      <div class="wish-item"><span>✦</span>${storyText('copy.more_long_talks_that_make')}</div>
+      <div class="wish-item"><span>✦</span>${storyText('copy.more_laughter_that_sneaks_up')}</div>
+      <div class="wish-item"><span>✦</span>${storyText('copy.more_places_memories_and_beautiful')}</div>
+      <div class="wish-item"><span>✦</span>${storyText('copy.more_of_us_choosing_each')}</div>
+      <div class="script">${storyText('copy.the_best_chapters_have_not')}</div>
       ${pageLabel(9)}
     </div>`,
 
   wishesRight: `
     <div class="page star-page page-framed">
-      <div class="tiny-cap">${escapeHTML(STORY.copy.one_wish_carried_by_the)}</div>
+      <div class="tiny-cap">${storyText('copy.one_wish_carried_by_the')}</div>
       <div class="primogem-cluster" aria-hidden="true">
         <img src="${primogem}" alt="" />
         <img src="${primogem}" alt="" />
@@ -159,21 +160,21 @@ const pages = {
         <img src="${primogem}" alt="" />
       </div>
       <div class="constellation wish-gem" aria-hidden="true"><img src="${primogem}" alt="" /></div>
-      <h2>${escapeHTML(STORY.copy.make_a_wish)}</h2>
-      <p>${escapeHTML(STORY.copy.close_your_eyes_and_make)}</p>
+      <h2>${storyText('copy.make_a_wish')}</h2>
+      <p>${storyText('copy.close_your_eyes_and_make')}</p>
       <button class="wish-button make-wish" type="button">Make a wish <span aria-hidden="true">↗</span></button>
-      <div class="fine-print wish-note">${escapeHTML(STORY.copy.may_every_good_thing_find)}</div>
+      <div class="fine-print wish-note">${storyText('copy.may_every_good_thing_find')}</div>
       ${pageLabel(10)}
     </div>`,
 
   endingLeft: `
     <div class="page last-page parchment-chapter">
-      <div class="tiny-cap">${escapeHTML(STORY.copy.the_next_adventure_awaits)}</div>
+      <div class="tiny-cap">${storyText('copy.the_next_adventure_awaits')}</div>
       <div class="last-glyph">∞</div>
-      <h2>${escapeHTML(STORY.copy.to_be)}<br/><span class="emphasis">${escapeHTML(STORY.copy.continued)}</span></h2>
+      <h2>${storyText('copy.to_be')}<br/><span class="emphasis">${storyText('copy.continued')}</span></h2>
       <div class="small-heart">♥</div>
-      <p>${escapeHTML(STORY.copy.another_birthday_another_reminder_that)}</p>
-      <div class="script">${escapeHTML(STORY.copy.and_we_still_have_so)}</div>
+      <p>${storyText('copy.another_birthday_another_reminder_that')}</p>
+      <div class="script">${storyText('copy.and_we_still_have_so')}</div>
       ${pageLabel(11)}
     </div>`,
 
@@ -181,11 +182,11 @@ const pages = {
     <div class="page base-right">
       <div class="navigator-compass" aria-hidden="true"><span>✦</span></div>
       <div class="end-flower">✧</div>
-      <div class="big-end">${escapeHTML(STORY.copy.the_best_part)}</div>
-      <p>${escapeHTML(STORY.copy.there_are_still_so_many)}</p>
+      <div class="big-end">${storyText('copy.the_best_part')}</div>
+      <p>${storyText('copy.there_are_still_so_many')}</p>
       <div class="end-gem" aria-hidden="true"><img src="${primogem}" alt="" /></div>
-      <div class="end-script">${escapeHTML(STORY.copy.love_you_always)}</div>
-      <div class="fine-print end-note">${escapeHTML(STORY.copy.the_voyage_continues)}</div>
+      <div class="end-script">${storyText('copy.love_you_always')}</div>
+      <div class="fine-print end-note">${storyText('copy.the_voyage_continues')}</div>
     </div>`,
 };
 
@@ -199,7 +200,7 @@ const sheetConfig = [
 ];
 
 // Mobile uses the same story copy as the desktop spreads.
-const photoStrip = '<div class="mobile-photo-strip"><img src="' + photo1 + '" alt="A memory of us"><img src="' + photo2 + '" alt="A little treasure"></div>';
+const photoStrip = '<div class="mobile-photo-strip"><img data-story-image="photos.0" src="' + photo1 + '" alt="A memory of us"><img data-story-image="photos.1" src="' + photo2 + '" alt="A little treasure"></div>';
 const mobileTemplates = [
   pages.cover,
   pages.openingLeft.replace('<h2>', `${keepsakePortrait}<h2>`),
@@ -219,12 +220,14 @@ const dotsEl = document.getElementById('pagination');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const dialog = document.getElementById('letterDialog');
-dialog.querySelector('.signature').textContent = 'All my love,\n' + STORY.signoff;
+dialog.querySelector('.signature').innerHTML = 'All my love,<br/>' + storyText('signoff');
 dialog.querySelector('h2').textContent = STORY.letter.greeting;
+dialog.querySelector('h2').dataset.storyText = 'letter.greeting';
 dialog.querySelectorAll('.dialog-inner p').forEach(p => p.remove());
-STORY.letter.paragraphs.forEach(text => {
+STORY.letter.paragraphs.forEach((text, index) => {
   const p = document.createElement('p');
   p.textContent = text;
+  p.dataset.storyText = 'letter.paragraphs.' + index;
   dialog.querySelector('.signature').before(p);
 });
 
@@ -289,6 +292,7 @@ function render() {
   });
   pageCountEl.textContent = `${String(current + 1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
   chapterLabelEl.textContent = STORY.chapterNames[current];
+  chapterLabelEl.dataset.storyText = 'chapterNames.' + current;
   prevBtn.disabled = requested === 0;
   nextBtn.disabled = requested === total - 1;
   document.getElementById('cornerPrev').disabled = requested === 0;
@@ -476,6 +480,18 @@ for (let i = 0; i < 36; i++) {
 render();
 // The intro is independent of this book's navigation and works in the portable preview.
 window.BIRTHDAY_BOOK = {
+  refresh: () => {
+    dialog.querySelectorAll('.dialog-inner p').forEach(p => p.remove());
+    STORY.letter.paragraphs.forEach((text, index) => {
+      const p = document.createElement('p');
+      p.textContent = text;
+      p.dataset.storyText = 'letter.paragraphs.' + index;
+      dialog.querySelector('.signature').before(p);
+    });
+    dots.forEach((dot, i) => dot.setAttribute('aria-label', `Go to chapter ${i + 1}: ${STORY.chapterNames[i]}`));
+    mobileCards.forEach((card, i) => card.setAttribute('aria-label', STORY.chapterNames[i]));
+    render();
+  },
   open: async () => {
     if (current === 0) goTo(1);
     await new Promise(resolve => {

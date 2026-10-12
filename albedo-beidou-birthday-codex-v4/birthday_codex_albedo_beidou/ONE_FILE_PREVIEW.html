@@ -1134,7 +1134,65 @@ body { background: #10212a; }
 }
 
 </style>
-  <script>document.addEventListener('DOMContentLoaded', () => {
+  <style>
+/* Editing controls are separate from the keepsake's visual layout. */
+.story-text { display: inline !important; font: inherit !important; color: inherit !important; letter-spacing: inherit !important; margin: 0 !important; padding: 0 !important; }
+[data-story-text] { white-space: pre-line; }
+[data-editor-ui][hidden] { display: none !important; }
+.editor-launch { border: 1px solid #c8b58d70; border-radius: 4px; padding: 9px 13px; background: #1d333a; color: #f2e6d1; font: 12px var(--type-ui); cursor: pointer; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.intro-editor-launch { position: absolute; z-index: 5; top: 29px; left: max(24px, 4vw); }
+body.is-editing { padding-bottom: 105px; }
+.is-editing [data-story-text] { cursor: text; outline: 1px dashed #99724e80; outline-offset: 3px; border-radius: 2px; }
+.is-editing [data-story-text]:hover, .is-editing [data-story-text]:focus-visible { outline: 2px solid #9b6056; background: #d9ba7640; }
+.is-editing img[data-story-image] { cursor: pointer; outline: 3px dashed #b98763; outline-offset: 3px; }
+.is-editing img[data-story-image]:hover, .is-editing img[data-story-image]:focus-visible { outline-style: solid; }
+.gift-toolbar { position: fixed; z-index: 100; bottom: 16px; left: 50%; transform: translateX(-50%); width: min(840px, calc(100% - 28px)); border: 1px solid #c8b89166; border-radius: 10px; padding: 13px 16px; color: #f4ead7; background: #132b32f5; box-shadow: 0 12px 45px #0008; font: 13px var(--type-ui); }
+.gift-toolbar-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.gift-toolbar-top strong { font-weight: 600; }
+.gift-status { color: #b7c6bc; font-size: 11px; }
+.gift-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.gift-toolbar button { background: transparent; color: #ede2ca; border: 1px solid #ac98725c; border-radius: 4px; padding: 8px 12px; font: inherit; cursor: pointer; }
+.gift-toolbar button:hover { background: #ffffff0d; }
+.gift-toolbar .gift-download { background: #d6b780; color: #253236; border-color: #d6b780; margin-left: auto; }
+.gift-dialog { width: min(620px, calc(100vw - 28px)); max-height: 86dvh; padding: 0; overflow: auto; border: 1px solid #bba884; border-radius: 10px; background: #fbf6eb; color: #30352f; font: 15px/1.5 var(--type-ui); box-shadow: 0 25px 90px #0007; }
+.gift-dialog::backdrop { background: #061923b8; }
+.gift-dialog form, .gift-dialog-content { padding: 26px; }
+.gift-dialog h2 { font: 400 29px var(--type-display); margin: 0 0 8px; }
+.gift-dialog p { color: #656659; margin: 0 0 18px; font-size: 13px; }
+.gift-dialog label { display: block; margin: 15px 0 6px; font-weight: 500; font-size: 13px; }
+.gift-dialog input[type=text], .gift-dialog textarea { display: block; width: 100%; border: 1px solid #b6ab97; border-radius: 4px; background: #fffdf7; color: #30352f; padding: 11px; font: 16px/1.5 var(--type-ui); }
+.gift-dialog textarea { resize: vertical; min-height: 110px; }
+.gift-dialog input[type=range] { width: 100%; accent-color: #8d6053; }
+.gift-dialog input[type=checkbox] { accent-color: #8d6053; margin-right: 8px; }
+.gift-dialog details { border-top: 1px solid #d4caba; margin-top: 22px; padding-top: 16px; }
+.gift-dialog summary { cursor: pointer; font-weight: 600; }
+.gift-dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.gift-dialog button, .gift-file-label { border: 1px solid #b09c7c; border-radius: 4px; background: transparent; color: #4a4235; padding: 10px 15px; font: 14px var(--type-ui); cursor: pointer; }
+.gift-dialog button[type=submit], .gift-dialog .primary { background: #8b5c50; border-color: #8b5c50; color: #fff8eb; }
+.gift-error { color: #9b3434 !important; margin-top: 12px !important; }
+.gift-crop { display: block; width: min(260px, 100%); height: auto; margin: 18px auto; border-radius: 4px; background: #e5ddce; }
+.gift-photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.gift-photo-grid button { display: grid; gap: 10px; justify-items: center; }
+.gift-photo-grid img { width: 100%; height: 130px; object-fit: cover; border-radius: 3px; }
+.gift-help { font-size: 12px; color: #656659; margin-top: 9px; }
+.gift-preview-note { position: fixed; z-index: 100; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 5px; background: #132b32eb; border: 1px solid #c8b89166; color: #f4ead7; font: 12px var(--type-ui); }
+.gift-preview-note button { margin: 0; }
+@media (max-width: 600px) {
+  .topbar-right { gap: 5px; }
+  .editor-launch { font-size: 11px; padding: 8px; }
+  .intro-editor-launch { top: 16px; left: 16px; }
+  .gift-toolbar { padding: 11px; bottom: 10px; }
+  .gift-toolbar-top { display: block; }
+  .gift-status { display: block; margin-top: 4px; }
+  .gift-toolbar button { padding: 8px 10px; font-size: 12px; }
+  .gift-toolbar .gift-download { margin-left: 0; }
+  .gift-dialog form, .gift-dialog-content { padding: 20px; }
+  body.is-editing { padding-bottom: 155px; }
+}
+
+</style>
+  <script data-wishbound-source="story-config.js">document.addEventListener('DOMContentLoaded', () => {
 // Personalize your gift here. All text is rendered safely. Photos can be assets/ paths or https:// URLs.
 window.BIRTHDAY_STORY = {
   "recipient": "my love",
@@ -1250,7 +1308,78 @@ window.BIRTHDAY_STORY = {
 };
 
 });</script>
-  <script>document.addEventListener('DOMContentLoaded', () => {
+  <script data-wishbound-source="gift-state.js">document.addEventListener('DOMContentLoaded', () => {
+'use strict';
+(() => {
+  const story = window.BIRTHDAY_STORY;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  story.presentation = Object.assign({
+    themeTitle: 'The Alchemist & the Captain', heroPrefix: 'Between', heroAccent: 'stars & seas.',
+    heroSubtitle: 'A little universe, bound just for you.', introTitle: 'A wish, just for you.',
+    introMessage: 'Some stars find their way to us.\nSome become our whole world.'
+  }, story.presentation);
+  story.photoAlts ||= ['A favorite memory', 'Another favorite memory', 'An adventure to remember'];
+  const defaults = clone(story);
+  const template = document.documentElement.outerHTML;
+  const fields = new Map();
+  function collect(value, prefix = '') {
+    for (const [key, item] of Object.entries(value)) {
+      const path = prefix ? prefix + '.' + key : key;
+      if (typeof item === 'string' || typeof item === 'boolean') fields.set(path, typeof item);
+      else if (item && typeof item === 'object') collect(item, path);
+    }
+  }
+  collect(defaults);
+  const get = path => path.split('.').reduce((value, key) => value?.[key], story);
+  const imagePath = value => typeof value === 'string' && /^(?:assets\/|\.\/assets\/|https?:\/\/|data:image\/(?:svg\+xml|png|jpeg|webp);base64,)/i.test(value);
+  function set(path, value) {
+    if (path === 'letter.paragraphs') {
+      if (!Array.isArray(value) || value.length > 20 || value.some(p => typeof p !== 'string' || p.length > 5000)) throw Error('Keep the letter to 20 short paragraphs.');
+      story.letter.paragraphs.splice(0, story.letter.paragraphs.length, ...value);
+      return;
+    }
+    const type = fields.get(path) || (/^letter\.paragraphs\.\d+$/.test(path) ? 'string' : null);
+    if (!type || typeof value !== type) throw Error('This field cannot be edited.');
+    const image = path === 'reveal.portrait' || /^photos\.\d$/.test(path);
+    if (type === 'string' && !image && value.length > 5000) throw Error('Please keep this text under 5,000 characters.');
+    if ((path === 'reveal.portrait' || /^photos\.\d$/.test(path)) && !imagePath(value)) throw Error('Please choose a supported image.');
+    const keys = path.split('.'); const key = keys.pop();
+    const parent = keys.reduce((value, key) => value[key], story);
+    parent[key] = value;
+  }
+  function apply(saved) {
+    if (!saved || typeof saved !== 'object') return;
+    for (const path of fields.keys()) {
+      const value = path.split('.').reduce((obj, key) => Object.prototype.hasOwnProperty.call(obj || {}, key) ? obj[key] : undefined, saved);
+      if (value !== undefined) { try { set(path, value); } catch {} }
+    }
+    if (Array.isArray(saved.letter?.paragraphs)) { try { set('letter.paragraphs', saved.letter.paragraphs); } catch {} }
+  }
+  function refresh() {
+    document.querySelectorAll('[data-story-text]').forEach(node => {
+      const value = get(node.dataset.storyText);
+      if (typeof value === 'string') node.textContent = value;
+    });
+    document.querySelectorAll('img[data-story-image]').forEach(img => {
+      const path = img.dataset.storyImage; const value = get(path);
+      if (imagePath(value)) img.src = value;
+      img.alt = path === 'reveal.portrait' ? story.reveal.portraitAlt : story.photoAlts[Number(path.split('.')[1])];
+    });
+    window.BIRTHDAY_BOOK?.refresh();
+    document.getElementById('replayIntro').hidden = story.reveal.enabled === false;
+    document.dispatchEvent(new CustomEvent('wishbound:refresh'));
+  }
+  window.WISHBOUND = {
+    story, defaults, template, get, set, apply, refresh, clone,
+    text: path => `<span class="story-text" data-story-text="${escape(path)}">${escape(get(path))}</span>`,
+    reset: () => { apply(defaults); refresh(); },
+    snapshot: () => clone(story)
+  };
+})();
+
+});</script>
+  <script data-wishbound-source="app.js">document.addEventListener('DOMContentLoaded', () => {
 /*
  * FOR YOU, ALWAYS — Albedo + Beidou-inspired interactive birthday codex.
  * All copy and image paths are near the top so you can personalize easily.
@@ -1258,6 +1387,7 @@ window.BIRTHDAY_STORY = {
 'use strict';
 
 const STORY = window.BIRTHDAY_STORY;
+const storyText = path => window.WISHBOUND.text(path);
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
 const safeImage = value => {
   const url = String(value ?? '');
@@ -1266,7 +1396,7 @@ const safeImage = value => {
 };
 
 const [photo1, photo2, photo3] = STORY.photos.map(safeImage);
-const keepsakePortrait = `<div class="keepsake-portrait"><img src="${safeImage(STORY.reveal?.portrait || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgODAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2t5IiB4Mj0iMCIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiMxMjI3MzYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyOTQwNDQiLz48L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJoYWxvIj48c3RvcCBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9Ii41Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJkcmVzcyIgeDI9Ii44IiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2E4NzU2NSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzU0MmU0MCIvPjwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxwYXRoIGZpbGw9InVybCgjc2t5KSIgZD0iTTAgMGg2MDB2ODAwSDB6Ii8+CiAgPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzA1IiByPSIyNTAiIGZpbGw9InVybCgjaGFsbykiLz4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlMGM1OGMiIHN0cm9rZS1vcGFjaXR5PSIuMzUiPjxjaXJjbGUgY3g9IjMwMCIgY3k9IjI5OCIgcj0iMjEwIi8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iMjk4IiByPSIxODMiLz48cGF0aCBkPSJNMzAwIDY5djQ2bTAgMzY3djQ1TTY5IDI5OGg0Nm0zNjcgMGg0NSIvPjwvZz4KICA8cGF0aCBkPSJNMTUyIDQwM2MtMzctMTEyLTE2LTIzNCA2Ni0yNzYgNTctMzAgMTQ0LTIwIDE4MiAzMCA1MiA2OSA0NSAxNjkgMTggMjUybC0xMjYgNTdaIiBmaWxsPSIjMTkyMzI5Ii8+CiAgPHBhdGggZD0iTTIzOSAzNjRoMTIybDkgODktNzEgNjctNzQtNjdaIiBmaWxsPSIjYzZhNzhlIi8+CiAgPHBhdGggZD0iTTE2NyA3NTRjLTUtMTMzIDEyLTI2OSA4MS0zMTRsNTAgMzkgNTItMzljODUgNDAgOTggMTk0IDkxIDMxNFoiIGZpbGw9InVybCgjZHJlc3MpIi8+CiAgPGVsbGlwc2UgY3g9IjMwMCIgY3k9IjI3OCIgcng9Ijg4IiByeT0iMTE2IiBmaWxsPSIjZDBiNDk4Ii8+CiAgPHBhdGggZD0iTTIwOSAzMDVjLTEwLTkzIDMtMTY3IDg4LTE3NiA2Ny03IDEwMSA0NCAxMDMgMTE4LTY0LTE2LTEwNy00OS0xMjYtNzYtMiA1MS0yMyA5OC02NSAxMzRaIiBmaWxsPSIjMjAyOTJkIi8+CiAgPHBhdGggZD0iTTIxMSAyNjNjLTI4IDEyOC00NyAxNjMtMzQgMjU3bDYxLTQ1Yy0xNi02OC0yMS0xMzItMjctMjEybTE4My0zN2MzNiAxMDkgNTEgMjA4IDM2IDI5NGwtNTktMzdjMTUtODUgMjAtMTcxIDIzLTI1NyIgZmlsbD0iIzIwMjkyZCIvPgogIDxwYXRoIGQ9Ik0yNDkgNDQ2YzIwIDQ2IDgwIDU4IDEwMy0xIiBmaWxsPSJub25lIiBzdHJva2U9IiNkOGJiODAiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Im0yOTggNDc5IDggMTItOCAxMi04LTEyWiIgZmlsbD0iI2Q4YmI4MCIvPgogIDxnIGZpbGw9IiNlNGQwYTMiPjxwYXRoIGQ9Im0xMTcgMTI2IDMgMTAgMTAgMy0xMCAzLTMgMTAtMy0xMC0xMC0zIDEwLTNaTTQ3MyAzNTZsNCAxMyAxMyA0LTEzIDQtNCAxMy00LTEzLTEzLTQgMTMtNFoiLz48Y2lyY2xlIGN4PSI0MzQiIGN5PSIxMDIiIHI9IjIiLz48Y2lyY2xlIGN4PSI5NCIgY3k9IjM4NyIgcj0iMS43Ii8+PC9nPgogIDx0ZXh0IHg9IjMwMCIgeT0iNzE3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZTRkNWI4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC1zdHlsZT0iaXRhbGljIj5hIHBvcnRyYWl0LCB3YWl0aW5nIGZvciB5b3U8L3RleHQ+Cjwvc3ZnPgo=')}" alt="${escapeHTML(STORY.reveal?.portraitAlt || `A portrait of ${STORY.recipient}`)}" /></div>`;
+const keepsakePortrait = `<div class="keepsake-portrait"><img data-story-image="reveal.portrait" src="${safeImage(STORY.reveal?.portrait || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgODAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2t5IiB4Mj0iMCIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiMxMjI3MzYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyOTQwNDQiLz48L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJoYWxvIj48c3RvcCBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9Ii41Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJkcmVzcyIgeDI9Ii44IiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2E4NzU2NSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzU0MmU0MCIvPjwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxwYXRoIGZpbGw9InVybCgjc2t5KSIgZD0iTTAgMGg2MDB2ODAwSDB6Ii8+CiAgPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzA1IiByPSIyNTAiIGZpbGw9InVybCgjaGFsbykiLz4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlMGM1OGMiIHN0cm9rZS1vcGFjaXR5PSIuMzUiPjxjaXJjbGUgY3g9IjMwMCIgY3k9IjI5OCIgcj0iMjEwIi8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iMjk4IiByPSIxODMiLz48cGF0aCBkPSJNMzAwIDY5djQ2bTAgMzY3djQ1TTY5IDI5OGg0Nm0zNjcgMGg0NSIvPjwvZz4KICA8cGF0aCBkPSJNMTUyIDQwM2MtMzctMTEyLTE2LTIzNCA2Ni0yNzYgNTctMzAgMTQ0LTIwIDE4MiAzMCA1MiA2OSA0NSAxNjkgMTggMjUybC0xMjYgNTdaIiBmaWxsPSIjMTkyMzI5Ii8+CiAgPHBhdGggZD0iTTIzOSAzNjRoMTIybDkgODktNzEgNjctNzQtNjdaIiBmaWxsPSIjYzZhNzhlIi8+CiAgPHBhdGggZD0iTTE2NyA3NTRjLTUtMTMzIDEyLTI2OSA4MS0zMTRsNTAgMzkgNTItMzljODUgNDAgOTggMTk0IDkxIDMxNFoiIGZpbGw9InVybCgjZHJlc3MpIi8+CiAgPGVsbGlwc2UgY3g9IjMwMCIgY3k9IjI3OCIgcng9Ijg4IiByeT0iMTE2IiBmaWxsPSIjZDBiNDk4Ii8+CiAgPHBhdGggZD0iTTIwOSAzMDVjLTEwLTkzIDMtMTY3IDg4LTE3NiA2Ny03IDEwMSA0NCAxMDMgMTE4LTY0LTE2LTEwNy00OS0xMjYtNzYtMiA1MS0yMyA5OC02NSAxMzRaIiBmaWxsPSIjMjAyOTJkIi8+CiAgPHBhdGggZD0iTTIxMSAyNjNjLTI4IDEyOC00NyAxNjMtMzQgMjU3bDYxLTQ1Yy0xNi02OC0yMS0xMzItMjctMjEybTE4My0zN2MzNiAxMDkgNTEgMjA4IDM2IDI5NGwtNTktMzdjMTUtODUgMjAtMTcxIDIzLTI1NyIgZmlsbD0iIzIwMjkyZCIvPgogIDxwYXRoIGQ9Ik0yNDkgNDQ2YzIwIDQ2IDgwIDU4IDEwMy0xIiBmaWxsPSJub25lIiBzdHJva2U9IiNkOGJiODAiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Im0yOTggNDc5IDggMTItOCAxMi04LTEyWiIgZmlsbD0iI2Q4YmI4MCIvPgogIDxnIGZpbGw9IiNlNGQwYTMiPjxwYXRoIGQ9Im0xMTcgMTI2IDMgMTAgMTAgMy0xMCAzLTMgMTAtMy0xMC0xMC0zIDEwLTNaTTQ3MyAzNTZsNCAxMyAxMyA0LTEzIDQtNCAxMy00LTEzLTEzLTQgMTMtNFoiLz48Y2lyY2xlIGN4PSI0MzQiIGN5PSIxMDIiIHI9IjIiLz48Y2lyY2xlIGN4PSI5NCIgY3k9IjM4NyIgcj0iMS43Ii8+PC9nPgogIDx0ZXh0IHg9IjMwMCIgeT0iNzE3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZTRkNWI4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC1zdHlsZT0iaXRhbGljIj5hIHBvcnRyYWl0LCB3YWl0aW5nIGZvciB5b3U8L3RleHQ+Cjwvc3ZnPgo=')}" alt="${escapeHTML(STORY.reveal?.portraitAlt || `A portrait of ${STORY.recipient}`)}" /></div>`;
 const primogem = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJPcmlnaW5hbCBwcmltb2dlbS1pbnNwaXJlZCBnZW0gaWNvbiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImcxIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNjOGZiZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI0NSUiIHN0b3AtY29sb3I9IiM5YWU2ZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjN2VjNmZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIiBzdG9wLW9wYWNpdHk9IjAuOSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii00MCUiIHk9Ii00MCUiIHdpZHRoPSIxODAlIiBoZWlnaHQ9IjE4MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI2IiByZXN1bHQ9ImIiLz4KICAgICAgPGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxnIGZpbHRlcj0idXJsKCNnbG93KSI+CiAgICA8cGF0aCBkPSJNMTI4IDEyIDE4MyA1NiAyNDQgMTI4IDE4MyAyMDAgMTI4IDI0NCA3MyAyMDAgMTIgMTI4IDczIDU2WiIgZmlsbD0idXJsKCNnMSkiIHN0cm9rZT0iI2ViZmJmZiIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgICA8cGF0aCBkPSJNMTI4IDM0IDE2NyA2NiAyMTAgMTI4IDE2NyAxOTAgMTI4IDIyMiA4OSAxOTAgNDYgMTI4IDg5IDY2WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjRmZmZmIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBzdHJva2Utd2lkdGg9IjYiLz4KICAgIDxwYXRoIGQ9Ik0xMjggNTIgMTUyIDcyIDE4MSAxMjggMTUyIDE4NCAxMjggMjA0IDEwNCAxODQgNzUgMTI4IDEwNCA3MloiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsLjEyKSIgb3BhY2l0eT0iLjM1Ii8+CiAgICA8cGF0aCBkPSJNMTI4IDI4IDE2NiA1OSAxMzAgOTYgODkgNjFaIiBmaWxsPSJ1cmwoI2cyKSIgb3BhY2l0eT0iLjg1Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSIxMjgiIHI9IjIyIiBmaWxsPSIjZjVmZmZmIiBmaWxsLW9wYWNpdHk9Ii42Ii8+CiAgPC9nPgo8L3N2Zz4K';
 const pageLabel = n => `<span class="page-number">${String(n).padStart(2, '0')}</span>`;
 
@@ -1275,8 +1405,8 @@ const pages = {
     <div class="page base-left">
       <div class="arcane-sigil" aria-hidden="true"></div><div class="alchemy-orbit" aria-hidden="true">✧ &nbsp; ✦ &nbsp; ✧</div>
       <div class="halo"><div class="halo-heart">✦</div></div>
-      <div class="base-message">${escapeHTML(STORY.copy.a_journal_of_us)}</div>
-      <div class="base-detail">${escapeHTML(STORY.copy.an_alchemists_heart_a_captains)}</div>
+      <div class="base-message">${storyText('copy.a_journal_of_us')}</div>
+      <div class="base-detail">${storyText('copy.an_alchemists_heart_a_captains')}</div>
     </div>`,
 
   cover: `
@@ -1288,25 +1418,25 @@ const pages = {
         <img src="${primogem}" alt="" />
         <img src="${primogem}" alt="" />
       </div>
-      <div class="cover-top">${escapeHTML(STORY.copy.a_chronicle_beneath_the_stars)}</div>
+      <div class="cover-top">${storyText('copy.a_chronicle_beneath_the_stars')}</div>
       <div class="cover-divider">✦</div>
       <div>
-        <div class="cover-kicker">${escapeHTML(STORY.copy.bound_for)}</div>
-        <div class="cover-title">${escapeHTML(STORY.copy.happy)}<br/><em>${escapeHTML(STORY.copy.birthday)}</em><br/>${escapeHTML(STORY.recipient)}.</div>
-        <div class="cover-script">${escapeHTML(STORY.copy.our_favorite_adventures_written_in)}</div>
+        <div class="cover-kicker">${storyText('copy.bound_for')}</div>
+        <div class="cover-title">${storyText('copy.happy')}<br/><em>${storyText('copy.birthday')}</em><br/>${storyText('recipient')}.</div>
+        <div class="cover-script">${storyText('copy.our_favorite_adventures_written_in')}</div>
       </div>
       <div class="wax-seal" aria-hidden="true">✧</div>
-      <div class="cover-bottom">${escapeHTML(STORY.copy.set_sail_turn_the_page)}</div>
+      <div class="cover-bottom">${storyText('copy.set_sail_turn_the_page')}</div>
     </div>`,
 
   openingLeft: `
     <div class="page chapter-page parchment-chapter">
-      <div class="large-initial">${escapeHTML(STORY.copy.i)}</div>
-      <div class="tiny-cap">${escapeHTML(STORY.copy.chapter_one_where_our_paths)}</div>
-      <h2>${escapeHTML(STORY.copy.where_two_worlds)}<br/><span class="emphasis">${escapeHTML(STORY.copy.became_one)}</span></h2>
+      <div class="large-initial">${storyText('copy.i')}</div>
+      <div class="tiny-cap">${storyText('copy.chapter_one_where_our_paths')}</div>
+      <h2>${storyText('copy.where_two_worlds')}<br/><span class="emphasis">${storyText('copy.became_one')}</span></h2>
       <div class="rule"></div>
-      <p>${escapeHTML(STORY.copy.somewhere_between_the_stars_above)}</p>
-      <div class="quote-card"><p>${escapeHTML(STORY.copy.ever_since_you_life_has)}</p></div>
+      <p>${storyText('copy.somewhere_between_the_stars_above')}</p>
+      <div class="quote-card"><p>${storyText('copy.ever_since_you_life_has')}</p></div>
       <div class="calligraphy-flower">✦</div>
       ${pageLabel(1)}
     </div>`,
@@ -1314,9 +1444,9 @@ const pages = {
   openingRight: `
     <div class="page beidou-showcase page-framed">
       <div class="showcase-copy">
-        <span class="tiny-cap">${escapeHTML(STORY.copy.the_captain_of_the_tale)}</span>
-        <h3>${escapeHTML(STORY.copy.a_heart_as_brave)}<br/>${escapeHTML(STORY.copy.as_the_sea)}</h3>
-        <p>${escapeHTML(STORY.copy.for_your_courage_your_kindness)}</p>
+        <span class="tiny-cap">${storyText('copy.the_captain_of_the_tale')}</span>
+        <h3>${storyText('copy.a_heart_as_brave')}<br/>${storyText('copy.as_the_sea')}</h3>
+        <p>${storyText('copy.for_your_courage_your_kindness')}</p>
         <div class="gem-row" aria-hidden="true">
           <img src="${primogem}" alt="" />
           <img src="${primogem}" alt="" />
@@ -1324,55 +1454,55 @@ const pages = {
         </div>
       </div>
       ${keepsakePortrait}
-      <div class="side-note">${escapeHTML(STORY.copy.my_favorite_adventure_is_you)}</div>
+      <div class="side-note">${storyText('copy.my_favorite_adventure_is_you')}</div>
       ${pageLabel(2)}
     </div>`,
 
   thingsLeft: `
     <div class="page little-things parchment-chapter">
-      <span class="tiny-cap">${escapeHTML(STORY.copy.chapter_two_little_treasures)}</span>
-      <h2>${escapeHTML(STORY.copy.the_little_treasures)}<br/><span class="emphasis">${escapeHTML(STORY.copy.i_found_in_you)}</span></h2>
-      <div class="list-line"><span class="num">01</span><p><strong>${escapeHTML(STORY.copy.your_laugh)}</strong>${escapeHTML(STORY.copy.it_can_change_the_temperature)}</p></div>
-      <div class="list-line"><span class="num">02</span><p><strong>${escapeHTML(STORY.copy.your_kindness)}</strong>${escapeHTML(STORY.copy.even_the_quiet_kind_that)}</p></div>
-      <div class="list-line"><span class="num">03</span><p><strong>${escapeHTML(STORY.copy.your_presence)}</strong>${escapeHTML(STORY.copy.somehow_every_place_feels_softer)}</p></div>
+      <span class="tiny-cap">${storyText('copy.chapter_two_little_treasures')}</span>
+      <h2>${storyText('copy.the_little_treasures')}<br/><span class="emphasis">${storyText('copy.i_found_in_you')}</span></h2>
+      <div class="list-line"><span class="num">01</span><p><strong>${storyText('copy.your_laugh')}</strong>${storyText('copy.it_can_change_the_temperature')}</p></div>
+      <div class="list-line"><span class="num">02</span><p><strong>${storyText('copy.your_kindness')}</strong>${storyText('copy.even_the_quiet_kind_that')}</p></div>
+      <div class="list-line"><span class="num">03</span><p><strong>${storyText('copy.your_presence')}</strong>${storyText('copy.somehow_every_place_feels_softer')}</p></div>
       ${pageLabel(3)}
     </div>`,
 
   thingsRight: `
     <div class="page scrapbook-page page-framed">
-      <div class="tiny-cap scrapbook-title">${escapeHTML(STORY.copy.treasures_from_the_voyage)}</div>
-      <div class="photo-mini photo-a"><div class="mini-frame"><img src="${photo2}" alt="Illustrated bouquet — placeholder for your memory" /></div><span>${escapeHTML(STORY.copy.little_constellations)}</span></div>
-      <div class="photo-mini photo-b"><div class="mini-frame"><img src="${photo3}" alt="Illustrated crimson-sail ship at sea — replace with your photo" /></div><span>${escapeHTML(STORY.copy.quiet_horizons)}</span></div>
-      <span class="doodle">${escapeHTML(STORY.copy.all_the_things_that_make)}</span>
+      <div class="tiny-cap scrapbook-title">${storyText('copy.treasures_from_the_voyage')}</div>
+      <div class="photo-mini photo-a"><div class="mini-frame"><img data-story-image="photos.1" src="${photo2}" alt="Illustrated bouquet — placeholder for your memory" /></div><span>${storyText('copy.little_constellations')}</span></div>
+      <div class="photo-mini photo-b"><div class="mini-frame"><img data-story-image="photos.2" src="${photo3}" alt="Illustrated crimson-sail ship at sea — replace with your photo" /></div><span>${storyText('copy.quiet_horizons')}</span></div>
+      <span class="doodle">${storyText('copy.all_the_things_that_make')}</span>
       ${pageLabel(4)}
     </div>`,
 
   memoriesLeft: `
     <div class="page timeline-page parchment-chapter">
-      <div class="tiny-cap">${escapeHTML(STORY.copy.chapter_three_our_voyages)}</div>
-      <h2>${escapeHTML(STORY.copy.our_favorite)}<br/><span class="emphasis">${escapeHTML(STORY.copy.uncharted_waters)}</span></h2>
-      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${escapeHTML(STORY.copy.the_first_time_we_set)}</strong><p>${escapeHTML(STORY.copy.a_moment_i_would_gladly)}</p></div></div>
-      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${escapeHTML(STORY.copy.the_unexpected_detours)}</strong><p>${escapeHTML(STORY.copy.sometimes_the_best_moments_are)}</p></div></div>
-      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${escapeHTML(STORY.copy.everything_still_ahead)}</strong><p>${escapeHTML(STORY.copy.there_are_so_many_horizons)}</p></div></div>
+      <div class="tiny-cap">${storyText('copy.chapter_three_our_voyages')}</div>
+      <h2>${storyText('copy.our_favorite')}<br/><span class="emphasis">${storyText('copy.uncharted_waters')}</span></h2>
+      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.the_first_time_we_set')}</strong><p>${storyText('copy.a_moment_i_would_gladly')}</p></div></div>
+      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.the_unexpected_detours')}</strong><p>${storyText('copy.sometimes_the_best_moments_are')}</p></div></div>
+      <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.everything_still_ahead')}</strong><p>${storyText('copy.there_are_so_many_horizons')}</p></div></div>
       ${pageLabel(5)}
     </div>`,
 
   memoriesRight: `
     <div class="page gallery-page page-framed">
-      <span class="tiny-cap">${escapeHTML(STORY.copy.a_gallery_of_favorites)}</span>
+      <span class="tiny-cap">${storyText('copy.a_gallery_of_favorites')}</span>
       <div class="gallery-grid">
-        <div class="photo-tile"><div class="tile-image"><img src="${photo1}" alt="Sunset illustration, replace with a couple photo" /></div><div class="tile-caption">${escapeHTML(STORY.copy.one_unforgettable_day)}</div></div>
-        <div class="photo-tile"><div class="tile-image"><img src="${photo2}" alt="Flower illustration, replace with a couple photo" /></div><div class="tile-caption">${escapeHTML(STORY.copy.one_beautiful_feeling)}</div></div>
+        <div class="photo-tile"><div class="tile-image"><img data-story-image="photos.0" src="${photo1}" alt="Sunset illustration, replace with a couple photo" /></div><div class="tile-caption">${storyText('copy.one_unforgettable_day')}</div></div>
+        <div class="photo-tile"><div class="tile-image"><img data-story-image="photos.1" src="${photo2}" alt="Flower illustration, replace with a couple photo" /></div><div class="tile-caption">${storyText('copy.one_beautiful_feeling')}</div></div>
       </div>
-      <div class="script gallery-script">${escapeHTML(STORY.copy.every_memory_becomes_brighter_with)}</div>
+      <div class="script gallery-script">${storyText('copy.every_memory_becomes_brighter_with')}</div>
       ${pageLabel(6)}
     </div>`,
 
   letterLeft: `
     <div class="page letter-left parchment-chapter">
-      <span class="tiny-cap">${escapeHTML(STORY.copy.chapter_four_a_sealed_letter)}</span>
-      <h2>${escapeHTML(STORY.copy.i_wrote_you)}<br/><span class="emphasis">${escapeHTML(STORY.copy.something_sincere)}</span></h2>
-      <p>${escapeHTML(STORY.copy.some_feelings_deserve_more_than)}</p>
+      <span class="tiny-cap">${storyText('copy.chapter_four_a_sealed_letter')}</span>
+      <h2>${storyText('copy.i_wrote_you')}<br/><span class="emphasis">${storyText('copy.something_sincere')}</span></h2>
+      <p>${storyText('copy.some_feelings_deserve_more_than')}</p>
       <div class="envelope" aria-hidden="true"><div class="wax-seal">✦</div></div>
       <button class="reveal-btn open-letter" type="button">Read your letter <span aria-hidden="true">↗</span></button>
       ${pageLabel(7)}
@@ -1380,30 +1510,30 @@ const pages = {
 
   letterRight: `
     <div class="page letter-right page-framed">
-      <div class="letter-heading"><span class="tiny-cap">${escapeHTML(STORY.copy.a_page_written_from_the)}</span></div>
-      <div class="salutation">${escapeHTML(STORY.copy.my_darling)}</div>
-      <p>${escapeHTML(STORY.copy.even_in_the_smallest_moments)}</p>
-      <p>${escapeHTML(STORY.copy.i_hope_this_next_year)}</p>
-      <p>${escapeHTML(STORY.copy.and_through_every_chapter_ahead)}</p>
-      <div class="signature">${escapeHTML(STORY.copy.with_all_my_love)}<span class="letter-sender">${escapeHTML(STORY.signoff)}</span></div>
+      <div class="letter-heading"><span class="tiny-cap">${storyText('copy.a_page_written_from_the')}</span></div>
+      <div class="salutation">${storyText('copy.my_darling')}</div>
+      <p>${storyText('copy.even_in_the_smallest_moments')}</p>
+      <p>${storyText('copy.i_hope_this_next_year')}</p>
+      <p>${storyText('copy.and_through_every_chapter_ahead')}</p>
+      <div class="signature">${storyText('copy.with_all_my_love')}<span class="letter-sender">${storyText('signoff')}</span></div>
       ${pageLabel(8)}
     </div>`,
 
   wishesLeft: `
     <div class="page wishes-page parchment-chapter">
-      <div class="tiny-cap">${escapeHTML(STORY.copy.chapter_five_beyond_the_horizon)}</div>
-      <h2>${escapeHTML(STORY.copy.to_every_horizon)}<br/><span class="emphasis">${escapeHTML(STORY.copy.still_ahead)}</span></h2>
-      <div class="wish-item"><span>✦</span>${escapeHTML(STORY.copy.more_long_talks_that_make)}</div>
-      <div class="wish-item"><span>✦</span>${escapeHTML(STORY.copy.more_laughter_that_sneaks_up)}</div>
-      <div class="wish-item"><span>✦</span>${escapeHTML(STORY.copy.more_places_memories_and_beautiful)}</div>
-      <div class="wish-item"><span>✦</span>${escapeHTML(STORY.copy.more_of_us_choosing_each)}</div>
-      <div class="script">${escapeHTML(STORY.copy.the_best_chapters_have_not)}</div>
+      <div class="tiny-cap">${storyText('copy.chapter_five_beyond_the_horizon')}</div>
+      <h2>${storyText('copy.to_every_horizon')}<br/><span class="emphasis">${storyText('copy.still_ahead')}</span></h2>
+      <div class="wish-item"><span>✦</span>${storyText('copy.more_long_talks_that_make')}</div>
+      <div class="wish-item"><span>✦</span>${storyText('copy.more_laughter_that_sneaks_up')}</div>
+      <div class="wish-item"><span>✦</span>${storyText('copy.more_places_memories_and_beautiful')}</div>
+      <div class="wish-item"><span>✦</span>${storyText('copy.more_of_us_choosing_each')}</div>
+      <div class="script">${storyText('copy.the_best_chapters_have_not')}</div>
       ${pageLabel(9)}
     </div>`,
 
   wishesRight: `
     <div class="page star-page page-framed">
-      <div class="tiny-cap">${escapeHTML(STORY.copy.one_wish_carried_by_the)}</div>
+      <div class="tiny-cap">${storyText('copy.one_wish_carried_by_the')}</div>
       <div class="primogem-cluster" aria-hidden="true">
         <img src="${primogem}" alt="" />
         <img src="${primogem}" alt="" />
@@ -1412,21 +1542,21 @@ const pages = {
         <img src="${primogem}" alt="" />
       </div>
       <div class="constellation wish-gem" aria-hidden="true"><img src="${primogem}" alt="" /></div>
-      <h2>${escapeHTML(STORY.copy.make_a_wish)}</h2>
-      <p>${escapeHTML(STORY.copy.close_your_eyes_and_make)}</p>
+      <h2>${storyText('copy.make_a_wish')}</h2>
+      <p>${storyText('copy.close_your_eyes_and_make')}</p>
       <button class="wish-button make-wish" type="button">Make a wish <span aria-hidden="true">↗</span></button>
-      <div class="fine-print wish-note">${escapeHTML(STORY.copy.may_every_good_thing_find)}</div>
+      <div class="fine-print wish-note">${storyText('copy.may_every_good_thing_find')}</div>
       ${pageLabel(10)}
     </div>`,
 
   endingLeft: `
     <div class="page last-page parchment-chapter">
-      <div class="tiny-cap">${escapeHTML(STORY.copy.the_next_adventure_awaits)}</div>
+      <div class="tiny-cap">${storyText('copy.the_next_adventure_awaits')}</div>
       <div class="last-glyph">∞</div>
-      <h2>${escapeHTML(STORY.copy.to_be)}<br/><span class="emphasis">${escapeHTML(STORY.copy.continued)}</span></h2>
+      <h2>${storyText('copy.to_be')}<br/><span class="emphasis">${storyText('copy.continued')}</span></h2>
       <div class="small-heart">♥</div>
-      <p>${escapeHTML(STORY.copy.another_birthday_another_reminder_that)}</p>
-      <div class="script">${escapeHTML(STORY.copy.and_we_still_have_so)}</div>
+      <p>${storyText('copy.another_birthday_another_reminder_that')}</p>
+      <div class="script">${storyText('copy.and_we_still_have_so')}</div>
       ${pageLabel(11)}
     </div>`,
 
@@ -1434,11 +1564,11 @@ const pages = {
     <div class="page base-right">
       <div class="navigator-compass" aria-hidden="true"><span>✦</span></div>
       <div class="end-flower">✧</div>
-      <div class="big-end">${escapeHTML(STORY.copy.the_best_part)}</div>
-      <p>${escapeHTML(STORY.copy.there_are_still_so_many)}</p>
+      <div class="big-end">${storyText('copy.the_best_part')}</div>
+      <p>${storyText('copy.there_are_still_so_many')}</p>
       <div class="end-gem" aria-hidden="true"><img src="${primogem}" alt="" /></div>
-      <div class="end-script">${escapeHTML(STORY.copy.love_you_always)}</div>
-      <div class="fine-print end-note">${escapeHTML(STORY.copy.the_voyage_continues)}</div>
+      <div class="end-script">${storyText('copy.love_you_always')}</div>
+      <div class="fine-print end-note">${storyText('copy.the_voyage_continues')}</div>
     </div>`,
 };
 
@@ -1452,7 +1582,7 @@ const sheetConfig = [
 ];
 
 // Mobile uses the same story copy as the desktop spreads.
-const photoStrip = '<div class="mobile-photo-strip"><img src="' + photo1 + '" alt="A memory of us"><img src="' + photo2 + '" alt="A little treasure"></div>';
+const photoStrip = '<div class="mobile-photo-strip"><img data-story-image="photos.0" src="' + photo1 + '" alt="A memory of us"><img data-story-image="photos.1" src="' + photo2 + '" alt="A little treasure"></div>';
 const mobileTemplates = [
   pages.cover,
   pages.openingLeft.replace('<h2>', `${keepsakePortrait}<h2>`),
@@ -1472,12 +1602,14 @@ const dotsEl = document.getElementById('pagination');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const dialog = document.getElementById('letterDialog');
-dialog.querySelector('.signature').textContent = 'All my love,\n' + STORY.signoff;
+dialog.querySelector('.signature').innerHTML = 'All my love,<br/>' + storyText('signoff');
 dialog.querySelector('h2').textContent = STORY.letter.greeting;
+dialog.querySelector('h2').dataset.storyText = 'letter.greeting';
 dialog.querySelectorAll('.dialog-inner p').forEach(p => p.remove());
-STORY.letter.paragraphs.forEach(text => {
+STORY.letter.paragraphs.forEach((text, index) => {
   const p = document.createElement('p');
   p.textContent = text;
+  p.dataset.storyText = 'letter.paragraphs.' + index;
   dialog.querySelector('.signature').before(p);
 });
 
@@ -1542,6 +1674,7 @@ function render() {
   });
   pageCountEl.textContent = `${String(current + 1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
   chapterLabelEl.textContent = STORY.chapterNames[current];
+  chapterLabelEl.dataset.storyText = 'chapterNames.' + current;
   prevBtn.disabled = requested === 0;
   nextBtn.disabled = requested === total - 1;
   document.getElementById('cornerPrev').disabled = requested === 0;
@@ -1729,6 +1862,18 @@ for (let i = 0; i < 36; i++) {
 render();
 // The intro is independent of this book's navigation and works in the portable preview.
 window.BIRTHDAY_BOOK = {
+  refresh: () => {
+    dialog.querySelectorAll('.dialog-inner p').forEach(p => p.remove());
+    STORY.letter.paragraphs.forEach((text, index) => {
+      const p = document.createElement('p');
+      p.textContent = text;
+      p.dataset.storyText = 'letter.paragraphs.' + index;
+      dialog.querySelector('.signature').before(p);
+    });
+    dots.forEach((dot, i) => dot.setAttribute('aria-label', `Go to chapter ${i + 1}: ${STORY.chapterNames[i]}`));
+    mobileCards.forEach((card, i) => card.setAttribute('aria-label', STORY.chapterNames[i]));
+    render();
+  },
   open: async () => {
     if (current === 0) goTo(1);
     await new Promise(resolve => {
@@ -1741,7 +1886,7 @@ window.BIRTHDAY_BOOK = {
 };
 
 });</script>
-  <script>document.addEventListener('DOMContentLoaded', () => {
+  <script data-wishbound-source="wish.js">document.addEventListener('DOMContentLoaded', () => {
 ﻿'use strict';
 (() => {
   const intro = document.getElementById('wishIntro');
@@ -2109,7 +2254,7 @@ window.BIRTHDAY_BOOK = {
 })();
 
 });</script>
-  <script>document.addEventListener('DOMContentLoaded', () => {
+  <script data-wishbound-source="intro.js">document.addEventListener('DOMContentLoaded', () => {
 'use strict';
 (() => {
   const config = window.BIRTHDAY_STORY.reveal || {};
@@ -2327,6 +2472,259 @@ window.BIRTHDAY_BOOK = {
 })();
 
 });</script>
+  <script data-wishbound-source="gift-editor.js">document.addEventListener('DOMContentLoaded', () => {
+'use strict';
+(() => {
+  const state = window.WISHBOUND;
+  state.refresh();
+  if (window.WISHBOUND_GIFT) {
+    document.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
+    return;
+  }
+  const $ = id => document.getElementById(id);
+  const textDialog = $('giftTextDialog'); const imageDialog = $('giftImageDialog');
+  let editing = false; let textPath; let imagePath; let cropImage; let imageTicket = 0;
+  let saveTimer; let db; let revision = 0; let saving = Promise.resolve();
+  const draftKey = 'current:' + location.pathname.replace(/(?:index|ONE_FILE_PREVIEW)\.html$/i, '');
+  const status = message => { $('giftSaveStatus').textContent = message; };
+  const error = (id, message = '') => { $(id).hidden = !message; $(id).textContent = message; };
+
+  function openDatabase() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('wishbound-gifts', 1);
+      request.onupgradeneeded = () => request.result.createObjectStore('drafts');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+      request.onblocked = () => reject(Error('Draft storage is blocked.'));
+    });
+  }
+  function readDraft(database) {
+    return new Promise((resolve, reject) => {
+      const request = database.transaction('drafts').objectStore('drafts').get(draftKey);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+  function writeDraft(database, value) {
+    return new Promise((resolve, reject) => {
+      const transaction = database.transaction('drafts', 'readwrite');
+      transaction.objectStore('drafts').put(value, draftKey);
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error || Error('Draft could not be saved.'));
+    });
+  }
+  function saveNow() {
+    clearTimeout(saveTimer);
+    const version = revision; const snapshot = state.snapshot();
+    saving = saving.catch(() => {}).then(async () => {
+      if (!db) { status('Download your gift to keep it. Browser saving is unavailable.'); return; }
+      try {
+        await writeDraft(db, {version: 1, story: snapshot});
+        if (version === revision) status('Saved in this browser.');
+      } catch { status('Draft could not be saved. Download your gift to keep it.'); }
+    });
+    return saving;
+  }
+  function changed() {
+    revision++; state.refresh(); status('Saving your draft…');
+    clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 250);
+  }
+  function decorate() {
+    document.querySelectorAll('[data-story-text], img[data-story-image]').forEach(node => {
+      if (editing) { node.tabIndex = 0; node.setAttribute('role', 'button'); node.setAttribute('aria-label', node.matches('img') ? 'Replace this photo' : 'Edit this text'); }
+      else { node.removeAttribute('tabindex'); node.removeAttribute('role'); node.removeAttribute('aria-label'); }
+    });
+  }
+  function setEditing(value, preview = false) {
+    editing = value; document.body.classList.toggle('is-editing', value);
+    $('giftToolbar').hidden = !value; $('giftPreviewNote').hidden = !preview;
+    decorate();
+  }
+  function beginEditing() {
+    if ($('wishIntro').open) $('skipIntro').click();
+    setEditing(true);
+  }
+  document.addEventListener('wishbound:refresh', decorate);
+  $('editGift').addEventListener('click', beginEditing);
+  $('introEditGift').addEventListener('click', beginEditing);
+  $('giftBackButton').addEventListener('click', beginEditing);
+  $('giftPreviewButton').addEventListener('click', () => { setEditing(false, true); saveNow(); });
+
+  function openText(path) {
+    textPath = path; const letter = path === 'letter.paragraphs';
+    $('giftTextTitle').textContent = letter ? 'Write your letter' : 'Edit your words';
+    $('giftTextHelp').textContent = letter ? 'Separate paragraphs with a blank line.' : 'Keep it personal. Shorter text fits the book best.';
+    $('giftTextValue').maxLength = letter ? 20000 : 5000;
+    $('giftTextValue').value = letter ? state.story.letter.paragraphs.join('\n\n') : state.get(path);
+    error('giftTextError'); textDialog.showModal(); $('giftTextValue').focus();
+  }
+  $('giftTextForm').addEventListener('submit', event => {
+    event.preventDefault();
+    try {
+      const value = $('giftTextValue').value;
+      state.set(textPath, textPath === 'letter.paragraphs' ? value.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean) : value);
+      changed(); textDialog.close();
+    } catch (e) { error('giftTextError', e.message); }
+  });
+  $('giftLetterButton').addEventListener('click', () => openText('letter.paragraphs'));
+
+  function field(parent, path, label, multiline = false) {
+    const wrap = document.createElement('div'); const title = document.createElement('label');
+    const input = document.createElement(multiline ? 'textarea' : 'input');
+    input.id = 'gift-field-' + path.replaceAll('.', '-'); input.dataset.field = path;
+    if (!multiline) input.type = 'text'; input.maxLength = 5000; input.value = state.get(path);
+    title.htmlFor = input.id; title.textContent = label; wrap.append(title, input); parent.append(wrap);
+  }
+  $('giftDetailsButton').addEventListener('click', () => {
+    const basic = $('giftDetailsFields'); const all = $('giftAllTextFields'); basic.replaceChildren(); all.replaceChildren();
+    field(basic, 'recipient', 'Birthday celebrant'); field(basic, 'signoff', 'Your name');
+    const label = document.createElement('label'); const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox'; checkbox.id = 'giftIntroEnabled'; checkbox.checked = state.story.reveal.enabled;
+    label.append(checkbox, document.createTextNode('Play the opening wish')); basic.append(label);
+    state.story.chapterNames.forEach((_, i) => field(basic, 'chapterNames.' + i, 'Chapter ' + (i + 1) + ' label'));
+    for (const [path, label] of [['reveal.eyebrow','Reveal introduction'],['reveal.title','Reveal heading'],['reveal.subtitle','Reveal message'],['letter.greeting','Letter greeting']]) field(all, path, label, true);
+    for (const [key, value] of Object.entries(state.story.presentation)) field(all, 'presentation.' + key, key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()), true);
+    for (const [key, value] of Object.entries(state.story.copy)) field(all, 'copy.' + key, value.replace(/\n/g, ' ').slice(0, 75) || 'Chapter text', true);
+    error('giftDetailsError'); $('giftDetailsDialog').showModal();
+  });
+  $('giftDetailsForm').addEventListener('submit', event => {
+    event.preventDefault();
+    try {
+      $('giftDetailsForm').querySelectorAll('[data-field]').forEach(input => state.set(input.dataset.field, input.value));
+      state.set('reveal.enabled', $('giftIntroEnabled').checked); changed(); $('giftDetailsDialog').close();
+    } catch (e) { error('giftDetailsError', e.message); }
+  });
+
+  function openImage(path) {
+    imagePath = path; imageTicket++; cropImage = null;
+    $('giftImageTitle').textContent = path === 'reveal.portrait' ? 'Replace the portrait' : 'Replace memory photo';
+    $('giftImageFile').value = ''; $('giftCropPreview').hidden = true; $('giftCropControls').hidden = true;
+    $('giftImageApply').disabled = true;
+    $('giftImageAlt').value = path === 'reveal.portrait' ? state.story.reveal.portraitAlt : state.story.photoAlts[Number(path.split('.')[1])];
+    error('giftImageError'); imageDialog.showModal();
+  }
+  function drawCrop() {
+    if (!cropImage) return;
+    const canvas = $('giftCropPreview'); const portrait = imagePath === 'reveal.portrait';
+    canvas.width = portrait ? 900 : 1200; canvas.height = 1200;
+    const scale = Math.max(canvas.width / cropImage.naturalWidth, canvas.height / cropImage.naturalHeight) * Number($('giftCropZoom').value);
+    const width = cropImage.naturalWidth * scale; const height = cropImage.naturalHeight * scale;
+    const x = -(width - canvas.width) / 2 * (1 + Number($('giftCropX').value) / 100);
+    const y = -(height - canvas.height) / 2 * (1 + Number($('giftCropY').value) / 100);
+    const context = canvas.getContext('2d'); context.fillStyle = '#f6eedb'; context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(cropImage, x, y, width, height);
+  }
+  for (const id of ['giftCropZoom','giftCropX','giftCropY']) $(id).addEventListener('input', drawCrop);
+  $('giftImageFile').addEventListener('change', async () => {
+    const file = $('giftImageFile').files[0]; if (!file) return;
+    const ticket = ++imageTicket; cropImage = null; $('giftImageApply').disabled = true;
+    $('giftCropPreview').hidden = true; $('giftCropControls').hidden = true; error('giftImageError');
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 20 * 1024 * 1024) {
+      error('giftImageError', 'Choose a JPG, PNG, or WebP photo smaller than 20 MB.'); return;
+    }
+    const url = URL.createObjectURL(file);
+    try {
+      const image = new Image();
+      await new Promise((resolve, reject) => { image.onload = resolve; image.onerror = reject; image.src = url; });
+      if (ticket !== imageTicket || !imageDialog.open) return;
+      if (image.naturalWidth * image.naturalHeight > 60e6) throw Error('This photo is too large. Choose a smaller copy.');
+      cropImage = image; $('giftCropZoom').value = '1'; $('giftCropX').value = $('giftCropY').value = '0';
+      drawCrop(); $('giftCropPreview').hidden = false; $('giftCropControls').hidden = false; $('giftImageApply').disabled = false;
+    } catch (e) { if (ticket === imageTicket) error('giftImageError', e.message || 'This image could not be opened. Try another photo.'); }
+    finally { URL.revokeObjectURL(url); }
+  });
+  $('giftImageForm').addEventListener('submit', event => {
+    event.preventDefault(); if (!cropImage) return;
+    try {
+      state.set(imagePath, $('giftCropPreview').toDataURL('image/jpeg', .88));
+      state.set(imagePath === 'reveal.portrait' ? 'reveal.portraitAlt' : 'photoAlts.' + imagePath.split('.')[1], $('giftImageAlt').value);
+      changed(); imageDialog.close();
+    } catch (e) { error('giftImageError', e.message); }
+  });
+  $('giftImageDefault').addEventListener('click', () => {
+    const value = imagePath.split('.').reduce((obj, key) => obj[key], state.defaults);
+    state.set(imagePath, value);
+    const altPath = imagePath === 'reveal.portrait' ? 'reveal.portraitAlt' : 'photoAlts.' + imagePath.split('.')[1];
+    state.set(altPath, altPath.split('.').reduce((obj, key) => obj[key], state.defaults));
+    changed(); imageDialog.close();
+  });
+  imageDialog.addEventListener('close', () => { imageTicket++; cropImage = null; });
+  $('giftPhotosButton').addEventListener('click', () => {
+    const grid = $('giftPhotoGrid'); grid.replaceChildren();
+    ['reveal.portrait','photos.0','photos.1','photos.2'].forEach((path, i) => {
+      const button = document.createElement('button'); button.type = 'button';
+      const img = document.createElement('img'); img.src = state.get(path); img.alt = '';
+      button.append(img, document.createTextNode(i ? 'Memory photo ' + i : 'Portrait'));
+      button.addEventListener('click', () => { $('giftPhotosDialog').close(); openImage(path); }); grid.append(button);
+    });
+    $('giftPhotosDialog').showModal();
+  });
+
+  function editTarget(event) {
+    if (!editing || event.target.closest('[data-editor-ui]')) return;
+    const node = event.target.closest('[data-story-text], img[data-story-image]'); if (!node) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    if (node.matches('img')) openImage(node.dataset.storyImage); else openText(node.dataset.storyText);
+  }
+  document.addEventListener('click', editTarget, true);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      if (event.target.matches('[data-story-text], img[data-story-image]')) editTarget(event);
+    }
+  }, true);
+  document.querySelectorAll('[data-close-editor]').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
+  $('giftResetButton').addEventListener('click', () => $('giftResetDialog').showModal());
+  $('giftConfirmReset').addEventListener('click', () => { state.reset(); changed(); $('giftResetDialog').close(); });
+
+  const blobData = blob => new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
+  async function exportGift() {
+    await saveNow();
+    let markup = state.template;
+    if (!markup.includes('data-wishbound-source="story-config.js"')) {
+      if (location.protocol === 'file:') throw Error('Open ONE_FILE_PREVIEW.html to download a complete gift, or use the live preview. Your edits stay saved in this browser.');
+      const response = await fetch('ONE_FILE_PREVIEW.html'); if (!response.ok) throw Error('The portable template could not be loaded. Use the live preview to download your gift.');
+      markup = await response.text();
+    }
+    const snapshot = state.snapshot();
+    async function embed(value) {
+      if (!/^(?:assets\/|\.\/assets\/)/i.test(value)) return value;
+      const response = await fetch(value); if (!response.ok) throw Error('A photo could not be included. Replace it with an upload and try again.');
+      return blobData(await response.blob());
+    }
+    snapshot.reveal.portrait = await embed(snapshot.reveal.portrait);
+    snapshot.photos = await Promise.all(snapshot.photos.map(embed));
+    const doc = new DOMParser().parseFromString(markup, 'text/html');
+    const config = doc.querySelector('script[data-wishbound-source="story-config.js"]');
+    if (!config) throw Error('The portable template is unavailable. Please refresh the live preview.');
+    const json = JSON.stringify(snapshot).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+    config.textContent = `document.addEventListener('DOMContentLoaded', () => { window.BIRTHDAY_STORY = ${json}; window.WISHBOUND_GIFT = true; });`;
+    doc.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
+    const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+    const blob = new Blob([html], {type:'text/html;charset=utf-8'}); const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); const name = snapshot.recipient.normalize('NFKD').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').slice(0,40) || 'you';
+    a.href = url; a.download = 'wishbound-for-' + name.toLowerCase() + '.html'; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000); status('Gift downloaded. Open the HTML file to check it before sharing.');
+  }
+  $('giftDownloadButton').addEventListener('click', async () => {
+    const button = $('giftDownloadButton'); button.disabled = true; button.textContent = 'Preparing…';
+    try { await exportGift(); } catch (e) { status(e.message || 'Download failed. Please try again.'); }
+    finally { button.disabled = false; button.textContent = 'Download gift'; }
+  });
+
+  (async () => {
+    try {
+      db = await openDatabase(); const saved = await readDraft(db);
+      if (saved?.version === 1 && saved.story && revision === 0) {
+        state.apply(saved.story); state.refresh(); status('Your saved draft is ready.');
+        if (state.story.reveal.enabled === false && $('wishIntro').open) $('skipIntro').click();
+      }
+    } catch { status('Download your gift to keep it. Browser saving is unavailable.'); }
+    $('editGift').hidden = $('introEditGift').hidden = false;
+  })();
+})();
+
+});</script>
 </head>
 <body>
   <div class="voyage-backdrop" aria-hidden="true"><div class="chart-light"></div><div class="chart-lines"></div><div class="chart-vignette"></div></div>
@@ -2337,15 +2735,15 @@ window.BIRTHDAY_BOOK = {
 
   <header class="topbar">
     <a class="monogram" href="#main" aria-label="Go to story">f<span>✦</span>y</a>
-    <div class="topbar-center">The Alchemist &amp; the Captain</div>
-    <div class="topbar-right"><button id="replayIntro" class="replay-intro" type="button" hidden>Replay the wish <span aria-hidden="true">↗</span></button></div>
+    <div class="topbar-center" data-story-text="presentation.themeTitle">The Alchemist &amp; the Captain</div>
+    <div class="topbar-right"><button id="editGift" data-editor-ui class="editor-launch" type="button" hidden>Edit your gift</button><button id="replayIntro" class="replay-intro" type="button" hidden>Replay the wish <span aria-hidden="true">↗</span></button></div>
   </header>
 
   <main id="main" class="experience">
     <div class="hero">
       <div class="eyebrow"><img class="chapter-gem" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJPcmlnaW5hbCBwcmltb2dlbS1pbnNwaXJlZCBnZW0gaWNvbiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImcxIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNjOGZiZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI0NSUiIHN0b3AtY29sb3I9IiM5YWU2ZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjN2VjNmZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIiBzdG9wLW9wYWNpdHk9IjAuOSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii00MCUiIHk9Ii00MCUiIHdpZHRoPSIxODAlIiBoZWlnaHQ9IjE4MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI2IiByZXN1bHQ9ImIiLz4KICAgICAgPGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxnIGZpbHRlcj0idXJsKCNnbG93KSI+CiAgICA8cGF0aCBkPSJNMTI4IDEyIDE4MyA1NiAyNDQgMTI4IDE4MyAyMDAgMTI4IDI0NCA3MyAyMDAgMTIgMTI4IDczIDU2WiIgZmlsbD0idXJsKCNnMSkiIHN0cm9rZT0iI2ViZmJmZiIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgICA8cGF0aCBkPSJNMTI4IDM0IDE2NyA2NiAyMTAgMTI4IDE2NyAxOTAgMTI4IDIyMiA4OSAxOTAgNDYgMTI4IDg5IDY2WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjRmZmZmIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBzdHJva2Utd2lkdGg9IjYiLz4KICAgIDxwYXRoIGQ9Ik0xMjggNTIgMTUyIDcyIDE4MSAxMjggMTUyIDE4NCAxMjggMjA0IDEwNCAxODQgNzUgMTI4IDEwNCA3MloiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsLjEyKSIgb3BhY2l0eT0iLjM1Ii8+CiAgICA8cGF0aCBkPSJNMTI4IDI4IDE2NiA1OSAxMzAgOTYgODkgNjFaIiBmaWxsPSJ1cmwoI2cyKSIgb3BhY2l0eT0iLjg1Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSIxMjgiIHI9IjIyIiBmaWxsPSIjZjVmZmZmIiBmaWxsLW9wYWNpdHk9Ii42Ii8+CiAgPC9nPgo8L3N2Zz4K" alt="" aria-hidden="true"/>A STORY IN SEVEN CHAPTERS<img class="chapter-gem" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJPcmlnaW5hbCBwcmltb2dlbS1pbnNwaXJlZCBnZW0gaWNvbiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImcxIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNjOGZiZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI0NSUiIHN0b3AtY29sb3I9IiM5YWU2ZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjN2VjNmZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIiBzdG9wLW9wYWNpdHk9IjAuOSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii00MCUiIHk9Ii00MCUiIHdpZHRoPSIxODAlIiBoZWlnaHQ9IjE4MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI2IiByZXN1bHQ9ImIiLz4KICAgICAgPGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxnIGZpbHRlcj0idXJsKCNnbG93KSI+CiAgICA8cGF0aCBkPSJNMTI4IDEyIDE4MyA1NiAyNDQgMTI4IDE4MyAyMDAgMTI4IDI0NCA3MyAyMDAgMTIgMTI4IDczIDU2WiIgZmlsbD0idXJsKCNnMSkiIHN0cm9rZT0iI2ViZmJmZiIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgICA8cGF0aCBkPSJNMTI4IDM0IDE2NyA2NiAyMTAgMTI4IDE2NyAxOTAgMTI4IDIyMiA4OSAxOTAgNDYgMTI4IDg5IDY2WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjRmZmZmIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBzdHJva2Utd2lkdGg9IjYiLz4KICAgIDxwYXRoIGQ9Ik0xMjggNTIgMTUyIDcyIDE4MSAxMjggMTUyIDE4NCAxMjggMjA0IDEwNCAxODQgNzUgMTI4IDEwNCA3MloiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsLjEyKSIgb3BhY2l0eT0iLjM1Ii8+CiAgICA8cGF0aCBkPSJNMTI4IDI4IDE2NiA1OSAxMzAgOTYgODkgNjFaIiBmaWxsPSJ1cmwoI2cyKSIgb3BhY2l0eT0iLjg1Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSIxMjgiIHI9IjIyIiBmaWxsPSIjZjVmZmZmIiBmaWxsLW9wYWNpdHk9Ii42Ii8+CiAgPC9nPgo8L3N2Zz4K" alt="" aria-hidden="true"/></div>
-      <h1>Between <em>stars &amp; seas.</em></h1>
-      <p>A little universe, bound just for you.</p>
+      <h1><span data-story-text="presentation.heroPrefix">Between</span> <em data-story-text="presentation.heroAccent">stars &amp; seas.</em></h1>
+      <p data-story-text="presentation.heroSubtitle">A little universe, bound just for you.</p>
     </div>
 
     <section class="storybook-area" aria-label="Interactive birthday storybook">
@@ -2387,13 +2785,14 @@ window.BIRTHDAY_BOOK = {
   <footer class="footer"><span>An original keepsake of alchemy, starlight, and sea.</span><span>ONLY YOU &amp; ME <span class="footer-heart">♥</span></span></footer>
 
   <dialog id="wishIntro" class="wish-intro" aria-labelledby="introTitle" data-stage="ready">
+    <button id="introEditGift" data-editor-ui class="editor-launch intro-editor-launch" type="button" hidden>Edit your gift</button>
     <button id="skipIntro" class="intro-skip" type="button">Read the book <span aria-hidden="true">↗</span></button>
     <div class="wish-sky" aria-hidden="true"><div class="sky-orbit orbit-one"></div><div class="sky-orbit orbit-two"></div><div class="sky-dust"></div></div>
     <div class="intro-invitation" id="introInvitation">
       <span class="intro-overline">A BIRTHDAY WISH · FOR YOU</span>
       <div class="wish-portal" aria-hidden="true"><div class="portal-ring"></div><div class="portal-ring ring-inner"></div><span class="portal-star">✦</span><img class="portal-captain" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNDAgMTcwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Ik9yaWdpbmFsIG1pbmlhdHVyZSBCZWlkb3UtaW5zcGlyZWQgY2FwdGFpbiBjaGFybSI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImhhaXIiIHgyPSIuOCIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiM0OTMwMzYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyMTFkMjkiLz48L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjb2F0IiB4Mj0iLjciIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjYjA1ZTY1Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNzIyZTQ2Ii8+PC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYnJhc3MiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2YyZDhhMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2I1OGM1NSIvPjwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxlbGxpcHNlIGN4PSI3MCIgY3k9IjE1NyIgcng9IjQwIiByeT0iNSIgZmlsbD0iIzBjMTcyOCIgb3BhY2l0eT0iLjMiLz4KICA8cGF0aCBkPSJNMjYgNjZDMTggMTAyIDE4IDEzNyAyNyAxNTBMNDYgMTQzIDEwMSAxNDhDMTE3IDExNiAxMTcgODYgMTEwIDYxWiIgZmlsbD0idXJsKCNoYWlyKSIgc3Ryb2tlPSIjZGFiNThhIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxwYXRoIGQ9Ik00MSAxMTBRNzAgMTAxIDk5IDExMEwxMTYgMTQyUTcxIDE2MyAyMyAxNDJaIiBmaWxsPSJ1cmwoI2NvYXQpIiBzdHJva2U9IiNkZmJkOGIiIHN0cm9rZS13aWR0aD0iMS43Ii8+CiAgPHBhdGggZD0iTTU2IDEwMCA1NCAxMTIgNzAgMTIzIDg1IDExMiA4MyA5OSIgZmlsbD0iI2U2YmI5YyIvPgogIDxwYXRoIGQ9Ik00OSAxMTMgNTkgMTMxIDcwIDEyMSA4MiAxMzAgOTQgMTEzIDkwIDE0OEg1MFoiIGZpbGw9IiMyYzI4MzMiLz4KICA8cGF0aCBkPSJNNDggMTEyIDU1IDE0ME05NCAxMTIgODcgMTQwTTQxIDE0NlE3MCAxNTUgOTkgMTQ2IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjYnJhc3MpIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8cGF0aCBkPSJNMjYgNjRRMjMgMjIgNjcgMTUgMTExIDE3IDExNSA2M0wxMDYgODlIMzRaIiBmaWxsPSJ1cmwoI2hhaXIpIiBzdHJva2U9IiNkNGFjODIiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgPHBhdGggZD0iTTM2IDU3UTM3IDQyIDUyIDM0TDk0IDQyUTEwOCA1NiAxMDMgNzggOTkgMTA0IDcwIDExMSA0MiAxMDQgMzYgNzlaIiBmaWxsPSIjZWZkMGIwIi8+CiAgPHBhdGggZD0iTTMxIDU5UTQ0IDEzIDc5IDI2TDEwOSA0NiAxMDMgNzNRODcgNjUgNzQgNDQgNTIgNjEgMzEgNTlaIiBmaWxsPSJ1cmwoI2hhaXIpIi8+CiAgPHBhdGggZD0iTTMzIDU3IDQwIDEwMiAyOSAxMjJRMjMgODAgMzMgNTdaTTEwNSA1N1ExMTkgOTAgMTAyIDEzM0w5MiAxMTIgOTkgNjgiIGZpbGw9InVybCgjaGFpcikiLz4KICA8cGF0aCBkPSJNNDAgNjIgOTkgNzMiIHN0cm9rZT0iIzNiMjYzNCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICA8cGF0aCBkPSJNNzcgNjhRODYgNjMgOTkgNjlMOTYgODFRODYgODkgNzcgODBaIiBmaWxsPSIjMzgyNjM4IiBzdHJva2U9IiNiNzg4NjMiIHN0cm9rZS13aWR0aD0iMS4zIi8+CiAgPHBhdGggZD0iTTQ3IDcyUTU0IDY2IDYzIDcyIiBmaWxsPSJub25lIiBzdHJva2U9IiM0YzI5MzkiIHN0cm9rZS13aWR0aD0iMi4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8ZWxsaXBzZSBjeD0iNTYiIGN5PSI3NiIgcng9IjUiIHJ5PSI3IiBmaWxsPSIjNzg0OTY3Ii8+PGNpcmNsZSBjeD0iNTgiIGN5PSI3MyIgcj0iMiIgZmlsbD0iI2ZmZjVkZiIvPgogIDxwYXRoIGQ9Ik02MiA5NFE2OSAxMDAgNzggOTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E2NWY2NSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8ZWxsaXBzZSBjeD0iNDYiIGN5PSI4NiIgcng9IjYiIHJ5PSIzIiBmaWxsPSIjYzk3ZDc4IiBvcGFjaXR5PSIuMjgiLz4KICA8cGF0aCBkPSJNOTkgMzAgMTA1IDIzIDExMCAzMSAxMDUgMzhaIiBmaWxsPSJ1cmwoI2JyYXNzKSIvPgogIDxwYXRoIGQ9Ik0xMDggMzcgMTE1IDMwIDExOSAzOCAxMTMgNDRaIiBmaWxsPSJ1cmwoI2JyYXNzKSIvPgogIDxjaXJjbGUgY3g9IjEwNCIgY3k9Ijk0IiByPSIzIiBmaWxsPSJ1cmwoI2JyYXNzKSIvPgogIDxwYXRoIGQ9Ik03MCAxMjIgNzYgMTMwIDcwIDEzOCA2NCAxMzBaIiBmaWxsPSJ1cmwoI2JyYXNzKSIvPgogIDxwYXRoIGQ9Ik0zMSAxMjlRMTcgMTIwIDEzIDExMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZWZkMGIwIiBzdHJva2Utd2lkdGg9IjkiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik05IDExMiAxNiAxMDZNMTIgMTA4IDEwIDEwMCIgc3Ryb2tlPSIjZWZkMGIwIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Im05IDkxIDMtNyAzIDcgNyAzLTcgMy0zIDctMy03LTctM1oiIGZpbGw9IiNlNWM3OGUiLz4KPC9zdmc+Cg==" alt=""/></div>
-      <h2 id="introTitle">A wish, just for you.</h2>
-      <p>Some stars find their way to us.<br/>Some become our whole world.</p>
+      <h2 id="introTitle" data-story-text="presentation.introTitle">A wish, just for you.</h2>
+      <p data-story-text="presentation.introMessage">Some stars find their way to us.<br/>Some become our whole world.</p>
       <button id="startWish" class="intro-primary wish-action" type="button"><span class="wish-action-icon" aria-hidden="true"><img class="button-gem" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJPcmlnaW5hbCBwcmltb2dlbS1pbnNwaXJlZCBnZW0gaWNvbiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImcxIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNjOGZiZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI0NSUiIHN0b3AtY29sb3I9IiM5YWU2ZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjN2VjNmZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZmZmZmIiBzdG9wLW9wYWNpdHk9IjAuOSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii00MCUiIHk9Ii00MCUiIHdpZHRoPSIxODAlIiBoZWlnaHQ9IjE4MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI2IiByZXN1bHQ9ImIiLz4KICAgICAgPGZlTWVyZ2U+PGZlTWVyZ2VOb2RlIGluPSJiIi8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxnIGZpbHRlcj0idXJsKCNnbG93KSI+CiAgICA8cGF0aCBkPSJNMTI4IDEyIDE4MyA1NiAyNDQgMTI4IDE4MyAyMDAgMTI4IDI0NCA3MyAyMDAgMTIgMTI4IDczIDU2WiIgZmlsbD0idXJsKCNnMSkiIHN0cm9rZT0iI2ViZmJmZiIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgICA8cGF0aCBkPSJNMTI4IDM0IDE2NyA2NiAyMTAgMTI4IDE2NyAxOTAgMTI4IDIyMiA4OSAxOTAgNDYgMTI4IDg5IDY2WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjRmZmZmIiBzdHJva2Utb3BhY2l0eT0iLjc1IiBzdHJva2Utd2lkdGg9IjYiLz4KICAgIDxwYXRoIGQ9Ik0xMjggNTIgMTUyIDcyIDE4MSAxMjggMTUyIDE4NCAxMjggMjA0IDEwNCAxODQgNzUgMTI4IDEwNCA3MloiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsLjEyKSIgb3BhY2l0eT0iLjM1Ii8+CiAgICA8cGF0aCBkPSJNMTI4IDI4IDE2NiA1OSAxMzAgOTYgODkgNjFaIiBmaWxsPSJ1cmwoI2cyKSIgb3BhY2l0eT0iLjg1Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSIxMjgiIHI9IjIyIiBmaWxsPSIjZjVmZmZmIiBmaWxsLW9wYWNpdHk9Ii42Ii8+CiAgPC9nPgo8L3N2Zz4K" alt=""/></span><span>Make your wish</span></button>
       <span class="intro-footnote">One little wish. A whole story waiting.</span>
     </div>
@@ -2404,8 +2803,8 @@ window.BIRTHDAY_BOOK = {
       <div class="character-motes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </div>
     <div class="intro-reveal" id="introReveal" hidden>
-      <div class="reveal-portrait"><img id="revealPortrait" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgODAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2t5IiB4Mj0iMCIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiMxMjI3MzYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyOTQwNDQiLz48L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJoYWxvIj48c3RvcCBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9Ii41Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJkcmVzcyIgeDI9Ii44IiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2E4NzU2NSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzU0MmU0MCIvPjwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxwYXRoIGZpbGw9InVybCgjc2t5KSIgZD0iTTAgMGg2MDB2ODAwSDB6Ii8+CiAgPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzA1IiByPSIyNTAiIGZpbGw9InVybCgjaGFsbykiLz4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlMGM1OGMiIHN0cm9rZS1vcGFjaXR5PSIuMzUiPjxjaXJjbGUgY3g9IjMwMCIgY3k9IjI5OCIgcj0iMjEwIi8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iMjk4IiByPSIxODMiLz48cGF0aCBkPSJNMzAwIDY5djQ2bTAgMzY3djQ1TTY5IDI5OGg0Nm0zNjcgMGg0NSIvPjwvZz4KICA8cGF0aCBkPSJNMTUyIDQwM2MtMzctMTEyLTE2LTIzNCA2Ni0yNzYgNTctMzAgMTQ0LTIwIDE4MiAzMCA1MiA2OSA0NSAxNjkgMTggMjUybC0xMjYgNTdaIiBmaWxsPSIjMTkyMzI5Ii8+CiAgPHBhdGggZD0iTTIzOSAzNjRoMTIybDkgODktNzEgNjctNzQtNjdaIiBmaWxsPSIjYzZhNzhlIi8+CiAgPHBhdGggZD0iTTE2NyA3NTRjLTUtMTMzIDEyLTI2OSA4MS0zMTRsNTAgMzkgNTItMzljODUgNDAgOTggMTk0IDkxIDMxNFoiIGZpbGw9InVybCgjZHJlc3MpIi8+CiAgPGVsbGlwc2UgY3g9IjMwMCIgY3k9IjI3OCIgcng9Ijg4IiByeT0iMTE2IiBmaWxsPSIjZDBiNDk4Ii8+CiAgPHBhdGggZD0iTTIwOSAzMDVjLTEwLTkzIDMtMTY3IDg4LTE3NiA2Ny03IDEwMSA0NCAxMDMgMTE4LTY0LTE2LTEwNy00OS0xMjYtNzYtMiA1MS0yMyA5OC02NSAxMzRaIiBmaWxsPSIjMjAyOTJkIi8+CiAgPHBhdGggZD0iTTIxMSAyNjNjLTI4IDEyOC00NyAxNjMtMzQgMjU3bDYxLTQ1Yy0xNi02OC0yMS0xMzItMjctMjEybTE4My0zN2MzNiAxMDkgNTEgMjA4IDM2IDI5NGwtNTktMzdjMTUtODUgMjAtMTcxIDIzLTI1NyIgZmlsbD0iIzIwMjkyZCIvPgogIDxwYXRoIGQ9Ik0yNDkgNDQ2YzIwIDQ2IDgwIDU4IDEwMy0xIiBmaWxsPSJub25lIiBzdHJva2U9IiNkOGJiODAiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Im0yOTggNDc5IDggMTItOCAxMi04LTEyWiIgZmlsbD0iI2Q4YmI4MCIvPgogIDxnIGZpbGw9IiNlNGQwYTMiPjxwYXRoIGQ9Im0xMTcgMTI2IDMgMTAgMTAgMy0xMCAzLTMgMTAtMy0xMC0xMC0zIDEwLTNaTTQ3MyAzNTZsNCAxMyAxMyA0LTEzIDQtNCAxMy00LTEzLTEzLTQgMTMtNFoiLz48Y2lyY2xlIGN4PSI0MzQiIGN5PSIxMDIiIHI9IjIiLz48Y2lyY2xlIGN4PSI5NCIgY3k9IjM4NyIgcj0iMS43Ii8+PC9nPgogIDx0ZXh0IHg9IjMwMCIgeT0iNzE3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZTRkNWI4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC1zdHlsZT0iaXRhbGljIj5hIHBvcnRyYWl0LCB3YWl0aW5nIGZvciB5b3U8L3RleHQ+Cjwvc3ZnPgo=" alt=""/><div class="portrait-border" aria-hidden="true"></div><span class="portrait-star" aria-hidden="true">✦</span></div>
-      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient"></span><h2 id="revealTitle"></h2><p id="revealSubtitle"></p><button id="enterBook" class="intro-primary" type="button">Open your story <span aria-hidden="true">↗</span></button><span class="intro-footnote">The best chapters are still ahead.</span></div>
+      <div class="reveal-portrait"><img data-story-image="reveal.portrait" id="revealPortrait" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgODAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2t5IiB4Mj0iMCIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiMxMjI3MzYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyOTQwNDQiLz48L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJoYWxvIj48c3RvcCBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9Ii41Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJkcmVzcyIgeDI9Ii44IiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2E4NzU2NSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzU0MmU0MCIvPjwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxwYXRoIGZpbGw9InVybCgjc2t5KSIgZD0iTTAgMGg2MDB2ODAwSDB6Ii8+CiAgPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzA1IiByPSIyNTAiIGZpbGw9InVybCgjaGFsbykiLz4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiNlMGM1OGMiIHN0cm9rZS1vcGFjaXR5PSIuMzUiPjxjaXJjbGUgY3g9IjMwMCIgY3k9IjI5OCIgcj0iMjEwIi8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iMjk4IiByPSIxODMiLz48cGF0aCBkPSJNMzAwIDY5djQ2bTAgMzY3djQ1TTY5IDI5OGg0Nm0zNjcgMGg0NSIvPjwvZz4KICA8cGF0aCBkPSJNMTUyIDQwM2MtMzctMTEyLTE2LTIzNCA2Ni0yNzYgNTctMzAgMTQ0LTIwIDE4MiAzMCA1MiA2OSA0NSAxNjkgMTggMjUybC0xMjYgNTdaIiBmaWxsPSIjMTkyMzI5Ii8+CiAgPHBhdGggZD0iTTIzOSAzNjRoMTIybDkgODktNzEgNjctNzQtNjdaIiBmaWxsPSIjYzZhNzhlIi8+CiAgPHBhdGggZD0iTTE2NyA3NTRjLTUtMTMzIDEyLTI2OSA4MS0zMTRsNTAgMzkgNTItMzljODUgNDAgOTggMTk0IDkxIDMxNFoiIGZpbGw9InVybCgjZHJlc3MpIi8+CiAgPGVsbGlwc2UgY3g9IjMwMCIgY3k9IjI3OCIgcng9Ijg4IiByeT0iMTE2IiBmaWxsPSIjZDBiNDk4Ii8+CiAgPHBhdGggZD0iTTIwOSAzMDVjLTEwLTkzIDMtMTY3IDg4LTE3NiA2Ny03IDEwMSA0NCAxMDMgMTE4LTY0LTE2LTEwNy00OS0xMjYtNzYtMiA1MS0yMyA5OC02NSAxMzRaIiBmaWxsPSIjMjAyOTJkIi8+CiAgPHBhdGggZD0iTTIxMSAyNjNjLTI4IDEyOC00NyAxNjMtMzQgMjU3bDYxLTQ1Yy0xNi02OC0yMS0xMzItMjctMjEybTE4My0zN2MzNiAxMDkgNTEgMjA4IDM2IDI5NGwtNTktMzdjMTUtODUgMjAtMTcxIDIzLTI1NyIgZmlsbD0iIzIwMjkyZCIvPgogIDxwYXRoIGQ9Ik0yNDkgNDQ2YzIwIDQ2IDgwIDU4IDEwMy0xIiBmaWxsPSJub25lIiBzdHJva2U9IiNkOGJiODAiIHN0cm9rZS13aWR0aD0iMyIvPgogIDxwYXRoIGQ9Im0yOTggNDc5IDggMTItOCAxMi04LTEyWiIgZmlsbD0iI2Q4YmI4MCIvPgogIDxnIGZpbGw9IiNlNGQwYTMiPjxwYXRoIGQ9Im0xMTcgMTI2IDMgMTAgMTAgMy0xMCAzLTMgMTAtMy0xMC0xMC0zIDEwLTNaTTQ3MyAzNTZsNCAxMyAxMyA0LTEzIDQtNCAxMy00LTEzLTEzLTQgMTMtNFoiLz48Y2lyY2xlIGN4PSI0MzQiIGN5PSIxMDIiIHI9IjIiLz48Y2lyY2xlIGN4PSI5NCIgY3k9IjM4NyIgcj0iMS43Ii8+PC9nPgogIDx0ZXh0IHg9IjMwMCIgeT0iNzE3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZTRkNWI4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC1zdHlsZT0iaXRhbGljIj5hIHBvcnRyYWl0LCB3YWl0aW5nIGZvciB5b3U8L3RleHQ+Cjwvc3ZnPgo=" alt=""/><div class="portrait-border" aria-hidden="true"></div><span class="portrait-star" aria-hidden="true">✦</span></div>
+      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow" data-story-text="reveal.eyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient" data-story-text="recipient"></span><h2 id="revealTitle" data-story-text="reveal.title"></h2><p id="revealSubtitle" data-story-text="reveal.subtitle"></p><button id="enterBook" class="intro-primary" type="button">Open your story <span aria-hidden="true">↗</span></button><span class="intro-footnote">The best chapters are still ahead.</span></div>
     </div>
     <span class="intro-status" id="introStatus" role="status" aria-live="polite"></span>
     <div class="intro-chart-note" aria-hidden="true">LIYUE · A VOYAGE BENEATH THE STARS</div>
@@ -2423,5 +2822,48 @@ window.BIRTHDAY_BOOK = {
       
     </div>
   </dialog>
+
+  <section id="giftToolbar" class="gift-toolbar" data-editor-ui aria-label="Gift editor" hidden>
+    <div class="gift-toolbar-top"><strong>Click words or photos to edit.</strong><span id="giftSaveStatus" class="gift-status" role="status" aria-live="polite">Draft stays in this browser.</span></div>
+    <div class="gift-toolbar-actions">
+      <button id="giftDetailsButton" type="button">Details &amp; text</button>
+      <button id="giftPhotosButton" type="button">Photos</button>
+      <button id="giftLetterButton" type="button">Letter</button>
+      <button id="giftPreviewButton" type="button">Preview</button>
+      <button id="giftResetButton" type="button">Start over</button>
+      <button id="giftDownloadButton" class="gift-download" type="button">Download gift</button>
+    </div>
+  </section>
+  <div id="giftPreviewNote" class="gift-preview-note" data-editor-ui hidden><span>Previewing your gift</span><button id="giftBackButton" class="editor-launch" type="button">Back to editing</button></div>
+  <dialog id="giftTextDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftTextTitle">
+    <form id="giftTextForm"><h2 id="giftTextTitle">Edit your words</h2><p id="giftTextHelp">Keep it personal. Shorter text fits the book best.</p>
+      <label for="giftTextValue">Your text</label><textarea id="giftTextValue" rows="5" maxlength="5000"></textarea><p id="giftTextError" class="gift-error" role="alert" hidden></p>
+      <div class="gift-dialog-actions"><button type="button" data-close-editor>Cancel</button><button type="submit">Apply text</button></div>
+    </form>
+  </dialog>
+  <dialog id="giftDetailsDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftDetailsTitle">
+    <form id="giftDetailsForm"><h2 id="giftDetailsTitle">Make it yours</h2><p>Set the names and chapter labels. You can also edit every message here.</p>
+      <div id="giftDetailsFields"></div><details><summary>All messages</summary><div id="giftAllTextFields"></div></details>
+      <p id="giftDetailsError" class="gift-error" role="alert" hidden></p><div class="gift-dialog-actions"><button type="button" data-close-editor>Cancel</button><button type="submit">Apply changes</button></div>
+    </form>
+  </dialog>
+  <dialog id="giftPhotosDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftPhotosTitle"><div class="gift-dialog-content">
+    <h2 id="giftPhotosTitle">Your photos</h2><p>Choose a photo to replace it. Each photo updates everywhere it appears in the gift.</p><div id="giftPhotoGrid" class="gift-photo-grid"></div>
+    <div class="gift-dialog-actions"><button type="button" data-close-editor>Close</button></div>
+  </div></dialog>
+  <dialog id="giftImageDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftImageTitle"><form id="giftImageForm">
+    <h2 id="giftImageTitle">Replace photo</h2><p>Choose a JPG, PNG, or WebP image, then adjust the crop. Maximum upload: 20 MB.</p>
+    <label for="giftImageFile">Upload a photo</label><input id="giftImageFile" type="file" accept="image/jpeg,image/png,image/webp" />
+    <canvas id="giftCropPreview" class="gift-crop" width="600" height="800" hidden></canvas><div id="giftCropControls" hidden>
+      <label for="giftCropZoom">Zoom</label><input id="giftCropZoom" type="range" min="1" max="3" step="0.05" value="1" />
+      <label for="giftCropX">Horizontal position</label><input id="giftCropX" type="range" min="-100" max="100" value="0" />
+      <label for="giftCropY">Vertical position</label><input id="giftCropY" type="range" min="-100" max="100" value="0" />
+    </div><label for="giftImageAlt">Describe the photo</label><input id="giftImageAlt" type="text" maxlength="250" />
+    <p id="giftImageError" class="gift-error" role="alert" hidden></p><div class="gift-dialog-actions"><button id="giftImageDefault" type="button">Use placeholder</button><button type="button" data-close-editor>Cancel</button><button id="giftImageApply" type="submit" disabled>Use photo</button></div>
+  </form></dialog>
+  <dialog id="giftResetDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftResetTitle"><div class="gift-dialog-content">
+    <h2 id="giftResetTitle">Start a fresh gift?</h2><p>This replaces your saved draft in this browser with the sample gift. Download your current gift first if you want to keep it.</p>
+    <div class="gift-dialog-actions"><button type="button" data-close-editor>Keep editing</button><button id="giftConfirmReset" class="primary" type="button">Start over</button></div>
+  </div></dialog>
 </body>
 </html>

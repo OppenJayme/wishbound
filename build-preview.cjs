@@ -15,9 +15,11 @@ const editorial = embed(fs.readFileSync(path.join(dir,'editorial.css'),'utf8'));
 html = html.replace('<link rel="stylesheet" href="editorial.css" />', () => '<style>\n'+editorial+'\n</style>');
 const voyage = embed(fs.readFileSync(path.join(dir,'voyage.css'),'utf8'));
 html = html.replace('<link rel="stylesheet" href="voyage.css" />', () => '<style>\n'+voyage+'\n</style>');
-for (const name of ['story-config.js','app.js','wish.js','intro.js']) {
+const editorStyle = fs.readFileSync(path.join(dir,'gift-editor.css'),'utf8');
+html = html.replace('<link rel="stylesheet" href="gift-editor.css" />', () => '<style>\n'+editorStyle+'\n</style>');
+for (const name of ['story-config.js','gift-state.js','app.js','wish.js','intro.js','gift-editor.js']) {
   const js = embed(fs.readFileSync(path.join(dir,name),'utf8')).replace(/<\/script/gi,'<\\/script');
-  html = html.replace(`<script src="${name}" defer></script>`, () => `<script>document.addEventListener('DOMContentLoaded', () => {\n${js}\n});</script>`);
+  html = html.replace(`<script src="${name}" defer></script>`, () => `<script data-wishbound-source="${name}">document.addEventListener('DOMContentLoaded', () => {\n${js}\n});</script>`);
 }
 fs.writeFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),embed(html));
 console.log('Portable preview updated.');

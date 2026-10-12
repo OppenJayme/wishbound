@@ -7,7 +7,10 @@ For downloading, previewing, personalizing, and sharing the gift, start with the
 | File | Responsibility |
 | --- | --- |
 | `index.html` | Page structure, entrance, and dialogs. |
-| `story-config.js` | Recipient and sender names, photo paths, letter, and story copy. |
+| `story-config.js` | Default names, photo paths, letter, and story copy. |
+| `gift-state.js` | Editable field bindings, validation, and story synchronization. |
+| `gift-editor.js` | Text and image controls, local drafts, cropping, and HTML export. |
+| `gift-editor.css` | Editor controls and editing outlines. |
 | `app.js` | Chapter rendering, navigation, and book page turns. |
 | `intro.js` | Entrance state, portrait flight, replay, skipping, and cleanup. |
 | `wish.js` | Canvas clouds, comet, and arrival sequence. |
@@ -50,11 +53,12 @@ npm install
 npm run preview:build
 npm run test:browser
 npm run test:intro
+npm run test:editor
 ```
 
 The preview must be rebuilt before checking the portable version. `test:browser` covers book navigation and layout; `test:intro` covers the entrance, replay, and cancellation.
 
-Both scripts currently launch Chrome from `C:/Program Files/Google/Chrome/Application/chrome.exe`. Update `executablePath` in `book-qa.cjs` and `intro-qa.cjs` for another installation. Screenshots are written to the ignored `qa/` folder.
+The scripts currently launch Chrome from `C:/Program Files/Google/Chrome/Application/chrome.exe`. Update `executablePath` in `book-qa.cjs` and `intro-qa.cjs` for another installation. For `editor-qa.cjs`, set `CHROME_PATH` to your Chrome executable. Screenshots are written to the ignored `qa/` folder.
 
 For portrait landing alignment and interruption cleanup:
 
@@ -65,3 +69,13 @@ node intro-qa.cjs --journey --alignment
 ## Design reference
 
 See [DESIGN_NOTES.md](DESIGN_NOTES.md) for typography, the alchemy and nautical theme, book behavior, entrance motion, and accessibility considerations.
+
+## Gift editor and export
+
+Text fragments and photos are bound through `data-story-text` and `data-story-image`. The editor updates all instances of a field, including desktop, mobile, the entrance, and the letter. Keep these bindings when adding layouts.
+
+Drafts use IndexedDB, scoped to the current website path. Photos are decoded, cropped, and re-encoded as JPEGs in the browser; uploads are not sent to a server.
+
+The preview builder marks its inline scripts with `data-wishbound-source`. HTML export uses the initial template, replaces its story configuration with safely serialized values, and removes editing controls. The exported gift sets `WISHBOUND_GIFT` and skips local draft restoration. Preserve these script markers when changing the builder.
+
+`test:editor` checks text editing, crop positioning, photo replacement, draft restoration and isolation, reset, preview, and exported HTML. The GitHub Pages workflow runs this check before deploying and saves screenshots as an Actions artifact.

@@ -2,110 +2,59 @@
 
 A Genshin-inspired birthday storybook you can personalize with photos, shared memories, and a letter. It includes an animated five-star wish reveal, page turns, and layouts for desktop and mobile.
 
-Originally made as a romantic gift, the sample messages can be rewritten for a partner, a friend, or anyone you want to celebrate.
+Originally made as a romantic gift, its messages can be adapted for a partner, a friend, or anyone you want to celebrate.
 
-## Browser preview
+**[Open the preview and make your gift](https://oppenjayme.github.io/wishbound/)**
 
-[Open the wishbound preview](https://oppenjayme.github.io/wishbound/)
+## Personalize it without code
 
-View the sample gift directly in your browser. Downloading or cloning the repository is only needed if you want to customize your own copy.
+1. Open the preview and select **Edit your gift**. This button is available on the opening screen and above the book.
+2. **Click a name or message** to edit it, then select **Apply text**. Use the book's arrows or chapter dots to visit other pages.
+3. **Click a photo** to upload a JPG, PNG, or WebP image. Adjust its crop, zoom, and position, add a description, and select **Use photo**.
+4. Use **Details & text** for names, chapter labels, reveal settings, and all messages. **Letter** edits the complete letter; separate paragraphs with a blank line. **Photos** gives access to the portrait and all three memory photos.
+5. Select **Preview** to hide the editing outlines. Check the chapters, letter, and photos, then select **Back to editing** if you want more changes.
+6. Select **Download gift** to save your personalized birthday website as one HTML file. Open that file in a browser to check it before sharing.
 
-## 1. Get your copy
+Uploaded photos are cropped and resized in your browser. The portrait uses a 3:4 crop; memory photos use square crops. Uploads can be up to 20 MB each.
 
-- **To create your own GitHub repository:** select **Use this template → Create a new repository**, if that button is available. Choose **Private** if you want your personal source files hidden on GitHub.
-- **To edit on your computer:** select **Code → Download ZIP**, then extract the ZIP. If you created your own repository first, download from that copy.
+Keep headings and paragraphs short enough to fit the book. The default wording is romantic, so read through every chapter when adapting it for a different recipient.
 
-Keep your personal photos and messages in your own copy of the project.
+## Drafts and sharing
 
-## 2. Open the website
+- Edits and uploaded photos stay in your browser. They are not uploaded to the public demo or written to this repository.
+- Your draft is saved automatically when browser storage is available. Returning in the same browser restores it. Check the editor's save status; if saving is unavailable, download the gift to keep your changes.
+- Clearing site data or using another browser removes access to that local draft. Keep a downloaded copy of your finished gift.
+- The downloaded HTML includes your words and local artwork and photos. It opens as the gift, without editing controls, and does not read the recipient's saved drafts.
+- Google Fonts and any externally configured image links use the internet. Local font fallbacks work offline, and images uploaded through the editor are embedded in the download.
+- **Download gift creates a file, not a new website URL.** The public preview link remains the shared template. To share your personalized gift as a link, publish your own copy with a static website host.
+- **Start over** restores the sample gift in your browser after confirmation. Download your current version first if you want to keep it.
 
-Inside the extracted project, open this folder:
+## Use your own repository
+
+If available, select **Use this template → Create a new repository** on GitHub. Choose its visibility, then make your changes in that separate copy.
+
+To work locally, select **Code → Download ZIP**, extract it, and open:
 
 ```text
-albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/
+albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/ONE_FILE_PREVIEW.html
 ```
 
-Double-click `index.html`. You do not need Node.js, npm, or a build step to view it.
+This portable template includes the editor. You can personalize and download a gift without installing anything. Browser draft storage availability may vary for locally opened files.
 
-Select **Make your wish** to play the entrance, then **Open your story** to enter the book. **Read the book** skips the entrance.
+The separate `index.html` is useful when editing the source. For complete HTML downloads from a local file, use `ONE_FILE_PREVIEW.html` or the live preview.
 
-## 3. Make it personal
+## For developers
 
-Open `story-config.js` in that same folder using a text or code editor. Edit the existing values; keep the property names, quotes, brackets, and commas in place.
-
-| What to personalize | Where to edit |
-| --- | --- |
-| Recipient and sender names | `recipient` and `signoff` |
-| Portrait and its description | `reveal.portrait` and `reveal.portraitAlt` |
-| Reveal messages | `reveal.title`, `reveal.subtitle`, and `reveal.eyebrow` |
-| Three memory photos | `photos` |
-| Letter | `letter.greeting` and `letter.paragraphs` |
-| Chapter labels | `chapterNames` — keep seven entries |
-| Story headings, messages, and captions | `copy` |
-
-The sample text is romantic. For a friend or another recipient, update the letter and chapter messages as well as the names. Keep paragraphs short enough to fit the desktop pages.
-
-### Replace the photos
-
-Put one portrait and three memory photos in the website's `assets/` folder. Use simple filenames such as `portrait.jpg` and `memory-1.jpg`. A vertical 3:4 portrait fits the reveal well.
-
-Update the existing portrait values inside `reveal`:
-
-```javascript
-"portrait": "assets/portrait.jpg",
-"portraitAlt": "A portrait of Alex",
-```
-
-Then update the existing `photos` array:
-
-```javascript
-"photos": [
-  "assets/memory-1.jpg",
-  "assets/memory-2.jpg",
-  "assets/memory-3.jpg"
-],
-```
-
-These snippets replace the matching entries in `story-config.js`, not the entire file. Use paths relative to the website folder, and match filename spelling and capitalization exactly.
-
-Save your changes and refresh `index.html`. Check every chapter, the letter, and the portrait reveal before sharing. Set `reveal.enabled` to `false` if you prefer to start directly at the book.
-
-## 4. Share your gift
-
-### Share a website link with GitHub Pages
-
-1. Upload or commit your edited files to your own GitHub repository, keeping the project folders in place.
-2. Open **Settings → Pages** and choose **GitHub Actions** under **Build and deployment → Source**.
-3. Open **Actions → Deploy birthday site to GitHub Pages → Run workflow**, and run it on `main`.
-4. Once the deployment succeeds, open its website link and check the gift before sending it.
-
-The included workflow rebuilds the portable HTML from the latest source and publishes it as the home page on every push to `main`. No manual preview rebuild is needed for the hosted link. Markdown guides and development scripts are excluded from the published website.
-
-GitHub Pages is free for public repositories; private repositories require an eligible paid plan. A private repository hides the GitHub source, but the published Pages website and its photos and messages are public.
-
-### Share one HTML file
-
-Install Node.js if you want to generate the portable version. Open a terminal at the **project root** — the folder containing `package.json` — and run:
+The website uses plain HTML, CSS, and JavaScript. Edit `story-config.js` for default content, or the source files for layout and behavior. After source changes, run this from the repository root, where `package.json` is located:
 
 ```sh
 npm run preview:build
 ```
 
-No `npm install` is needed. The command updates `ONE_FILE_PREVIEW.html` inside the website folder. Open that generated file to check it, then share it.
+This requires Node.js but no dependency installation. It regenerates the portable template with the editor included.
 
-**Rebuild after every change you want included in the portable gift.** Local SVG, JPG/JPEG, PNG, and WebP images are embedded. Google Fonts and external HTTPS image links still use the internet; local font fallbacks are available offline.
+The included GitHub Actions workflow rebuilds the HTML, checks the editor and exported gift, and deploys it on pushes to `main`. To enable hosting in your own repository, choose **Settings → Pages → Source → GitHub Actions**, then run the deployment workflow. GitHub Pages is free for public repositories; private repositories require an eligible paid plan. The published Pages website is public even when its source repository is private.
 
-## Common fixes
+See the [website reference](albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/README.md) for file responsibilities and developer checks, and the [design notes](albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/DESIGN_NOTES.md) for the visual theme.
 
-| Problem | What to check |
-| --- | --- |
-| A photo is missing | Put it in `assets/`, check its extension and capitalization, and use a path such as `assets/portrait.jpg`. |
-| Changes do not appear | Save the source file and refresh the browser. If viewing `ONE_FILE_PREVIEW.html`, rebuild it first. |
-| The story stops working after an edit | Check for a missing quote, comma, or bracket in `story-config.js`. |
-| Text spills off a page | Shorten the heading or paragraph, then check desktop and phone layouts. |
-
-## Further customization
-
-See the [website reference](albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/README.md) for file responsibilities and optional developer checks, or the [design notes](albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/DESIGN_NOTES.md) for the visual theme.
-
-wishbound uses plain HTML, CSS, and JavaScript with original placeholder illustrations inspired by Albedo and Beidou. No official game artwork or audio is included.
+wishbound uses original placeholder illustrations inspired by Albedo and Beidou. No official game artwork or audio is included.
