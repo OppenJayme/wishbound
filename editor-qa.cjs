@@ -54,7 +54,7 @@ const server = http.createServer((req, res) => {
     assert(await page.locator('.cover-title').allTextContents().then(t=>t.every(v=>v.includes('Alex Rivera'))));
     await page.locator('#giftViewSelect').selectOption('book');
     await page.waitForFunction(()=>!document.getElementById('wishIntro').open);
-    assert(await page.locator('#giftToolbar').evaluate(el=>el.parentElement===document.body));
+    await page.waitForFunction(()=>document.getElementById('giftToolbar').parentElement===document.body);
     await page.locator('#nextBtn').click();
     await page.waitForFunction(()=>document.getElementById('pageCount').textContent.startsWith('02'));
     const hostile = 'A memory <img src=x onerror="window.giftXss=1"> & </script> 🙂';
