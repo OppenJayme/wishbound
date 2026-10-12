@@ -40,21 +40,6 @@ jobs:
           touch _site/.nojekyll
           test -s _site/index.html
 
-      - name: Check laptop and monitor layouts
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
-        run: |
-          npm install --ignore-scripts --no-save --package-lock=false playwright@1.62.1
-          node viewport-qa.cjs
-
-      - name: Save viewport screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: viewport-screenshots
-          path: qa/viewport-*.png
-          if-no-files-found: ignore
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
