@@ -115,6 +115,7 @@
   function setStage(next) {
     stage = next;
     intro.dataset.stage = next;
+    document.dispatchEvent(new CustomEvent('wishbound:intro'));
   }
 
   function showReveal() {
@@ -179,8 +180,8 @@
     else leaveTimer = setTimeout(close, 400);
   }
 
-  function showIntro() {
-    if (intro.open) return;
+  function showIntro(restart = false) {
+    if (intro.open && !restart) return;
     cleanupJourney();
     clearTimeout(revealTimer);
     clearTimeout(manifestTimer);
@@ -193,7 +194,8 @@
     status.textContent = '';
     intro.setAttribute('aria-labelledby', 'introTitle');
     setStage('ready');
-    intro.showModal();
+    if (!intro.open) intro.showModal();
+    document.dispatchEvent(new CustomEvent('wishbound:intro'));
     intro.scrollTop = 0;
     start.focus({preventScroll: true});
   }
@@ -201,15 +203,19 @@
   start.addEventListener('click', makeWish);
   skip.addEventListener('click', () => finish(false));
   enter.addEventListener('click', () => finish(true));
-  replay.addEventListener('click', showIntro);
+  replay.addEventListener('click', () => showIntro());
   intro.addEventListener('cancel', event => { event.preventDefault(); finish(false); });
-  intro.addEventListener('close', () => { clearTimeout(revealTimer); clearTimeout(manifestTimer); clearTimeout(leaveTimer); cleanupJourney(); window.BIRTHDAY_WISH?.stop(); });
+  intro.addEventListener('close', () => { clearTimeout(revealTimer); clearTimeout(manifestTimer); clearTimeout(leaveTimer); cleanupJourney(); window.BIRTHDAY_WISH?.stop(); document.dispatchEvent(new CustomEvent('wishbound:intro')); });
   motion.addEventListener('change', event => {
     if (event.matches) window.BIRTHDAY_WISH?.stop();
     if (event.matches && ['wishing', 'manifesting'].includes(stage)) showReveal();
     if (event.matches && stage === 'travelling') finish(false);
   });
   window.addEventListener('resize', () => { if (stage === 'travelling') finish(false); });
+  window.WISHBOUND_INTRO = {
+    start: () => showIntro(true),
+    reveal: () => { showIntro(true); showReveal(); }
+  };
   replay.hidden = config.enabled === false;
   if (config.enabled !== false) showIntro();
 })();

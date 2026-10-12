@@ -9,6 +9,7 @@
   const $ = id => document.getElementById(id);
   const textDialog = $('giftTextDialog'); const imageDialog = $('giftImageDialog');
   let editing = false; let textPath; let imagePath; let cropImage; let imageTicket = 0;
+  let ownDraft = state.snapshot(); let draftActive = false;
   let saveTimer; let db; let revision = 0; let saving = Promise.resolve();
   const draftKey = 'current:' + location.pathname.replace(/(?:index|ONE_FILE_PREVIEW)\.html$/i, '');
   const status = message => { $('giftSaveStatus').textContent = message; };
@@ -41,6 +42,8 @@
   }
   function saveNow() {
     clearTimeout(saveTimer);
+    if (!draftActive) return saving;
+    ownDraft = state.snapshot();
     const version = revision; const snapshot = state.snapshot();
     saving = saving.catch(() => {}).then(async () => {
       if (!db) { status('Download your gift to keep it. Browser saving is unavailable.'); return; }
@@ -52,7 +55,7 @@
     return saving;
   }
   function changed() {
-    revision++; state.refresh(); status('Saving your draft…');
+    revision++; ownDraft = state.snapshot(); state.refresh(); status('Saving your draft…');
     clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 250);
   }
   function decorate() {
@@ -61,21 +64,55 @@
       else { node.removeAttribute('tabindex'); node.removeAttribute('role'); node.removeAttribute('aria-label'); }
     });
   }
+  // Dialogs live in the browser's top layer. Keep the editor controls inside
+  // the opening dialog while it is open so they stay visible and usable.
+  function syncEditorView() {
+    const intro = $('wishIntro');
+    const host = intro.open ? intro : document.body;
+    for (const id of ['giftToolbar', 'giftPreviewNote']) {
+      const node = $(id); if (node.parentElement !== host) host.append(node);
+    }
+    $('giftViewSelect').value = !intro.open ? 'book' : intro.dataset.stage === 'ready' ? 'opening' : 'reveal';
+  }
   function setEditing(value, preview = false) {
     editing = value; document.body.classList.toggle('is-editing', value);
+    document.body.classList.toggle('is-gift-preview', preview);
+    document.body.dataset.giftMode = draftActive ? (preview ? 'preview' : 'draft') : 'template';
     $('giftToolbar').hidden = !value; $('giftPreviewNote').hidden = !preview;
     $('editGift').hidden = $('introEditGift').hidden = value || preview;
-    decorate();
+    syncEditorView(); decorate();
   }
   function beginEditing() {
-    if ($('wishIntro').open) $('skipIntro').click();
+    if (!draftActive) {
+      state.reset(); state.apply(ownDraft); draftActive = true; state.refresh();
+    }
+    window.BIRTHDAY_BOOK?.beginning();
     setEditing(true);
+    window.WISHBOUND_INTRO?.start();
   }
+  function backToTemplate() {
+    saveNow(); // Capture the draft before restoring the original demo.
+    draftActive = false; state.reset(); window.BIRTHDAY_BOOK?.beginning();
+    setEditing(false); window.WISHBOUND_INTRO?.start();
+  }
+  document.body.dataset.giftMode = 'template';
   document.addEventListener('wishbound:refresh', decorate);
+  document.addEventListener('wishbound:intro', syncEditorView);
   $('editGift').addEventListener('click', beginEditing);
   $('introEditGift').addEventListener('click', beginEditing);
-  $('giftBackButton').addEventListener('click', beginEditing);
-  $('giftPreviewButton').addEventListener('click', () => { setEditing(false, true); saveNow(); });
+  $('giftBackButton').addEventListener('click', () => setEditing(true));
+  $('giftDemoButton').addEventListener('click', backToTemplate);
+  $('giftPreviewDemoButton').addEventListener('click', backToTemplate);
+  $('giftViewSelect').addEventListener('change', event => {
+    if (event.target.value === 'opening') window.WISHBOUND_INTRO?.start();
+    else if (event.target.value === 'reveal') window.WISHBOUND_INTRO?.reveal();
+    else if ($('wishIntro').open) $('skipIntro').click();
+  });
+  $('giftPreviewButton').addEventListener('click', () => {
+    saveNow(); window.BIRTHDAY_BOOK?.beginning(); setEditing(false, true);
+    if (state.story.reveal.enabled !== false) window.WISHBOUND_INTRO?.start();
+    else if ($('wishIntro').open) $('skipIntro').click();
+  });
 
   function openText(path) {
     textPath = path; const letter = path === 'letter.paragraphs';
@@ -242,8 +279,8 @@
     try {
       db = await openDatabase(); const saved = await readDraft(db);
       if (saved?.version === 1 && saved.story && revision === 0) {
-        state.apply(saved.story); state.refresh(); status('Your saved draft is ready.');
-        if (state.story.reveal.enabled === false && $('wishIntro').open) $('skipIntro').click();
+        ownDraft = state.clone(saved.story);
+        status('Your saved draft is ready. Only your copy changes.');
       }
     } catch { status('Download your gift to keep it. Browser saving is unavailable.'); }
     $('editGift').hidden = $('introEditGift').hidden = false;

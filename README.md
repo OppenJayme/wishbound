@@ -8,8 +8,8 @@ Originally made as a romantic gift, its messages can be adapted for a partner, a
 
 ## Personalize it without code
 
-1. Open the preview and select **Edit your gift**. This button is available on the opening screen and above the book.
-2. **Click a name or message** to edit it, then select **Apply text**. Use the book's arrows or chapter dots to visit other pages.
+1. Open the preview and select **Edit your gift**. This opens your own copy at the very first wish screen, even if you were already reading the book. Your saved draft loads only after entering the editor.
+2. **Click a name or message** to edit it, then select **Apply text**. Use **View** to switch between the opening wish, portrait reveal, and storybook. Use the book's arrows or chapter dots to visit other chapters.
 3. **Click a photo** to upload a JPG, PNG, or WebP image. Adjust its crop, zoom, and position, add a description, and select **Use photo**.
 4. Use **Details & text** for names, chapter labels, reveal settings, and all messages, including the header, footer, and surrounding labels. **Letter** edits the complete letter; separate paragraphs with a blank line. **Photos** gives access to all six independent photo slots, labeled by chapter.
 5. Select **Preview** to hide the editing outlines. Check the chapters, letter, and photos, then select **Back to editing** if you want more changes.
@@ -24,11 +24,12 @@ Keep headings and paragraphs short enough to fit the book. The default wording i
 ## Drafts and sharing
 
 - Edits and uploaded photos stay in your browser. They are not uploaded to the public demo or written to this repository.
-- Your draft is saved automatically when browser storage is available. Returning in the same browser restores it. Check the editor's save status; if saving is unavailable, download the gift to keep your changes.
+- Your draft is saved automatically when browser storage is available. The public preview always opens the original template. Selecting **Edit your gift** in the same browser restores your draft. Check the editor's save status; if saving is unavailable, download the gift to keep your changes.
 - Clearing site data or using another browser removes access to that local draft. Keep a downloaded copy of your finished gift.
 - The downloaded HTML includes your words and local artwork and photos. It opens as the gift, without editing controls, and does not read the recipient's saved drafts.
 - Google Fonts and any externally configured image links use the internet. Local font fallbacks work offline, and images uploaded through the editor are embedded in the download.
 - **Download gift creates a file, not a new website URL.** The public preview link remains the shared template. To share your personalized gift as a link, publish your own copy with a static website host.
+- **Back to template** leaves your own copy and shows the original demo again, while keeping your draft saved. Your edits never change what other visitors see.
 - **Start over** restores the sample gift in your browser after confirmation. Download your current version first if you want to keep it.
 
 ## Use your own repository

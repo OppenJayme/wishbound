@@ -480,6 +480,7 @@ for (let i = 0; i < 36; i++) {
 render();
 // The intro is independent of this book's navigation and works in the portable preview.
 window.BIRTHDAY_BOOK = {
+  beginning: () => goTo(0),
   refresh: () => {
     dialog.querySelectorAll('.dialog-inner p').forEach(p => p.remove());
     STORY.letter.paragraphs.forEach((text, index) => {

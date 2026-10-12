@@ -1197,6 +1197,16 @@ body.is-editing { padding-bottom: 105px; }
 .monogram .monogram-letter { font: inherit; margin: 0; }
 .is-editing .captain-keepsake, .is-editing .intro-chart-note { pointer-events: auto; }
 
+.gift-view-label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.gift-view-label select { max-width: 155px; background: #1d333a; color: #f4ead7; border: 1px solid #ac98725c; border-radius: 4px; padding: 7px; font: inherit; }
+.is-editing .wish-intro, .is-gift-preview .wish-intro { padding-bottom: 155px; }
+.is-editing .intro-chart-note { bottom: 165px; }
+@media (max-width: 600px) {
+  .is-editing .wish-intro { padding-bottom: 215px; }
+  .is-editing .intro-chart-note { bottom: 225px; }
+  .gift-preview-note { width: calc(100% - 28px); flex-wrap: wrap; justify-content: center; }
+}
+
 </style>
   <script data-wishbound-source="story-config.js">document.addEventListener('DOMContentLoaded', () => {
 // Personalize your gift here. All text is rendered safely. Photos can be assets/ paths or https:// URLs.
@@ -1902,6 +1912,7 @@ for (let i = 0; i < 36; i++) {
 render();
 // The intro is independent of this book's navigation and works in the portable preview.
 window.BIRTHDAY_BOOK = {
+  beginning: () => goTo(0),
   refresh: () => {
     dialog.querySelectorAll('.dialog-inner p').forEach(p => p.remove());
     STORY.letter.paragraphs.forEach((text, index) => {
@@ -2412,6 +2423,7 @@ window.BIRTHDAY_BOOK = {
   function setStage(next) {
     stage = next;
     intro.dataset.stage = next;
+    document.dispatchEvent(new CustomEvent('wishbound:intro'));
   }
 
   function showReveal() {
@@ -2476,8 +2488,8 @@ window.BIRTHDAY_BOOK = {
     else leaveTimer = setTimeout(close, 400);
   }
 
-  function showIntro() {
-    if (intro.open) return;
+  function showIntro(restart = false) {
+    if (intro.open && !restart) return;
     cleanupJourney();
     clearTimeout(revealTimer);
     clearTimeout(manifestTimer);
@@ -2490,7 +2502,8 @@ window.BIRTHDAY_BOOK = {
     status.textContent = '';
     intro.setAttribute('aria-labelledby', 'introTitle');
     setStage('ready');
-    intro.showModal();
+    if (!intro.open) intro.showModal();
+    document.dispatchEvent(new CustomEvent('wishbound:intro'));
     intro.scrollTop = 0;
     start.focus({preventScroll: true});
   }
@@ -2498,15 +2511,19 @@ window.BIRTHDAY_BOOK = {
   start.addEventListener('click', makeWish);
   skip.addEventListener('click', () => finish(false));
   enter.addEventListener('click', () => finish(true));
-  replay.addEventListener('click', showIntro);
+  replay.addEventListener('click', () => showIntro());
   intro.addEventListener('cancel', event => { event.preventDefault(); finish(false); });
-  intro.addEventListener('close', () => { clearTimeout(revealTimer); clearTimeout(manifestTimer); clearTimeout(leaveTimer); cleanupJourney(); window.BIRTHDAY_WISH?.stop(); });
+  intro.addEventListener('close', () => { clearTimeout(revealTimer); clearTimeout(manifestTimer); clearTimeout(leaveTimer); cleanupJourney(); window.BIRTHDAY_WISH?.stop(); document.dispatchEvent(new CustomEvent('wishbound:intro')); });
   motion.addEventListener('change', event => {
     if (event.matches) window.BIRTHDAY_WISH?.stop();
     if (event.matches && ['wishing', 'manifesting'].includes(stage)) showReveal();
     if (event.matches && stage === 'travelling') finish(false);
   });
   window.addEventListener('resize', () => { if (stage === 'travelling') finish(false); });
+  window.WISHBOUND_INTRO = {
+    start: () => showIntro(true),
+    reveal: () => { showIntro(true); showReveal(); }
+  };
   replay.hidden = config.enabled === false;
   if (config.enabled !== false) showIntro();
 })();
@@ -2524,6 +2541,7 @@ window.BIRTHDAY_BOOK = {
   const $ = id => document.getElementById(id);
   const textDialog = $('giftTextDialog'); const imageDialog = $('giftImageDialog');
   let editing = false; let textPath; let imagePath; let cropImage; let imageTicket = 0;
+  let ownDraft = state.snapshot(); let draftActive = false;
   let saveTimer; let db; let revision = 0; let saving = Promise.resolve();
   const draftKey = 'current:' + location.pathname.replace(/(?:index|ONE_FILE_PREVIEW)\.html$/i, '');
   const status = message => { $('giftSaveStatus').textContent = message; };
@@ -2556,6 +2574,8 @@ window.BIRTHDAY_BOOK = {
   }
   function saveNow() {
     clearTimeout(saveTimer);
+    if (!draftActive) return saving;
+    ownDraft = state.snapshot();
     const version = revision; const snapshot = state.snapshot();
     saving = saving.catch(() => {}).then(async () => {
       if (!db) { status('Download your gift to keep it. Browser saving is unavailable.'); return; }
@@ -2567,7 +2587,7 @@ window.BIRTHDAY_BOOK = {
     return saving;
   }
   function changed() {
-    revision++; state.refresh(); status('Saving your draft…');
+    revision++; ownDraft = state.snapshot(); state.refresh(); status('Saving your draft…');
     clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 250);
   }
   function decorate() {
@@ -2576,21 +2596,55 @@ window.BIRTHDAY_BOOK = {
       else { node.removeAttribute('tabindex'); node.removeAttribute('role'); node.removeAttribute('aria-label'); }
     });
   }
+  // Dialogs live in the browser's top layer. Keep the editor controls inside
+  // the opening dialog while it is open so they stay visible and usable.
+  function syncEditorView() {
+    const intro = $('wishIntro');
+    const host = intro.open ? intro : document.body;
+    for (const id of ['giftToolbar', 'giftPreviewNote']) {
+      const node = $(id); if (node.parentElement !== host) host.append(node);
+    }
+    $('giftViewSelect').value = !intro.open ? 'book' : intro.dataset.stage === 'ready' ? 'opening' : 'reveal';
+  }
   function setEditing(value, preview = false) {
     editing = value; document.body.classList.toggle('is-editing', value);
+    document.body.classList.toggle('is-gift-preview', preview);
+    document.body.dataset.giftMode = draftActive ? (preview ? 'preview' : 'draft') : 'template';
     $('giftToolbar').hidden = !value; $('giftPreviewNote').hidden = !preview;
     $('editGift').hidden = $('introEditGift').hidden = value || preview;
-    decorate();
+    syncEditorView(); decorate();
   }
   function beginEditing() {
-    if ($('wishIntro').open) $('skipIntro').click();
+    if (!draftActive) {
+      state.reset(); state.apply(ownDraft); draftActive = true; state.refresh();
+    }
+    window.BIRTHDAY_BOOK?.beginning();
     setEditing(true);
+    window.WISHBOUND_INTRO?.start();
   }
+  function backToTemplate() {
+    saveNow(); // Capture the draft before restoring the original demo.
+    draftActive = false; state.reset(); window.BIRTHDAY_BOOK?.beginning();
+    setEditing(false); window.WISHBOUND_INTRO?.start();
+  }
+  document.body.dataset.giftMode = 'template';
   document.addEventListener('wishbound:refresh', decorate);
+  document.addEventListener('wishbound:intro', syncEditorView);
   $('editGift').addEventListener('click', beginEditing);
   $('introEditGift').addEventListener('click', beginEditing);
-  $('giftBackButton').addEventListener('click', beginEditing);
-  $('giftPreviewButton').addEventListener('click', () => { setEditing(false, true); saveNow(); });
+  $('giftBackButton').addEventListener('click', () => setEditing(true));
+  $('giftDemoButton').addEventListener('click', backToTemplate);
+  $('giftPreviewDemoButton').addEventListener('click', backToTemplate);
+  $('giftViewSelect').addEventListener('change', event => {
+    if (event.target.value === 'opening') window.WISHBOUND_INTRO?.start();
+    else if (event.target.value === 'reveal') window.WISHBOUND_INTRO?.reveal();
+    else if ($('wishIntro').open) $('skipIntro').click();
+  });
+  $('giftPreviewButton').addEventListener('click', () => {
+    saveNow(); window.BIRTHDAY_BOOK?.beginning(); setEditing(false, true);
+    if (state.story.reveal.enabled !== false) window.WISHBOUND_INTRO?.start();
+    else if ($('wishIntro').open) $('skipIntro').click();
+  });
 
   function openText(path) {
     textPath = path; const letter = path === 'letter.paragraphs';
@@ -2757,8 +2811,8 @@ window.BIRTHDAY_BOOK = {
     try {
       db = await openDatabase(); const saved = await readDraft(db);
       if (saved?.version === 1 && saved.story && revision === 0) {
-        state.apply(saved.story); state.refresh(); status('Your saved draft is ready.');
-        if (state.story.reveal.enabled === false && $('wishIntro').open) $('skipIntro').click();
+        ownDraft = state.clone(saved.story);
+        status('Your saved draft is ready. Only your copy changes.');
       }
     } catch { status('Download your gift to keep it. Browser saving is unavailable.'); }
     $('editGift').hidden = $('introEditGift').hidden = false;
@@ -2865,17 +2919,19 @@ window.BIRTHDAY_BOOK = {
   </dialog>
 
   <section id="giftToolbar" class="gift-toolbar" data-editor-ui aria-label="Gift editor" hidden>
-    <div class="gift-toolbar-top"><strong>Click words or photos to edit.</strong><span id="giftSaveStatus" class="gift-status" role="status" aria-live="polite">Draft stays in this browser.</span></div>
+    <div class="gift-toolbar-top"><strong>Editing your own gift</strong><span id="giftSaveStatus" class="gift-status" role="status" aria-live="polite">Only your copy changes. Saved in this browser.</span></div>
     <div class="gift-toolbar-actions">
+      <label class="gift-view-label" for="giftViewSelect">View <select id="giftViewSelect"><option value="opening">Opening wish</option><option value="reveal">Portrait reveal</option><option value="book">Storybook</option></select></label>
       <button id="giftDetailsButton" type="button">Details &amp; text</button>
       <button id="giftPhotosButton" type="button">Photos</button>
       <button id="giftLetterButton" type="button">Letter</button>
       <button id="giftPreviewButton" type="button">Preview</button>
       <button id="giftResetButton" type="button">Start over</button>
+      <button id="giftDemoButton" type="button">Back to template</button>
       <button id="giftDownloadButton" class="gift-download" type="button">Download gift</button>
     </div>
   </section>
-  <div id="giftPreviewNote" class="gift-preview-note" data-editor-ui hidden><span>Previewing your gift</span><button id="giftBackButton" class="editor-launch" type="button">Back to editing</button></div>
+  <div id="giftPreviewNote" class="gift-preview-note" data-editor-ui hidden><span>Previewing your own gift</span><button id="giftBackButton" class="editor-launch" type="button">Back to editing</button><button id="giftPreviewDemoButton" class="editor-launch" type="button">Back to template</button></div>
   <dialog id="giftTextDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftTextTitle">
     <form id="giftTextForm"><h2 id="giftTextTitle">Edit your words</h2><p id="giftTextHelp">Keep it personal. Shorter text fits the book best.</p>
       <label for="giftTextValue">Your text</label><textarea id="giftTextValue" rows="5" maxlength="5000"></textarea><p id="giftTextError" class="gift-error" role="alert" hidden></p>
