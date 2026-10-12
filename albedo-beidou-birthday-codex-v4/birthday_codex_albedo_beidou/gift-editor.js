@@ -108,6 +108,13 @@
     else if (event.target.value === 'reveal') window.WISHBOUND_INTRO?.reveal();
     else if ($('wishIntro').open) $('skipIntro').click();
   });
+  $('giftSaveButton').addEventListener('click', async () => {
+    const button = $('giftSaveButton');
+    button.disabled = true; button.textContent = 'Saving…';
+    status('Saving in this browser…');
+    try { await saveNow(); }
+    finally { button.disabled = false; button.textContent = 'Save draft'; }
+  });
   $('giftPreviewButton').addEventListener('click', () => {
     saveNow(); window.BIRTHDAY_BOOK?.beginning(); setEditing(false, true);
     if (state.story.reveal.enabled !== false) window.WISHBOUND_INTRO?.start();
