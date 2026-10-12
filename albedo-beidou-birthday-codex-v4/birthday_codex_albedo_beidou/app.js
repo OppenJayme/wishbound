@@ -13,8 +13,8 @@ const safeImage = value => {
   return allowed ? escapeHTML(url) : 'assets/sunset.svg';
 };
 
-const [photo1, photo2, photo3] = STORY.photos.map(safeImage);
-const keepsakePortrait = `<div class="keepsake-portrait"><img data-story-image="reveal.portrait" src="${safeImage(STORY.reveal?.portrait || 'assets/portrait-placeholder.svg')}" alt="${escapeHTML(STORY.reveal?.portraitAlt || `A portrait of ${STORY.recipient}`)}" /></div>`;
+const [photo1, photo2, photo3, bookPortrait, galleryPhoto2] = STORY.photos.map(safeImage);
+const keepsakePortrait = `<div class="keepsake-portrait"><img data-story-image="photos.3" src="${bookPortrait}" alt="${escapeHTML(STORY.photoAlts[3])}" /></div>`;
 const primogem = 'assets/primogem.svg';
 const pageLabel = n => `<span class="page-number">${String(n).padStart(2, '0')}</span>`;
 
@@ -110,7 +110,7 @@ const pages = {
       <span class="tiny-cap">${storyText('copy.a_gallery_of_favorites')}</span>
       <div class="gallery-grid">
         <div class="photo-tile"><div class="tile-image"><img data-story-image="photos.0" src="${photo1}" alt="Sunset illustration, replace with a couple photo" /></div><div class="tile-caption">${storyText('copy.one_unforgettable_day')}</div></div>
-        <div class="photo-tile"><div class="tile-image"><img data-story-image="photos.1" src="${photo2}" alt="Flower illustration, replace with a couple photo" /></div><div class="tile-caption">${storyText('copy.one_beautiful_feeling')}</div></div>
+        <div class="photo-tile"><div class="tile-image"><img data-story-image="photos.4" src="${galleryPhoto2}" alt="Flower illustration, replace with a couple photo" /></div><div class="tile-caption">${storyText('copy.one_beautiful_feeling')}</div></div>
       </div>
       <div class="script gallery-script">${storyText('copy.every_memory_becomes_brighter_with')}</div>
       ${pageLabel(6)}
@@ -122,7 +122,7 @@ const pages = {
       <h2>${storyText('copy.i_wrote_you')}<br/><span class="emphasis">${storyText('copy.something_sincere')}</span></h2>
       <p>${storyText('copy.some_feelings_deserve_more_than')}</p>
       <div class="envelope" aria-hidden="true"><div class="wax-seal">✦</div></div>
-      <button class="reveal-btn open-letter" type="button">Read your letter <span aria-hidden="true">↗</span></button>
+      <button class="reveal-btn open-letter" type="button">${storyText('presentation.readLetterLabel')} <span aria-hidden="true">↗</span></button>
       ${pageLabel(7)}
     </div>`,
 
@@ -162,7 +162,7 @@ const pages = {
       <div class="constellation wish-gem" aria-hidden="true"><img src="${primogem}" alt="" /></div>
       <h2>${storyText('copy.make_a_wish')}</h2>
       <p>${storyText('copy.close_your_eyes_and_make')}</p>
-      <button class="wish-button make-wish" type="button">Make a wish <span aria-hidden="true">↗</span></button>
+      <button class="wish-button make-wish" type="button">${storyText('presentation.makeWishLabel')} <span aria-hidden="true">↗</span></button>
       <div class="fine-print wish-note">${storyText('copy.may_every_good_thing_find')}</div>
       ${pageLabel(10)}
     </div>`,
@@ -200,12 +200,12 @@ const sheetConfig = [
 ];
 
 // Mobile uses the same story copy as the desktop spreads.
-const photoStrip = '<div class="mobile-photo-strip"><img data-story-image="photos.0" src="' + photo1 + '" alt="A memory of us"><img data-story-image="photos.1" src="' + photo2 + '" alt="A little treasure"></div>';
+const photoStrip = (first, second) => `<div class="mobile-photo-strip"><img data-story-image="photos.${first}" src="${safeImage(STORY.photos[first])}" alt="${escapeHTML(STORY.photoAlts[first])}"><img data-story-image="photos.${second}" src="${safeImage(STORY.photos[second])}" alt="${escapeHTML(STORY.photoAlts[second])}"></div>`;
 const mobileTemplates = [
   pages.cover,
   pages.openingLeft.replace('<h2>', `${keepsakePortrait}<h2>`),
-  pages.thingsLeft.replace(pageLabel(3), photoStrip),
-  pages.memoriesLeft.replace(pageLabel(5), photoStrip),
+  pages.thingsLeft.replace(pageLabel(3), photoStrip(1, 2)),
+  pages.memoriesLeft.replace(pageLabel(5), photoStrip(0, 4)),
   pages.letterLeft,
   pages.wishesRight,
   pages.endingLeft,
@@ -220,7 +220,7 @@ const dotsEl = document.getElementById('pagination');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const dialog = document.getElementById('letterDialog');
-dialog.querySelector('.signature').innerHTML = 'All my love,<br/>' + storyText('signoff');
+dialog.querySelector('.signature').innerHTML = storyText('presentation.letterSignature') + '<br/>' + storyText('signoff');
 dialog.querySelector('h2').textContent = STORY.letter.greeting;
 dialog.querySelector('h2').dataset.storyText = 'letter.greeting';
 dialog.querySelectorAll('.dialog-inner p').forEach(p => p.remove());

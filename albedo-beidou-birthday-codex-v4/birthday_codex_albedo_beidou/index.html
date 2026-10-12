@@ -28,14 +28,14 @@
   <div id="stars" aria-hidden="true"></div>
 
   <header class="topbar">
-    <a class="monogram" href="#main" aria-label="Go to story">f<span>✦</span>y</a>
+    <a class="monogram" href="#main" aria-label="Go to story"><span class="monogram-letter" data-story-text="presentation.monogramFirst">f</span><span aria-hidden="true">✦</span><span class="monogram-letter" data-story-text="presentation.monogramLast">y</span></a>
     <div class="topbar-center" data-story-text="presentation.themeTitle">The Alchemist &amp; the Captain</div>
-    <div class="topbar-right"><button id="editGift" data-editor-ui class="editor-launch" type="button" hidden>Edit your gift</button><button id="replayIntro" class="replay-intro" type="button" hidden>Replay the wish <span aria-hidden="true">↗</span></button></div>
+    <div class="topbar-right"><button id="editGift" data-editor-ui class="editor-launch" type="button" hidden>Edit your gift</button><button id="replayIntro" class="replay-intro" type="button" hidden><span data-story-text="presentation.replayLabel">Replay the wish</span> <span aria-hidden="true">↗</span></button></div>
   </header>
 
   <main id="main" class="experience">
     <div class="hero">
-      <div class="eyebrow"><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/>A STORY IN SEVEN CHAPTERS<img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/></div>
+      <div class="eyebrow"><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/><span data-story-text="presentation.heroEyebrow">A STORY IN SEVEN CHAPTERS</span><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/></div>
       <h1><span data-story-text="presentation.heroPrefix">Between</span> <em data-story-text="presentation.heroAccent">stars &amp; seas.</em></h1>
       <p data-story-text="presentation.heroSubtitle">A little universe, bound just for you.</p>
     </div>
@@ -64,7 +64,7 @@
     </section>
 
     <div class="controls" aria-label="Story controls">
-      <div class="captain-keepsake" aria-hidden="true"><img src="assets/captain-charm.svg" alt=""/><span>The captain's company</span></div>
+      <div class="captain-keepsake"><img src="assets/captain-charm.svg" alt=""/><span data-story-text="presentation.keepsakeLabel">The captain's company</span></div>
       <button class="nav-btn" type="button" id="prevBtn" aria-label="Previous pages"><span aria-hidden="true">←</span></button>
       <div class="progress-wrap">
         <div class="chapter-label" id="chapterLabel" aria-live="polite">The beginning</div>
@@ -73,22 +73,22 @@
       </div>
       <button class="nav-btn nav-next" type="button" id="nextBtn" aria-label="Next pages"><span aria-hidden="true">→</span></button>
     </div>
-    <div class="bottom-hint">Use the arrows to turn the page</div>
+    <div class="bottom-hint" data-story-text="presentation.bottomHint">Use the arrows to turn the page</div>
   </main>
 
-  <footer class="footer"><span>An original keepsake of alchemy, starlight, and sea.</span><span>ONLY YOU &amp; ME <span class="footer-heart">♥</span></span></footer>
+  <footer class="footer"><span data-story-text="presentation.footerNote">An original keepsake of alchemy, starlight, and sea.</span><span><span data-story-text="presentation.footerDedication">ONLY YOU &amp; ME</span> <span class="footer-heart">♥</span></span></footer>
 
   <dialog id="wishIntro" class="wish-intro" aria-labelledby="introTitle" data-stage="ready">
     <button id="introEditGift" data-editor-ui class="editor-launch intro-editor-launch" type="button" hidden>Edit your gift</button>
-    <button id="skipIntro" class="intro-skip" type="button">Read the book <span aria-hidden="true">↗</span></button>
+    <button id="skipIntro" class="intro-skip" type="button"><span data-story-text="presentation.skipLabel">Read the book</span> <span aria-hidden="true">↗</span></button>
     <div class="wish-sky" aria-hidden="true"><div class="sky-orbit orbit-one"></div><div class="sky-orbit orbit-two"></div><div class="sky-dust"></div></div>
     <div class="intro-invitation" id="introInvitation">
-      <span class="intro-overline">A BIRTHDAY WISH · FOR YOU</span>
+      <span class="intro-overline" data-story-text="presentation.introOverline">A BIRTHDAY WISH · FOR YOU</span>
       <div class="wish-portal" aria-hidden="true"><div class="portal-ring"></div><div class="portal-ring ring-inner"></div><span class="portal-star">✦</span><img class="portal-captain" src="assets/captain-charm.svg" alt=""/></div>
       <h2 id="introTitle" data-story-text="presentation.introTitle">A wish, just for you.</h2>
       <p data-story-text="presentation.introMessage">Some stars find their way to us.<br/>Some become our whole world.</p>
-      <button id="startWish" class="intro-primary wish-action" type="button"><span class="wish-action-icon" aria-hidden="true"><img class="button-gem" src="assets/primogem.svg" alt=""/></span><span>Make your wish</span></button>
-      <span class="intro-footnote">One little wish. A whole story waiting.</span>
+      <button id="startWish" class="intro-primary wish-action" type="button"><span class="wish-action-icon" aria-hidden="true"><img class="button-gem" src="assets/primogem.svg" alt=""/></span><span data-story-text="presentation.startWishLabel">Make your wish</span></button>
+      <span class="intro-footnote" data-story-text="presentation.introFootnote">One little wish. A whole story waiting.</span>
     </div>
     <div class="character-stage" aria-hidden="true">
       <div class="character-aura"></div>
@@ -98,16 +98,16 @@
     </div>
     <div class="intro-reveal" id="introReveal" hidden>
       <div class="reveal-portrait"><img data-story-image="reveal.portrait" id="revealPortrait" src="assets/portrait-placeholder.svg" alt=""/><div class="portrait-border" aria-hidden="true"></div><span class="portrait-star" aria-hidden="true">✦</span></div>
-      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow" data-story-text="reveal.eyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient" data-story-text="recipient"></span><h2 id="revealTitle" data-story-text="reveal.title"></h2><p id="revealSubtitle" data-story-text="reveal.subtitle"></p><button id="enterBook" class="intro-primary" type="button">Open your story <span aria-hidden="true">↗</span></button><span class="intro-footnote">The best chapters are still ahead.</span></div>
+      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow" data-story-text="reveal.eyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient" data-story-text="recipient"></span><h2 id="revealTitle" data-story-text="reveal.title"></h2><p id="revealSubtitle" data-story-text="reveal.subtitle"></p><button id="enterBook" class="intro-primary" type="button"><span data-story-text="presentation.enterBookLabel">Open your story</span> <span aria-hidden="true">↗</span></button><span class="intro-footnote" data-story-text="presentation.revealFootnote">The best chapters are still ahead.</span></div>
     </div>
     <span class="intro-status" id="introStatus" role="status" aria-live="polite"></span>
-    <div class="intro-chart-note" aria-hidden="true">LIYUE · A VOYAGE BENEATH THE STARS</div>
+    <div class="intro-chart-note" data-story-text="presentation.introChartNote">LIYUE · A VOYAGE BENEATH THE STARS</div>
   </dialog>
 
   <dialog id="letterDialog" class="letter-dialog" aria-labelledby="letterTitle">
-    <button class="dialog-close" id="closeLetter" type="button" aria-label="Close letter">Close <span aria-hidden="true">×</span></button>
+    <button class="dialog-close" id="closeLetter" type="button" aria-label="Close letter"><span data-story-text="presentation.closeLetterLabel">Close</span> <span aria-hidden="true">×</span></button>
     <div class="dialog-inner">
-      <div class="letter-heading"><span class="overline">A LETTER FOR YOU</span><span class="letter-occasion">On your birthday</span></div>
+      <div class="letter-heading"><span class="overline" data-story-text="presentation.letterOverline">A LETTER FOR YOU</span><span class="letter-occasion" data-story-text="presentation.letterOccasion">On your birthday</span></div>
       <h2 id="letterTitle">My dearest love,</h2>
       <p>There are a thousand beautiful things I could wish for you today — more laughter, more peace, more moments that feel golden in hindsight.</p>
       <p>But more than anything, I hope you always remember how deeply loved you are, not just on your birthday, but on every quiet ordinary day too.</p>
@@ -142,7 +142,7 @@
     </form>
   </dialog>
   <dialog id="giftPhotosDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftPhotosTitle"><div class="gift-dialog-content">
-    <h2 id="giftPhotosTitle">Your photos</h2><p>Choose a photo to replace it. Each photo updates everywhere it appears in the gift.</p><div id="giftPhotoGrid" class="gift-photo-grid"></div>
+    <h2 id="giftPhotosTitle">Your photos</h2><p>Choose a photo to replace it. Each slot is independent; the same chapter photo stays in sync between desktop and mobile.</p><div id="giftPhotoGrid" class="gift-photo-grid"></div>
     <div class="gift-dialog-actions"><button type="button" data-close-editor>Close</button></div>
   </div></dialog>
   <dialog id="giftImageDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftImageTitle"><form id="giftImageForm">

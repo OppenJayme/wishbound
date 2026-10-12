@@ -55,3 +55,7 @@ body.is-editing { padding-bottom: 105px; }
   .gift-dialog form, .gift-dialog-content { padding: 20px; }
   body.is-editing { padding-bottom: 155px; }
 }
+
+/* Edge labels keep their existing typography and become reachable in edit mode. */
+.monogram .monogram-letter { font: inherit; margin: 0; }
+.is-editing .captain-keepsake, .is-editing .intro-chart-note { pointer-events: auto; }

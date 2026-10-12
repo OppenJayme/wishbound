@@ -13,7 +13,9 @@ window.BIRTHDAY_STORY = {
   "photos": [
     "assets/sunset.svg",
     "assets/flowers.svg",
-    "assets/storm-sails.svg"
+    "assets/storm-sails.svg",
+    "assets/portrait-placeholder.svg",
+    "assets/moonlight.svg"
   ],
   "chapterNames": [
     "The beginning",

@@ -25,7 +25,7 @@ Keep the current source-folder path unless you also update the preview builder, 
 
 ## Content and image constraints
 
-- Keep seven `chapterNames` and three `photos` entries to match the current layout.
+- Keep seven `chapterNames` and five `photos` entries (plus `reveal.portrait`) to match the current layout.
 - Use descriptive `reveal.portraitAlt` text for your replacement portrait.
 - Keep desktop headings and paragraphs short enough to fit the pages.
 - Local image paths are relative to this folder. Use exact filename capitalization.
@@ -72,7 +72,7 @@ See [DESIGN_NOTES.md](DESIGN_NOTES.md) for typography, the alchemy and nautical 
 
 ## Gift editor and export
 
-Text fragments and photos are bound through `data-story-text` and `data-story-image`. The editor updates all instances of a field, including desktop, mobile, the entrance, and the letter. Keep these bindings when adding layouts.
+Text fragments and photos are bound through `data-story-text` and `data-story-image`. Each photo slot is independent. The editor synchronizes only matching desktop/mobile chapter views; the opening portrait has its own slot. Surrounding labels are editable through `presentation` fields and **Details & text**. Older three-photo drafts migrate without losing uploads. Keep these bindings when adding layouts.
 
 Drafts use IndexedDB, scoped to the current website path. Photos are decoded, cropped, and re-encoded as JPEGs in the browser; uploads are not sent to a server.
 

@@ -54,7 +54,8 @@ const server = http.createServer((req, res) => {
       return c.toDataURL('image/png').split(',')[1];
     });
     const upload = {name:'memory.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')};
-    await page.locator('img[data-story-image="reveal.portrait"]:visible').click();
+    await page.locator('#giftPhotosButton').click();
+    await page.getByRole('button',{name:'Opening wish portrait',exact:true}).click();
     await page.locator('#giftImageFile').setInputFiles(upload);
     await page.waitForFunction(()=>!document.getElementById('giftImageApply').disabled);
     for(const [id,value] of [['giftCropZoom','2'],['giftCropX','100']]) await page.locator('#'+id).evaluate((e,v)=>{e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));},value);
@@ -66,18 +67,66 @@ const server = http.createServer((req, res) => {
     assert(portrait.startsWith('data:image/jpeg;base64,'));
     assert(await page.locator('img[data-story-image="reveal.portrait"]').evaluateAll((imgs,src)=>imgs.every(i=>i.src===src&&i.alt==='A portrait of Alex'),portrait));
     await page.locator('#giftPhotosButton').click();
-    await page.getByRole('button',{name:'Memory photo 1',exact:true}).click();
+    await page.getByRole('button',{name:'Chapter 3 · Unforgettable day',exact:true}).click();
     await page.locator('#giftImageFile').setInputFiles(upload);
     await page.waitForFunction(()=>!document.getElementById('giftImageApply').disabled);
     await page.locator('#giftImageAlt').fill('Our favorite day');
     await page.locator('#giftImageForm button[type=submit]').click();
     assert(await page.evaluate(()=>WISHBOUND.story.photos[0].startsWith('data:image/jpeg;base64,')));
     await page.locator('#giftPhotosButton').click();
-    await page.getByRole('button',{name:'Memory photo 2',exact:true}).click();
+    await page.getByRole('button',{name:'Chapter 2 · Little constellations',exact:true}).click();
     await page.locator('#giftImageFile').setInputFiles({name:'invalid.svg',mimeType:'image/svg+xml',buffer:Buffer.from('<svg/>')});
     assert(await page.locator('#giftImageError').isVisible());
     assert(await page.locator('#giftImageApply').isDisabled());
     await page.locator('#giftImageDialog [data-close-editor]').click();
+    // Give every remaining slot a different image; replacing one must leave the others untouched.
+    const slots=await page.evaluate(()=>WISHBOUND.photoSlots);
+    assert.equal(slots.length,6);
+    const photoValues={'reveal.portrait':portrait};
+    for (const [index,slot] of slots.entries()) {
+      if (slot.path==='reveal.portrait') continue;
+      const before=await page.evaluate(()=>WISHBOUND.photoSlots.map(s=>WISHBOUND.get(s.path)));
+      const colorPng=await page.evaluate(index=>{
+        const c=document.createElement('canvas');c.width=320;c.height=400;
+        const x=c.getContext('2d');x.fillStyle=`hsl(${index*55},75%,45%)`;x.fillRect(0,0,320,400);
+        return c.toDataURL('image/png').split(',')[1];
+      },index);
+      await page.locator('#giftPhotosButton').click();
+      assert.equal(await page.locator('#giftPhotoGrid button').count(),6);
+      await page.getByRole('button',{name:slot.label,exact:true}).click();
+      await page.locator('#giftImageFile').setInputFiles({name:`photo-${index}.png`,mimeType:'image/png',buffer:Buffer.from(colorPng,'base64')});
+      await page.waitForFunction(()=>!document.getElementById('giftImageApply').disabled);
+      await page.locator('#giftImageAlt').fill(slot.label);
+      await page.locator('#giftImageForm button[type=submit]').click();
+      const after=await page.evaluate(()=>WISHBOUND.photoSlots.map(s=>WISHBOUND.get(s.path)));
+      for(let i=0;i<slots.length;i++) if(i!==index) assert.equal(after[i],before[i],`Replacing ${slot.label} changed ${slots[i].label}`);
+      photoValues[slot.path]=after[index];
+      const instances=page.locator(`img[data-story-image="${slot.path}"]`);
+      assert(await instances.count()>0);
+      assert(await instances.evaluateAll((imgs,{src,alt})=>imgs.every(i=>i.src===src&&i.alt===alt),{src:after[index],alt:slot.label}));
+    }
+    assert.equal(new Set(Object.values(photoValues)).size,6,'Independent slots lost their distinct images');
+    // Restore only one placeholder, then put its upload back; no other slot may change.
+    const slot=slots[2]; const snapshot=await page.evaluate(()=>WISHBOUND.snapshot());
+    await page.locator('#giftPhotosButton').click();await page.getByRole('button',{name:slot.label,exact:true}).click();
+    await page.locator('#giftImageDefault').click();
+    assert.notEqual(await page.evaluate(path=>WISHBOUND.get(path),slot.path),photoValues[slot.path]);
+    for(const other of slots.filter(s=>s.path!==slot.path)) assert.equal(await page.evaluate(path=>WISHBOUND.get(path),other.path),photoValues[other.path]);
+    await page.evaluate(snapshot=>{WISHBOUND.apply(snapshot);WISHBOUND.refresh();},snapshot);
+    // Click the actual surrounding labels, including the caption formerly ignoring pointer events.
+    const edgeValues={};
+    for(const key of ['monogramFirst','monogramLast','themeTitle','heroEyebrow','keepsakeLabel','bottomHint','footerNote','footerDedication']) {
+      const value=key.startsWith('monogram')?'A':'Our '+key;
+      await page.locator(`[data-story-text="presentation.${key}"]:visible`).click();
+      await page.locator('#giftTextValue').fill(value);await page.locator('#giftTextForm button[type=submit]').click();
+      assert.equal(await page.evaluate(key=>WISHBOUND.story.presentation[key],key),value);edgeValues[key]=value;
+    }
+    await page.locator('#giftDetailsButton').click();
+    await page.locator('#giftDetailsDialog summary').click();
+    await page.locator('#gift-field-presentation-introChartNote').fill('A voyage just for Alex');
+    await page.locator('#gift-field-presentation-letterOverline').fill('Words for Alex');
+    await page.locator('#giftDetailsForm button[type=submit]').click();
+    edgeValues.introChartNote='A voyage just for Alex';edgeValues.letterOverline='Words for Alex';
     await page.waitForFunction(()=>document.getElementById('giftSaveStatus').textContent==='Saved in this browser.');
     await page.locator('#giftPreviewButton').click();
     assert.equal(await page.locator('body').evaluate(b=>b.classList.contains('is-editing')),false);
@@ -89,6 +138,8 @@ const server = http.createServer((req, res) => {
     await page.locator('#introEditGift').waitFor({state:'visible'});
     await page.waitForFunction(()=>WISHBOUND.story.recipient==='Alex Rivera');
     assert.equal(await page.evaluate(()=>WISHBOUND.story.reveal.portrait),portrait);
+    for(const [path,value] of Object.entries(photoValues)) assert.equal(await page.evaluate(path=>WISHBOUND.get(path),path),value,'Photo changed on reload');
+    for(const [key,value] of Object.entries(edgeValues)) assert.equal(await page.evaluate(key=>WISHBOUND.story.presentation[key],key),value,'Edge text changed on reload');
     assert.equal(await page.evaluate(()=>WISHBOUND.story.letter.paragraphs.length),4);
     await page.locator('#introEditGift').click();
     const pending = page.waitForEvent('download');
@@ -103,6 +154,8 @@ const server = http.createServer((req, res) => {
     await giftPage.waitForFunction(()=>window.WISHBOUND_GIFT===true);
     assert.equal(await giftPage.locator('[data-editor-ui]').count(),0);
     assert.equal(await giftPage.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
+    for(const [path,value] of Object.entries(photoValues)) assert.equal(await giftPage.evaluate(path=>WISHBOUND.get(path),path),value,'Photo changed in export');
+    for(const [key,value] of Object.entries(edgeValues)) assert.equal(await giftPage.evaluate(key=>WISHBOUND.story.presentation[key],key),value,'Edge text changed in export');
     assert.equal(await giftPage.evaluate(()=>WISHBOUND.story.copy.somewhere_between_the_stars_above),hostile);
     assert.equal(await giftPage.evaluate(()=>window.giftXss),undefined);
     assert.equal(await giftPage.locator('script[src]').count(),0);
@@ -128,14 +181,44 @@ const server = http.createServer((req, res) => {
     assert(sourceGift.includes('"recipient":"Jamie"'));
     assert.equal(await phone.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await phone.screenshot({path:'qa/editor-mobile.png'});
+    // Mobile chapter photos refer to the corresponding desktop slots, never another chapter.
+    for(const [chapter,paths] of [[1,['photos.3']],[2,['photos.1','photos.2']],[3,['photos.0','photos.4']]]) {
+      await phone.locator('#pagination button').nth(chapter).click();
+      await phone.waitForFunction(chapter=>document.getElementById('pageCount').textContent.startsWith(String(chapter+1).padStart(2,'0')),chapter);
+      const card=phone.locator('.mobile-card.active');
+      assert.deepEqual(await card.locator('img[data-story-image]').evaluateAll(imgs=>imgs.map(i=>i.dataset.storyImage)),paths);
+      for(const path of paths) {
+        await card.locator(`img[data-story-image="${path}"]`).click();
+        assert.equal(await phone.locator('#giftImageTitle').textContent(),await phone.evaluate(path=>'Replace photo · '+WISHBOUND.photoSlot(path).label,path));
+        await phone.locator('#giftImageDialog [data-close-editor]').click();
+      }
+    }
+    await phone.locator('[data-story-text="presentation.footerDedication"]').click();
+    await phone.locator('#giftTextValue').fill('For Jamie');await phone.locator('#giftTextForm button[type=submit]').click();
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.presentation.footerDedication),'For Jamie');
     await phone.locator('#giftResetButton').click();await phone.locator('#giftConfirmReset').click();
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love');
     await phone.waitForFunction(()=>document.getElementById('giftSaveStatus').textContent==='Saved in this browser.');
     await phone.reload();await phone.locator('#introEditGift').waitFor({state:'visible'});
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love');
+    // A draft from the previous release keeps the images that used to be shared.
+    await phone.evaluate(async ()=>{
+      const old=WISHBOUND.clone(WISHBOUND.defaults);old.recipient='Legacy draft';
+      old.photos=old.photos.slice(0,3);old.photoAlts=old.photoAlts.slice(0,3);delete old.presentation;
+      const c=document.createElement('canvas');c.width=10;c.height=10;const x=c.getContext('2d');x.fillStyle='#25aa66';x.fillRect(0,0,10,10);
+      old.reveal.portrait=c.toDataURL('image/png');old.reveal.portraitAlt='Legacy portrait';old.photos[1]=old.reveal.portrait;old.photoAlts[1]='Legacy memory';
+      const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('wishbound-gifts',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
+      await new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').put({version:1,story:old},'current:/');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();
+    });
+    await phone.reload();await phone.waitForFunction(()=>WISHBOUND.story.recipient==='Legacy draft');
+    assert(await phone.evaluate(()=>WISHBOUND.story.photos[3]===WISHBOUND.story.reveal.portrait&&WISHBOUND.story.photos[4]===WISHBOUND.story.photos[1]));
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.photoAlts[3]),'Legacy portrait');
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.photoAlts[4]),'Legacy memory');
+    await phone.locator('#introEditGift').click();await phone.locator('#giftResetButton').click();await phone.locator('#giftConfirmReset').click();
+    assert(await phone.evaluate(()=>JSON.stringify(WISHBOUND.snapshot())===JSON.stringify(WISHBOUND.defaults)),'Start over did not restore all photo slots and edge text');
     await fresh.close();
     assert.deepEqual(errors,[]);
-    console.log('Editor checks passed: inline text, names, letter, crop, photos, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
+    console.log('Editor checks passed: inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
   } catch(e) {
     await page.screenshot({path:'qa/editor-failure.png',fullPage:true}).catch(()=>{}); throw e;
   } finally { await browser.close(); await new Promise(resolve=>server.close(resolve)); }

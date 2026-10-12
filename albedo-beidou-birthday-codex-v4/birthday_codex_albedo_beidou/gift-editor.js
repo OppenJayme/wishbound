@@ -124,15 +124,15 @@
 
   function openImage(path) {
     imagePath = path; imageTicket++; cropImage = null;
-    $('giftImageTitle').textContent = path === 'reveal.portrait' ? 'Replace the portrait' : 'Replace memory photo';
+    $('giftImageTitle').textContent = 'Replace photo · ' + state.photoSlot(path).label;
     $('giftImageFile').value = ''; $('giftCropPreview').hidden = true; $('giftCropControls').hidden = true;
     $('giftImageApply').disabled = true;
-    $('giftImageAlt').value = path === 'reveal.portrait' ? state.story.reveal.portraitAlt : state.story.photoAlts[Number(path.split('.')[1])];
+    $('giftImageAlt').value = state.get(state.photoSlot(path).altPath);
     error('giftImageError'); imageDialog.showModal();
   }
   function drawCrop() {
     if (!cropImage) return;
-    const canvas = $('giftCropPreview'); const portrait = imagePath === 'reveal.portrait';
+    const canvas = $('giftCropPreview'); const portrait = state.photoSlot(imagePath).portrait;
     canvas.width = portrait ? 900 : 1200; canvas.height = 1200;
     const scale = Math.max(canvas.width / cropImage.naturalWidth, canvas.height / cropImage.naturalHeight) * Number($('giftCropZoom').value);
     const width = cropImage.naturalWidth * scale; const height = cropImage.naturalHeight * scale;
@@ -164,24 +164,24 @@
     event.preventDefault(); if (!cropImage) return;
     try {
       state.set(imagePath, $('giftCropPreview').toDataURL('image/jpeg', .88));
-      state.set(imagePath === 'reveal.portrait' ? 'reveal.portraitAlt' : 'photoAlts.' + imagePath.split('.')[1], $('giftImageAlt').value);
+      state.set(state.photoSlot(imagePath).altPath, $('giftImageAlt').value);
       changed(); imageDialog.close();
     } catch (e) { error('giftImageError', e.message); }
   });
   $('giftImageDefault').addEventListener('click', () => {
     const value = imagePath.split('.').reduce((obj, key) => obj[key], state.defaults);
     state.set(imagePath, value);
-    const altPath = imagePath === 'reveal.portrait' ? 'reveal.portraitAlt' : 'photoAlts.' + imagePath.split('.')[1];
+    const altPath = state.photoSlot(imagePath).altPath;
     state.set(altPath, altPath.split('.').reduce((obj, key) => obj[key], state.defaults));
     changed(); imageDialog.close();
   });
   imageDialog.addEventListener('close', () => { imageTicket++; cropImage = null; });
   $('giftPhotosButton').addEventListener('click', () => {
     const grid = $('giftPhotoGrid'); grid.replaceChildren();
-    ['reveal.portrait','photos.0','photos.1','photos.2'].forEach((path, i) => {
+    state.photoSlots.forEach(({path, label}) => {
       const button = document.createElement('button'); button.type = 'button';
       const img = document.createElement('img'); img.src = state.get(path); img.alt = '';
-      button.append(img, document.createTextNode(i ? 'Memory photo ' + i : 'Portrait'));
+      button.append(img, document.createTextNode(label));
       button.addEventListener('click', () => { $('giftPhotosDialog').close(); openImage(path); }); grid.append(button);
     });
     $('giftPhotosDialog').showModal();

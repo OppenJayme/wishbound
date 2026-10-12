@@ -11,11 +11,13 @@ Originally made as a romantic gift, its messages can be adapted for a partner, a
 1. Open the preview and select **Edit your gift**. This button is available on the opening screen and above the book.
 2. **Click a name or message** to edit it, then select **Apply text**. Use the book's arrows or chapter dots to visit other pages.
 3. **Click a photo** to upload a JPG, PNG, or WebP image. Adjust its crop, zoom, and position, add a description, and select **Use photo**.
-4. Use **Details & text** for names, chapter labels, reveal settings, and all messages. **Letter** edits the complete letter; separate paragraphs with a blank line. **Photos** gives access to the portrait and all three memory photos.
+4. Use **Details & text** for names, chapter labels, reveal settings, and all messages, including the header, footer, and surrounding labels. **Letter** edits the complete letter; separate paragraphs with a blank line. **Photos** gives access to all six independent photo slots, labeled by chapter.
 5. Select **Preview** to hide the editing outlines. Check the chapters, letter, and photos, then select **Back to editing** if you want more changes.
 6. Select **Download gift** to save your personalized birthday website as one HTML file. Open that file in a browser to check it before sharing.
 
-Uploaded photos are cropped and resized in your browser. The portrait uses a 3:4 crop; memory photos use square crops. Uploads can be up to 20 MB each.
+Uploaded photos are cropped and resized in your browser. Portraits use a 3:4 crop; memory photos use square crops. Uploads can be up to 20 MB each.
+
+Each photo has its own upload and crop. Replacing one does not change another chapter’s photo. Desktop and mobile show the same photo for each matching chapter. Older saved drafts keep their existing photos when shared slots are split.
 
 Keep headings and paragraphs short enough to fit the book. The default wording is romantic, so read through every chapter when adapting it for a different recipient.
 
