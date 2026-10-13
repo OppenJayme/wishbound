@@ -85,7 +85,7 @@ The opening editor controls move inside the intro dialog while it is open so nat
 
 ## Visitor soundtrack and scenery
 
-`visitor-media.js` and `visitor-media.css` provide music and scenery settings independently of the gift editor draft. Choose a soundtrack in **Music & background**, then select **Portrait reveal** or **Book opening**. The portrait has a play/pause control inside its modal; book controls remain in the top bar. No audio plays on page load. A wish click primes the track silently for a delayed portrait reveal, which fades it in. A book-opening click starts book-only music. Browsers may require another Play click; playback failures appear beside the portrait control and in settings. Manual pause survives scene changes and replay.
+`visitor-media.js` and `visitor-media.css` provide music and scenery settings independently of the gift editor draft. Enter **Edit your gift** and choose a soundtrack in **Music & background** on the editor toolbar, then select **Portrait reveal** or **Book opening**. The portrait has a play/pause control inside its modal; book controls remain in the top bar. No audio plays on page load. A wish click primes the track silently for a delayed portrait reveal, which fades it in. A book-opening click starts book-only music. Browsers may require another Play click; playback failures appear beside the portrait control and in settings. Manual pause survives scene changes and replay.
 
 `story-config.js` has a `music` object: `src` (empty, local `assets/` path, or HTTPS URL), `startAt` (`portrait` or `book`), `volume` (0–100), `fadeMs` (0–5000), `loop`, and `enabled`. Visitor preferences override defaults. The default source is empty; the existing optional hosted `assets/liyue-theme.mp3` fallback remains available. No game soundtrack is bundled.
 
@@ -94,3 +94,5 @@ Uploads up to 15 MB are stored in a separate scoped IndexedDB/localStorage names
 The builder embeds local MP3, M4A, OGG, WAV, and WebM assets as well as images. Rebuild with `npm run preview:build`; keep `visitor-media.js` marked with `data-wishbound-source`. Use only audio you may share. See the root README for setup steps.
 
 Run `npm run test:media` after soundtrack changes. It uses a generated test tone to check upload and restoration, both start scenes, silent priming through the full wish, fades, pause/replay, exported audio, phone controls, and blocked playback. It requires the same Playwright and Chrome setup as the other browser checks.
+
+Music and scenery settings are restricted to `giftMode === "draft"`. The settings button moves into the editor toolbar so it remains usable inside the opening modal. `wishbound:mode` synchronizes mode changes; a body attribute observer covers other mode updates. Leaving editing closes settings and disables uploads and configuration inputs. Handlers also check editing mode. Preview, template viewing, and gifts retain only play/pause controls when a soundtrack exists.

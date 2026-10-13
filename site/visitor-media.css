@@ -36,3 +36,6 @@ body[data-visitor-theme="storm"]{background-color:#101b29}
 .visitor-reveal-controls button:focus-visible{outline:2px solid #edd397;outline-offset:3px}
 #visitorRevealMusicStatus{font:12px/1.4 var(--type-ui,serif);color:#ebd4ac;max-width:280px}
 @media(max-width:600px){.visitor-reveal-controls{align-items:center}}
+
++#visitorMusicEdit[hidden],#visitorMusicPlay[hidden]{display:none!important}
+#giftToolbar #visitorMusicEdit{white-space:nowrap}

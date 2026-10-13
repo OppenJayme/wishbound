@@ -91,6 +91,7 @@
     $('giftToolbar').hidden = !value; $('giftPreviewNote').hidden = !preview;
     $('editGift').hidden = $('introEditGift').hidden = value || preview;
     syncEditorView(); decorate();
+    document.dispatchEvent(new CustomEvent('wishbound:mode'));
   }
   function beginEditing() {
     if (!draftActive) {

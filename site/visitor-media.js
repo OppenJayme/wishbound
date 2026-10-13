@@ -31,6 +31,18 @@
   revealControls.innerHTML = '<button type="button" id="visitorRevealMusic">Play music</button><span id="visitorRevealMusicStatus" role="status" aria-live="polite"></span>';
   document.querySelector('#introReveal .reveal-copy')?.append(revealControls);
   const $ = id => document.getElementById(id);
+  const canEdit = () => document.body.dataset.giftMode === 'draft';
+  const settingsHome = $('visitorMusicEdit').parentElement;
+  const editableInputs = [...$('visitorMusicDialog').querySelectorAll('input,select'), $('visitorMusicReset'), $('visitorBackgroundReset')];
+  function syncEditing() {
+    const editing = canEdit();
+    $('visitorMusicEdit').hidden = !editing;
+    editableInputs.forEach(input => { input.disabled = !editing; });
+    const host = editing ? $('giftToolbar') : settingsHome;
+    if (host && $('visitorMusicEdit').parentElement !== host) host.append($('visitorMusicEdit'));
+    if (!editing && $('visitorMusicDialog').open) $('visitorMusicDialog').close();
+    syncButtons();
+  }
   const status = message => { $('visitorMusicStatus').textContent = message; };
   const playbackStatus = message => { status(message); $('visitorRevealMusicStatus').textContent = message; };
   const save = () => { try { localStorage.setItem(prefKey, JSON.stringify(prefs)); } catch (_) { status('Browser storage is unavailable; these settings may not survive reloading.'); } };
@@ -71,6 +83,7 @@
     $('visitorMusicEnabled').checked = prefs.enabled !== false;
     $('visitorMusicStart').value = prefs.startAt;
     revealControls.hidden = !audio.getAttribute('src');
+    $('visitorMusicPlay').hidden = !audio.getAttribute('src');
     const audible = playing && audio.volume > 0;
     $('visitorRevealMusic').textContent = audible ? 'Pause music' : 'Play music';
     $('visitorRevealMusic').setAttribute('aria-label', audible ? 'Pause background music' : 'Play background music');
@@ -95,11 +108,11 @@
   }
   function play(silent = false, automatic = false) {
     if (!audio.getAttribute('src')) {
-      if (!automatic) { $('visitorMusicDialog').showModal(); status('Choose a soundtrack first.'); }
+      if (!automatic && canEdit()) { $('visitorMusicDialog').showModal(); status('Choose a soundtrack first.'); }
       return;
     }
     if (automatic && (!prefs.enabled || manuallyPaused || document.body.dataset.giftMode === 'draft')) return;
-    if (!automatic) { manuallyPaused = false; prefs.enabled = true; save(); }
+    if (!automatic) { manuallyPaused = false; if (canEdit()) { prefs.enabled = true; save(); } }
     if (!audio.paused) { if (!silent) fadeToVolume(); return; }
     cancelFade(); audio.volume = 0;
     const ticket = ++playbackTicket;
@@ -130,19 +143,20 @@
     document.body.dataset.visitorTheme = prefs.theme;
     syncButtons();
   }
-  $('visitorMusicEdit').onclick = () => $('visitorMusicDialog').showModal();
+  $('visitorMusicEdit').onclick = () => { if (canEdit()) $('visitorMusicDialog').showModal(); };
   $('visitorMusicClose').onclick = () => $('visitorMusicDialog').close();
   $('visitorMusicDialog').onclick = e => { if (e.target === $('visitorMusicDialog')) e.target.close(); };
   $('visitorMusicPlay').onclick = toggle;
   $('visitorRevealMusic').onclick = toggle;
   $('visitorMusicDialogPlay').onclick = toggle;
   audio.addEventListener('play',syncButtons); audio.addEventListener('pause',syncButtons); audio.addEventListener('ended',syncButtons);
-  $('visitorMusicVolume').oninput = e => { cancelFade(); prefs.volume = clampVolume(e.target.value); audio.volume=prefs.volume/100; save(); syncButtons(); };
-  $('visitorMusicStart').onchange = e => { prefs.startAt=e.target.value; save(); };
+  $('visitorMusicVolume').oninput = e => { if (!canEdit()) return; cancelFade(); prefs.volume = clampVolume(e.target.value); audio.volume=prefs.volume/100; save(); syncButtons(); };
+  $('visitorMusicStart').onchange = e => { if (!canEdit()) return; prefs.startAt=e.target.value; save(); };
   audio.addEventListener('error', () => { cancelFade(); playbackStatus('This track could not load. Choose another audio file.'); syncButtons(); });
-  $('visitorMusicEnabled').onchange = e => { prefs.enabled=e.target.checked; save(); if (!prefs.enabled) pause(true); else if ((bookOpened || $('wishIntro')?.dataset.stage === 'revealed') && audio.src) play(); syncButtons(); };
-  for (const input of document.querySelectorAll('input[name="visitorTheme"]')) input.onchange = () => { if (input.checked) { prefs.theme=input.value; save(); applyTheme(); } };
+  $('visitorMusicEnabled').onchange = e => { if (!canEdit()) return; prefs.enabled=e.target.checked; save(); if (!prefs.enabled) pause(true); else if ((bookOpened || $('wishIntro')?.dataset.stage === 'revealed') && audio.src) play(); syncButtons(); };
+  for (const input of document.querySelectorAll('input[name="visitorTheme"]')) input.onchange = () => { if (canEdit() && input.checked) { prefs.theme=input.value; save(); applyTheme(); } };
   $('visitorMusicFile').onchange = async e => {
+    if (!canEdit()) { e.target.value=''; return; }
     const file = e.target.files?.[0]; if (!file) return; e.target.value='';
     if (file.size > maxBytes || !(file.type.startsWith('audio/') || /\.(mp3|m4a|wav|ogg|webm)$/i.test(file.name))) {status('Choose a supported audio file smaller than 15 MB.');return;}
     const mime = {mp3:'audio/mpeg',m4a:'audio/mp4',wav:'audio/wav',ogg:'audio/ogg',webm:'audio/webm'};
@@ -154,11 +168,13 @@
     if ((bookOpened || $('wishIntro')?.dataset.stage === 'revealed') && prefs.enabled) play();
   };
   $('visitorMusicReset').onclick = async () => {
+    if (!canEdit()) return;
     musicBlob=null; prefs.customMusic=false; save(); chooseAudio(defaultMusic,defaultMusic?'Included gift soundtrack':'No soundtrack selected');
     try { await store('delete','music'); } catch (_) {}
     status('Your uploaded music was removed.'); 
   };
   $('visitorBackgroundFile').onchange = async e => {
+    if (!canEdit()) { e.target.value=''; return; }
     const file=e.target.files?.[0]; if (!file) return; e.target.value='';
     if (file.size > maxBytes || !/^image\/(png|jpeg|webp|avif)$/.test(file.type)) {status('Choose a JPG, PNG, WebP, or AVIF image smaller than 15 MB.');return;}
     backgroundBlob=file; prefs.customBackground=true; save(); applyBackground(file);
@@ -166,6 +182,7 @@
     catch (_) {status('Background works for this visit and downloads; this browser could not persist it.');}
   };
   $('visitorBackgroundReset').onclick = async () => {
+    if (!canEdit()) return;
     backgroundBlob=null; prefs.customBackground=false; save(); applyBackground(defaultImage);
     try {await store('delete','background');}catch(_){}
     status('Custom background removed.');
@@ -228,5 +245,8 @@
     }
     applyTheme(); syncButtons();
   }
+  document.addEventListener('wishbound:mode', syncEditing);
+  new MutationObserver(syncEditing).observe(document.body, {attributes:true, attributeFilter:['data-gift-mode']});
+  syncEditing();
   init();
 })();

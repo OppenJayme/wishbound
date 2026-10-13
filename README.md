@@ -77,13 +77,15 @@ wishbound uses original placeholder illustrations inspired by Albedo and Beidou.
 
 ## Optional music and backgrounds
 
-Everyone can use **♫ Music & background** to choose a local soundtrack, set its volume, and choose whether it starts at the **Portrait reveal** or **Book opening**. Music fades in after interaction; it never starts on the initial page load. The portrait has its own play/pause button, and the book keeps the top-bar controls. If the browser blocks playback, press **Play music**. Pausing stays respected during scene changes and replay. The same track continues from the portrait into the book.
+In **Edit your gift** mode, use **♫ Music & background** in the editor toolbar to choose a local soundtrack, set its volume, and choose whether it starts at the **Portrait reveal** or **Book opening**. Music fades in after interaction; it never starts on the initial page load. The portrait has its own play/pause button, and the book keeps the top-bar controls. If the browser blocks playback, press **Play music**. Pausing stays respected during scene changes and replay. The same track continues from the portrait into the book.
 
-1. Enter the book with **Read the book**, then open **Music & background**.
+1. Select **Edit your gift**, then open **Music & background** in the editor toolbar. It is available while editing the entrance or the book.
 2. Choose an MP3, M4A, OGG, WAV, or WebM audio file smaller than 15 MB.
 3. Set **Start music at**, adjust **Volume**, and leave **Enable background music** checked.
 4. Replay the wish to check the portrait start, or choose book opening to keep the wish silent.
-5. Download your gift from the editor. The soundtrack, start scene, volume, and background are included in the HTML file.
+5. Use **Preview** to test playback, then return to editing to download your gift. The soundtrack, start scene, volume, and background are included in the HTML file.
+
+Adding, replacing, removing, and configuring music is available only while editing. Preview and gift viewing keep play/pause controls for the selected soundtrack; they cannot open the upload/settings panel.
 
 Settings and uploaded files stay in this browser when storage is available; they do not change the public template. Sharing the downloaded gift also shares its music. Include audio you have permission to redistribute. No soundtrack is bundled by default.
 
