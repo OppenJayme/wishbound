@@ -54,11 +54,12 @@ npm run preview:build
 npm run test:browser
 npm run test:intro
 npm run test:editor
+npm run test:layout
 ```
 
 The preview must be rebuilt before checking the portable version. `test:browser` covers book navigation and layout; `test:intro` covers the entrance, replay, and cancellation.
 
-The scripts currently launch Chrome from `C:/Program Files/Google/Chrome/Application/chrome.exe`. Update `executablePath` in `book-qa.cjs` and `intro-qa.cjs` for another installation. For `editor-qa.cjs`, set `CHROME_PATH` to your Chrome executable. Screenshots are written to the ignored `qa/` folder.
+The scripts currently launch Chrome from `C:/Program Files/Google/Chrome/Application/chrome.exe`. Update `executablePath` in `book-qa.cjs` and `intro-qa.cjs` for another installation. For `editor-qa.cjs` and `viewport-qa.cjs`, set `CHROME_PATH` to your Chrome executable. Screenshots are written to the ignored `qa/` folder.
 
 For portrait landing alignment and interruption cleanup:
 
@@ -78,6 +79,6 @@ Public-template drafts use IndexedDB, scoped to the current website path. Editab
 
 The preview builder marks its inline scripts with `data-wishbound-source`. HTML export uses the initial template and replaces its story configuration with safely serialized values. The download dialog can include editing controls with `WISHBOUND_GIFT_EDITABLE`, or strip them for a viewing-only gift. Both set `WISHBOUND_GIFT`. Editable gifts restore their own saved edits on opening; viewing-only gifts skip draft restoration. Saving only writes to browser storage, while downloading an updated copy embeds the latest content in the HTML file. Preserve these script markers when changing the builder.
 
-`test:editor` checks text editing, crop positioning, photo replacement, draft restoration and isolation, reset, preview, and exported HTML. The GitHub Pages workflow runs this check before deploying and saves screenshots as an Actions artifact.
+`test:editor` checks text editing, crop positioning, photo replacement, draft restoration and isolation, reset, preview, and exported HTML. `test:layout` checks all seven chapters in both source and portable HTML at ten laptop, monitor, and phone sizes, including short screens; it fails on clipped book content or keepsakes covering content. Website scrolling is allowed. The GitHub Pages workflow runs this check before deploying and saves screenshots as an Actions artifact.
 
 The opening editor controls move inside the intro dialog while it is open so native modal focus remains usable. On the public template, saved drafts are read into a detached copy and applied only on entering edit mode; returning to the template restores the defaults and retains the draft. In an editable downloaded gift, returning to the gift keeps the current edited content, and resetting restores that file’s embedded defaults.

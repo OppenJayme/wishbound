@@ -69,7 +69,7 @@ npm run preview:build
 
 This requires Node.js but no dependency installation. It regenerates the portable template with the editor included.
 
-The included GitHub Actions workflow rebuilds the HTML, checks the editor and exported gift, and deploys it on pushes to `main`. To enable hosting in your own repository, choose **Settings → Pages → Source → GitHub Actions**, then run the deployment workflow. GitHub Pages is free for public repositories; private repositories require an eligible paid plan. The published Pages website is public even when its source repository is private.
+The included GitHub Actions workflow rebuilds the HTML, checks the editor, exported gifts, and source/portable book layouts, and deploys it on pushes to `main`. To enable hosting in your own repository, choose **Settings → Pages → Source → GitHub Actions**, then run the deployment workflow. GitHub Pages is free for public repositories; private repositories require an eligible paid plan. The published Pages website is public even when its source repository is private.
 
 See the [website reference](site/README.md) for file responsibilities and developer checks, and the [design notes](site/DESIGN_NOTES.md) for the visual theme.
 
