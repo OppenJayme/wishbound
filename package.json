@@ -6,7 +6,8 @@
     "test:browser": "node book-qa.cjs",
     "test:intro": "node intro-qa.cjs",
     "test:editor": "node editor-qa.cjs",
-    "test:layout": "node viewport-qa.cjs"
+    "test:layout": "node viewport-qa.cjs",
+    "test:media": "node media-qa.cjs"
   },
   "devDependencies": {
     "playwright": "1.64.0"

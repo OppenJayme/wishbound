@@ -77,4 +77,27 @@ wishbound uses original placeholder illustrations inspired by Albedo and Beidou.
 
 ## Optional music and backgrounds
 
-Everyone can use **♫ Music & background** on the published site. Choose a local audio file (MP3/M4A/OGG/WAV), change volume, pause/play it, and choose a scenery theme or image. Files are saved only in the visitor's browser when browser storage is available; nothing is uploaded to the GitHub repository or other visitors. Music begins after a click to open/read the book, not on initial page load. The public demo does not ship with copyrighted Genshin music. If you have permission to host a Liyue soundtrack, place it at `site/assets/liyue-theme.mp3` and rebuild the portable HTML (the build embeds supported image assets but not audio by default). A selected custom track and background are embedded in the visitor's **downloaded gift**, so their personalized file works without a separate audio upload. Keep music files under 15 MB. Sharing the downloaded HTML also shares its embedded music; only include audio you have permission to redistribute.
+Everyone can use **♫ Music & background** to choose a local soundtrack, set its volume, and choose whether it starts at the **Portrait reveal** or **Book opening**. Music fades in after interaction; it never starts on the initial page load. The portrait has its own play/pause button, and the book keeps the top-bar controls. If the browser blocks playback, press **Play music**. Pausing stays respected during scene changes and replay. The same track continues from the portrait into the book.
+
+1. Enter the book with **Read the book**, then open **Music & background**.
+2. Choose an MP3, M4A, OGG, WAV, or WebM audio file smaller than 15 MB.
+3. Set **Start music at**, adjust **Volume**, and leave **Enable background music** checked.
+4. Replay the wish to check the portrait start, or choose book opening to keep the wish silent.
+5. Download your gift from the editor. The soundtrack, start scene, volume, and background are included in the HTML file.
+
+Settings and uploaded files stay in this browser when storage is available; they do not change the public template. Sharing the downloaded gift also shares its music. Include audio you have permission to redistribute. No soundtrack is bundled by default.
+
+For a default soundtrack in your own repository, put a file at `site/assets/our-song.mp3` and edit the `music` section in `site/story-config.js`:
+
+```javascript
+"music": {
+  "src": "assets/our-song.mp3",
+  "startAt": "portrait",
+  "volume": 35,
+  "fadeMs": 1200,
+  "loop": true,
+  "enabled": true
+},
+```
+
+Use `"book"` for `startAt` to begin on entering or turning the book. `volume` is 0–100; `fadeMs` is 0–5000 milliseconds. An empty `src` leaves the soundtrack optional. Visitor choices override these defaults. Run `npm run preview:build` after changing the file or settings. Local audio under `assets/` is embedded in the portable preview, subject to the 15 MB limit. HTTPS tracks remain external in the preview; gift downloads try to embed them and require the audio host to allow browser access. For reliable offline sharing, upload the track through **Music & background** or use a local asset.

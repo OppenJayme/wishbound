@@ -29,3 +29,10 @@ body[data-visitor-theme="storm"]{background-color:#101b29}
 #visitorMusicStatus{min-height:20px;font-size:12px;color:#785a34}
 @media(max-width:900px){.topbar-right{display:flex!important;align-items:center;gap:6px}.visitor-music-controls{gap:4px}.visitor-music-controls button{padding:8px 6px;font-size:11px}}
 @media(max-width:540px){#visitorMusicEdit{font-size:0}.visitor-music-controls #visitorMusicEdit::after{content:'♫ Settings';font-size:11px}.visitor-music-panel{padding:30px 18px 16px}.visitor-music-controls button{max-width:90px;white-space:normal}.topbar{gap:4px}}
+.visitor-range select{display:block;width:100%;margin-top:6px;padding:9px;border:1px solid #baa47f;border-radius:5px;background:#fcf7eb;color:#352a20;font:inherit}
+.visitor-reveal-controls{margin-top:16px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.visitor-reveal-controls[hidden]{display:none}
+.visitor-reveal-controls button{background:#122737cc;border:1px solid #c6a56a88;color:#f4e3c3;border-radius:5px;padding:8px 12px;cursor:pointer;font:12px var(--type-ui,serif)}
+.visitor-reveal-controls button:focus-visible{outline:2px solid #edd397;outline-offset:3px}
+#visitorRevealMusicStatus{font:12px/1.4 var(--type-ui,serif);color:#ebd4ac;max-width:280px}
+@media(max-width:600px){.visitor-reveal-controls{align-items:center}}

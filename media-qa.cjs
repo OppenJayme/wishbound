@@ -1,0 +1,76 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const http=require('node:http');
+const dir=path.join(__dirname,'site');
+const samples=44100, wav=Buffer.alloc(44+samples*2);
+wav.write('RIFF');wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(44100,24);wav.writeUInt32LE(88200,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(samples*2,40);
+for(let i=0;i<samples;i++)wav.writeInt16LE(Math.sin(i/44100*Math.PI*440*2)*800,i*2+44);
+let exported='';
+const server=http.createServer((req,res)=>{
+ if(req.url==='/gift.html'){res.setHeader('Content-Type','text/html');res.end(exported);return;}
+ const file=path.resolve(dir,'.'+decodeURIComponent(req.url.split('?')[0]));
+ if(!file.startsWith(path.resolve(dir)+path.sep)||!fs.existsSync(file)){res.writeHead(404);res.end();return;}
+ res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'})[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));
+});
+(async()=>{
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));
+ const base=`http://127.0.0.1:${server.address().port}`;
+ const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+ try{
+ const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
+ const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(base+'/ONE_FILE_PREVIEW.html');
+ assert(await page.locator('#visitorMusicAudio').evaluate(a=>a.paused),'No initial autoplay');
+ await page.locator('#skipIntro').click();await page.locator('#visitorMusicEdit').click();
+ await page.locator('#visitorMusicFile').setInputFiles({name:'test-tone.wav',mimeType:'audio/wav',buffer:wav});
+ await page.waitForFunction(()=>document.getElementById('visitorMusicStatus').textContent.includes('saved'));
+ await page.locator('#visitorMusicStart').selectOption('book');
+ await page.locator('#visitorMusicClose').click();await page.reload();
+ await page.waitForFunction(()=>document.getElementById('visitorMusicAudio').getAttribute('src')?.startsWith('blob:'));
+ await page.locator('#startWish').click();
+ assert(await page.locator('#visitorMusicAudio').evaluate(a=>a.paused),'Book track stays silent at portrait');
+ await page.locator('#enterBook').click();await page.waitForFunction(()=>{const a=document.getElementById('visitorMusicAudio');return !a.paused&&a.volume>.3});
+ await page.locator('#visitorMusicPlay').click();assert(await page.locator('#visitorMusicAudio').evaluate(a=>a.paused));
+ await page.locator('#visitorMusicEdit').click();await page.locator('#visitorMusicStart').selectOption('portrait');await page.locator('#visitorMusicClose').click();
+ await page.locator('#replayIntro').click();await page.locator('#startWish').click();
+ assert(await page.locator('#visitorMusicAudio').evaluate(a=>a.paused),'Manual pause survives replay');
+ await page.locator('#visitorRevealMusic').click();await page.waitForFunction(()=>{const a=document.getElementById('visitorMusicAudio');return !a.paused&&a.volume>.3});
+ const time=await page.locator('#visitorMusicAudio').evaluate(a=>a.currentTime);
+ await page.locator('#enterBook').click();assert(!(await page.locator('#visitorMusicAudio').evaluate(a=>a.paused)),'Music continues into book');
+ await page.locator('#visitorMusicEdit').click();await page.locator('#visitorMusicVolume').fill('17');
+ await page.evaluate(async()=>{const doc=new DOMParser().parseFromString(window.WISHBOUND.template,'text/html');await window.WISHBOUND_MEDIA.exportToDocument(doc);window.audioExport='<!doctype html>'+doc.documentElement.outerHTML;});
+ exported=await page.evaluate(()=>window.audioExport);
+ assert(exported.includes('data:audio/wav;base64,'),'Audio embedded');assert(exported.includes('"startAt":"portrait"'),'Start scene exported');
+ await page.locator('#visitorMusicClose').click();await page.reload();
+ await page.waitForFunction(()=>document.getElementById('visitorMusicAudio').getAttribute('src')?.startsWith('blob:'));
+ assert(await page.locator('#visitorMusicAudio').evaluate(a=>a.paused),'Reload does not autoplay');
+ await page.locator('#startWish').click();await page.waitForFunction(()=>{const a=document.getElementById('visitorMusicAudio');return !a.paused&&Math.abs(a.volume-.17)<.005});
+ await context.close();
+ const exportedContext=await browser.newContext({viewport:{width:375,height:900},reducedMotion:'reduce'});
+ const gift=await exportedContext.newPage();gift.on('pageerror',e=>errors.push(e.message));
+ await gift.goto(base+'/gift.html');assert(await gift.locator('#visitorMusicAudio').evaluate(a=>a.paused));
+ await gift.locator('#startWish').click();await gift.waitForFunction(()=>{const a=document.getElementById('visitorMusicAudio');return !a.paused&&Math.abs(a.volume-.17)<.005});
+ assert(await gift.locator('#visitorRevealMusic').isVisible(),'Phone portrait control visible');
+ await gift.locator('#visitorRevealMusic').click();assert(await gift.locator('#visitorMusicAudio').evaluate(a=>a.paused));
+ assert(await gift.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'No horizontal overflow');
+ await gift.evaluate(()=>{const a=document.getElementById('visitorMusicAudio');a.play=()=>Promise.reject(new DOMException('blocked','NotAllowedError'));});
+ await gift.locator('#visitorRevealMusic').click();await gift.waitForFunction(()=>document.getElementById('visitorRevealMusicStatus').textContent.includes('Press Play'));
+ assert.deepEqual(errors,[]);
+ console.log('PASS: upload, book/portrait starts, fade, pause/replay, continuity, volume, reload, embedded export, phone control, and blocked-playback message.');
+ await exportedContext.close();
+ const normal=await browser.newContext({viewport:{width:1280,height:900}});
+ await normal.addInitScript(data=>{window.WISHBOUND_EMBED_MEDIA={music:data,startAt:'portrait',volume:25};},'data:audio/wav;base64,'+wav.toString('base64'));
+ const animated=await normal.newPage();animated.on('pageerror',e=>errors.push(e.message));
+ await animated.goto(base+'/ONE_FILE_PREVIEW.html');
+ await animated.locator('#startWish').click();
+ await animated.waitForFunction(()=>!document.getElementById('visitorMusicAudio').paused);
+ assert.equal(await animated.locator('#visitorMusicAudio').evaluate(a=>a.volume),0,'Wish primes silently');
+ await animated.waitForFunction(()=>document.getElementById('wishIntro').dataset.stage==='revealed');
+ await animated.waitForFunction(()=>Math.abs(document.getElementById('visitorMusicAudio').volume-.25)<.005);
+ assert.deepEqual(errors,[]);
+ console.log('PASS: full animated wish stays silent until the portrait, then fades in.');
+ await normal.close();
+ }finally{await browser.close();server.close();}
+})().catch(e=>{console.error(e);server.close();process.exitCode=1});

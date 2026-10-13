@@ -2,6 +2,14 @@
 window.BIRTHDAY_STORY = {
   "recipient": "my love",
   "signoff": "your favorite person",
+  "music": {
+    "src": "",
+    "startAt": "portrait",
+    "volume": 35,
+    "fadeMs": 1200,
+    "loop": true,
+    "enabled": true
+  },
   "reveal": {
     "enabled": true,
     "portrait": "assets/portrait-placeholder.svg",

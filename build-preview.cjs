@@ -2,10 +2,11 @@
 const fs = require('fs');
 const path = require('path');
 const dir = path.join(__dirname, 'site');
-const imageTypes = {svg:'image/svg+xml',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp'};
-const embed = text => text.replace(/assets\/[a-z0-9_./-]+\.(svg|png|jpg|jpeg|webp)/gi, (name, extension) => {
+const imageTypes = {svg:'image/svg+xml',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',mp3:'audio/mpeg',m4a:'audio/mp4',ogg:'audio/ogg',wav:'audio/wav',webm:'audio/webm'};
+const embed = text => text.replace(/assets\/[a-z0-9_./-]+\.(svg|png|jpg|jpeg|webp|mp3|m4a|ogg|wav|webm)/gi, (name, extension) => {
   const file = path.resolve(dir, name);
   if(!file.startsWith(path.resolve(dir,'assets') + path.sep) || !fs.existsSync(file)) return name;
+  if (imageTypes[extension.toLowerCase()].startsWith('audio/') && fs.statSync(file).size > 15 * 1024 * 1024) throw Error('Audio assets must be smaller than 15 MB: ' + name);
   return 'data:' + imageTypes[extension.toLowerCase()] + ';base64,' + fs.readFileSync(file).toString('base64');
 });
 let html = fs.readFileSync(path.join(dir,'index.html'),'utf8');
