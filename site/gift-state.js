@@ -4,22 +4,22 @@
   const clone = value => JSON.parse(JSON.stringify(value));
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   story.presentation = Object.assign({
-    birthdayOverline: 'THE STARS HAVE A REASON TO CELEBRATE',
+    birthdayOverline: "TODAY BELONGS TO YOU",
     birthdayFirstLine: 'Happy', birthdaySecondLine: 'birthday.', birthdayToLabel: 'to',
-    birthdayMessage: 'A little universe, made to celebrate you.', birthdayContinueLabel: 'Let the magic begin',
-    themeTitle: 'The Alchemist & the Captain', heroPrefix: 'Between', heroAccent: 'stars & seas.',
-    heroSubtitle: 'A little universe, bound just for you.', introTitle: 'A wish, just for you.',
-    introMessage: 'Some stars find their way to us.\nSome become our whole world.',
-    monogramFirst: 'f', monogramLast: 'y', heroEyebrow: 'A STORY IN SEVEN CHAPTERS',
-    keepsakeLabel: "The captain's company", bottomHint: 'Use the arrows to turn the page',
-    footerNote: 'An original keepsake of alchemy, starlight, and sea.', footerDedication: 'ONLY YOU & ME',
-    introOverline: 'A BIRTHDAY WISH · FOR YOU', introFootnote: 'One little wish. A whole story waiting.',
-    introChartNote: 'LIYUE · A VOYAGE BENEATH THE STARS', revealFootnote: 'The best chapters are still ahead.',
-    letterOverline: 'A LETTER FOR YOU', letterOccasion: 'On your birthday', letterSignature: 'All my love,',
+    birthdayMessage: "A few small wonders, gathered for your birthday.", birthdayContinueLabel: "Step into your story",
+    themeTitle: 'The Alchemist & the Captain', heroPrefix: "A keepsake of", heroAccent: "stars & shared days.",
+    heroSubtitle: "For the moments that deserve a little more than a photograph.", introTitle: "A wish with your name on it.",
+    introMessage: "Take a breath. Look to the sky.\nThere is a little birthday magic waiting.",
+    monogramFirst: 'f', monogramLast: 'y', heroEyebrow: "A LITTLE BOOK IN SEVEN CHAPTERS",
+    keepsakeLabel: "A companion for the voyage", bottomHint: 'Use the arrows to turn the page',
+    footerNote: "A place for your words, memories, and birthday wishes.", footerDedication: "FOR THE DAYS WE SHARE",
+    introOverline: "ONE WISH · ONE WONDERFUL YOU", introFootnote: "A small celebration, made with a full heart.",
+    introChartNote: "A LITTLE LIGHT FOR THE JOURNEY", revealFootnote: "Your birthday story is waiting.",
+    letterOverline: "A NOTE TO KEEP", letterOccasion: "For your birthday", letterSignature: "Always in your corner,",
     replayLabel: 'Replay the wish', portraitReplayLabel: 'Replay wish', skipLabel: 'Read the book', startWishLabel: 'Make your wish',
     enterBookLabel: 'Open your story', closeLetterLabel: 'Close', readLetterLabel: 'Read your letter',
     makeWishLabel: 'Make a wish', endingCloseLabel: 'Close the book',
-    endingReplayLabel: 'Replay from the beginning', endingMessage: 'A little universe, ready to begin again.'
+    endingReplayLabel: 'Replay from the beginning', endingMessage: "Keep this chapter close. Begin again whenever you like."
   }, story.presentation);
   // Keep the original indices so older drafts can be restored.
   story.photos[3] = story.reveal.portrait;
@@ -29,8 +29,8 @@
   story.photoAlts[4] ||= story.photoAlts[1];
   const photoSlots = [
     {path: 'reveal.portrait', altPath: 'reveal.portraitAlt', label: 'Opening wish portrait', portrait: true},
-    {path: 'photos.1', altPath: 'photoAlts.1', label: 'Chapter 2 · Little constellations'},
-    {path: 'photos.2', altPath: 'photoAlts.2', label: 'Chapter 2 · Quiet horizons'},
+    {path: 'photos.1', altPath: 'photoAlts.1', label: 'Chapter 2 · Sunlit moments'},
+    {path: 'photos.2', altPath: 'photoAlts.2', label: 'Chapter 2 · A quiet afternoon'},
     {path: 'photos.0', altPath: 'photoAlts.0', label: 'Chapter 3 · Unforgettable day'},
     {path: 'photos.4', altPath: 'photoAlts.4', label: 'Chapter 3 · Beautiful feeling'}
   ];

@@ -54,9 +54,9 @@
 
   <main id="main" class="experience">
     <div class="hero">
-      <div class="eyebrow"><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/><span data-story-text="presentation.heroEyebrow">A STORY IN SEVEN CHAPTERS</span><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/></div>
-      <h1><span data-story-text="presentation.heroPrefix">Between</span> <em data-story-text="presentation.heroAccent">stars &amp; seas.</em></h1>
-      <p data-story-text="presentation.heroSubtitle">A little universe, bound just for you.</p>
+      <div class="eyebrow"><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/><span data-story-text="presentation.heroEyebrow">A LITTLE BOOK IN SEVEN CHAPTERS</span><img class="chapter-gem" src="assets/primogem.svg" alt="" aria-hidden="true"/></div>
+      <h1><span data-story-text="presentation.heroPrefix">A keepsake of</span> <em data-story-text="presentation.heroAccent">stars &amp; shared days.</em></h1>
+      <p data-story-text="presentation.heroSubtitle">For the moments that deserve a little more than a photograph.</p>
     </div>
 
     <section class="storybook-area" aria-label="Interactive birthday storybook">
@@ -83,10 +83,10 @@
     </section>
 
     <div class="controls" aria-label="Story controls">
-      <div class="captain-keepsake"><picture><source media="(prefers-reduced-motion: reduce)" srcset="assets/captain-charm-still.svg" type="image/svg+xml"/><img src="assets/captain-charm.svg" alt=""/></picture><span data-story-text="presentation.keepsakeLabel">The captain's company</span></div>
+      <div class="captain-keepsake"><picture><source media="(prefers-reduced-motion: reduce)" srcset="assets/captain-charm-still.svg" type="image/svg+xml"/><img src="assets/captain-charm.svg" alt=""/></picture><span data-story-text="presentation.keepsakeLabel">A companion for the voyage</span></div>
       <button class="nav-btn" type="button" id="prevBtn" aria-label="Previous pages"><span aria-hidden="true">←</span></button>
       <div class="progress-wrap">
-        <div class="chapter-label" id="chapterLabel" aria-live="polite">The beginning</div>
+        <div class="chapter-label" id="chapterLabel" aria-live="polite">A little keepsake</div>
         <div class="pagination" id="pagination" aria-label="Page progress"></div>
         <div class="progress-count" id="pageCount">01 / 07</div>
       </div>
@@ -94,13 +94,13 @@
     </div>
     <section class="story-ending" id="storyEnding" aria-label="Story ending" hidden>
       <button class="ending-button" id="closeStory" type="button">Close the book</button>
-      <div id="closedStory" hidden><p data-story-text="presentation.endingMessage">A little universe, ready to begin again.</p><button class="ending-button" id="restartStory" type="button">Replay from the beginning</button></div>
+      <div id="closedStory" hidden><p data-story-text="presentation.endingMessage">Keep this chapter close. Begin again whenever you like.</p><button class="ending-button" id="restartStory" type="button">Replay from the beginning</button></div>
       <span class="ending-status" id="endingStatus" role="status" aria-live="polite"></span>
     </section>
     <div class="bottom-hint" data-story-text="presentation.bottomHint">Use the arrows to turn the page</div>
   </main>
 
-  <footer class="footer"><span data-story-text="presentation.footerNote">An original keepsake of alchemy, starlight, and sea.</span><span><span data-story-text="presentation.footerDedication">ONLY YOU &amp; ME</span> <span class="footer-heart">♥</span></span></footer>
+  <footer class="footer"><span data-story-text="presentation.footerNote">A place for your words, memories, and birthday wishes.</span><span><span data-story-text="presentation.footerDedication">FOR THE DAYS WE SHARE</span> <span class="footer-heart">♥</span></span></footer>
 
   <div class="creator-credit" id="creatorCredit"><a href="https://github.com/OppenJayme" target="_blank" rel="noopener noreferrer">Made by OppenJayme <span aria-hidden="true">↗</span></a></div>
 
@@ -112,21 +112,22 @@
       <canvas id="birthdayStarlight" class="birthday-starlight" aria-hidden="true"></canvas>
       <div class="birthday-halo" aria-hidden="true"></div>
       <div class="birthday-welcome-copy">
-        <span class="birthday-overline" data-story-text="presentation.birthdayOverline">THE STARS HAVE A REASON TO CELEBRATE</span>
+        <span class="birthday-overline" data-story-text="presentation.birthdayOverline">TODAY BELONGS TO YOU</span>
         <div class="birthday-seal" aria-hidden="true"><span class="birthday-orbit orbit-gold"></span><span class="birthday-orbit orbit-blue"></span><span class="birthday-orbit orbit-fine"></span><img src="assets/alchemy-star.svg" alt=""/><svg class="birthday-core" viewBox="0 0 80 80"><path d="M40 4 50 30 76 40 50 50 40 76 30 50 4 40 30 30Z" fill="#e7ba70"/><path d="M40 4 40 40 4 40 30 30Z" fill="#fff0be"/><path d="M40 4 50 30 76 40 40 40Z" fill="#f3d395"/><path d="M40 40 76 40 50 50 40 76Z" fill="#b28246"/><path d="M4 40 40 40 40 76 30 50Z" fill="#d2a366"/></svg><span class="birthday-seal-spark">✦</span></div>
         <h2 id="birthdayTitle" class="birthday-title"><span class="birthday-line" data-birthday-letters data-story-text="presentation.birthdayFirstLine">Happy</span><span class="birthday-line birthday-gold" data-birthday-letters data-story-text="presentation.birthdaySecondLine">birthday.</span></h2>
-        <div class="birthday-recipient"><span class="birthday-dedication" data-story-text="presentation.birthdayToLabel">to</span> <span data-story-text="recipient">my love</span></div>
-        <p class="birthday-message" data-story-text="presentation.birthdayMessage">A little universe, made to celebrate you.</p>
-        <button id="birthdayContinue" class="birthday-continue" type="button"><span data-story-text="presentation.birthdayContinueLabel">Let the magic begin</span><span aria-hidden="true">↗</span></button>
+        <div class="birthday-recipient"><span class="birthday-dedication" data-story-text="presentation.birthdayToLabel">to</span> <span data-story-text="recipient">dear you</span></div>
+        <p class="birthday-message" data-story-text="presentation.birthdayMessage">A few small wonders, gathered for your birthday.</p>
+        <button id="birthdayContinue" class="birthday-continue" type="button"><span data-story-text="presentation.birthdayContinueLabel">Step into your story</span><span aria-hidden="true">↗</span></button>
       </div>
     </section>
     <div class="intro-invitation" id="introInvitation" hidden>
-      <span class="intro-overline" data-story-text="presentation.introOverline">A BIRTHDAY WISH · FOR YOU</span>
+      <span class="intro-overline" data-story-text="presentation.introOverline">ONE WISH · ONE WONDERFUL YOU</span>
       <div class="wish-portal" aria-hidden="true"><div class="portal-ring"></div><div class="portal-ring ring-inner"></div><span class="portal-star">✦</span><picture class="portal-captain"><source media="(prefers-reduced-motion: reduce)" srcset="assets/captain-charm-still.svg" type="image/svg+xml"/><img src="assets/captain-charm.svg" alt=""/></picture></div>
-      <h2 id="introTitle" data-story-text="presentation.introTitle">A wish, just for you.</h2>
-      <p data-story-text="presentation.introMessage">Some stars find their way to us.<br/>Some become our whole world.</p>
+      <h2 id="introTitle" data-story-text="presentation.introTitle">A wish with your name on it.</h2>
+      <p data-story-text="presentation.introMessage">Take a breath. Look to the sky.
+There is a little birthday magic waiting.</p>
       <button id="startWish" class="intro-primary wish-action" type="button"><span class="wish-action-icon" aria-hidden="true"><img class="button-gem" src="assets/primogem.svg" alt=""/></span><span data-story-text="presentation.startWishLabel">Make your wish</span></button>
-      <span class="intro-footnote" data-story-text="presentation.introFootnote">One little wish. A whole story waiting.</span>
+      <span class="intro-footnote" data-story-text="presentation.introFootnote">A small celebration, made with a full heart.</span>
     </div>
     <div class="character-stage" aria-hidden="true">
       <div class="character-aura"></div>
@@ -136,10 +137,10 @@
     </div>
     <div class="intro-reveal" id="introReveal" hidden>
       <div class="reveal-portrait"><img data-story-image="reveal.portrait" id="revealPortrait" src="assets/portrait-placeholder.svg" alt=""/><div class="portrait-border" aria-hidden="true"></div><span class="portrait-star" aria-hidden="true">✦</span></div>
-      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow" data-story-text="reveal.eyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient" data-story-text="recipient"></span><h2 id="revealTitle" data-story-text="reveal.title"></h2><p id="revealSubtitle" data-story-text="reveal.subtitle"></p><div class="reveal-actions"><button id="enterBook" class="intro-primary" type="button"><span data-story-text="presentation.enterBookLabel">Open your story</span> <span aria-hidden="true">↗</span></button><button id="replayPortraitWish" class="portrait-replay" type="button" disabled><span data-story-text="presentation.portraitReplayLabel">Replay wish</span> <span aria-hidden="true">↻</span></button></div><span class="intro-footnote" data-story-text="presentation.revealFootnote">The best chapters are still ahead.</span></div>
+      <div class="reveal-copy"><span class="intro-overline" id="revealEyebrow" data-story-text="reveal.eyebrow"></span><div class="five-stars" aria-label="Five stars"><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span><span aria-hidden="true">★</span></div><span class="reveal-recipient" id="revealRecipient" data-story-text="recipient"></span><h2 id="revealTitle" data-story-text="reveal.title"></h2><p id="revealSubtitle" data-story-text="reveal.subtitle"></p><div class="reveal-actions"><button id="enterBook" class="intro-primary" type="button"><span data-story-text="presentation.enterBookLabel">Open your story</span> <span aria-hidden="true">↗</span></button><button id="replayPortraitWish" class="portrait-replay" type="button" disabled><span data-story-text="presentation.portraitReplayLabel">Replay wish</span> <span aria-hidden="true">↻</span></button></div><span class="intro-footnote" data-story-text="presentation.revealFootnote">Your birthday story is waiting.</span></div>
     </div>
     <span class="intro-status" id="introStatus" role="status" aria-live="polite"></span>
-    <div class="intro-chart-note" data-story-text="presentation.introChartNote">LIYUE · A VOYAGE BENEATH THE STARS</div>
+    <div class="intro-chart-note" data-story-text="presentation.introChartNote">A LITTLE LIGHT FOR THE JOURNEY</div>
   </dialog>
 
   <dialog id="letterDialog" class="letter-dialog" aria-labelledby="letterTitle">
@@ -149,12 +150,12 @@
     </div>
     <button class="dialog-close" id="closeLetter" type="button" aria-label="Close letter"><span data-story-text="presentation.closeLetterLabel">Close</span> <span aria-hidden="true">×</span></button>
     <div class="dialog-inner">
-      <div class="letter-heading"><span class="overline" data-story-text="presentation.letterOverline">A LETTER FOR YOU</span><span class="letter-occasion" data-story-text="presentation.letterOccasion">On your birthday</span></div>
-      <h2 id="letterTitle">My dearest love,</h2>
-      <p>There are a thousand beautiful things I could wish for you today — more laughter, more peace, more moments that feel golden in hindsight.</p>
-      <p>But more than anything, I hope you always remember how deeply loved you are, not just on your birthday, but on every quiet ordinary day too.</p>
-      <p>Thank you for being the person who makes life feel lighter, warmer, and more meaningful.</p>
-      <div class="signature">All my love, always ✦</div>
+      <div class="letter-heading"><span class="overline" data-story-text="presentation.letterOverline">A NOTE TO KEEP</span><span class="letter-occasion" data-story-text="presentation.letterOccasion">For your birthday</span></div>
+      <h2 id="letterTitle">To my favorite human,</h2>
+      <p>On your birthday, I hope the world gives a little of your warmth back to you: easy laughter, good company, and time for the things you love.</p>
+      <p>I am glad I get to know you in the ordinary moments, too. The conversations, the small kindnesses, and the days when simply being together is enough.</p>
+      <p>May the year ahead make room for your dreams. Wherever it takes you, I hope you carry this with you: you matter to me, and I am cheering for you.</p>
+      <div class="signature">Always in your corner,</div>
       
     </div>
   </dialog>

@@ -220,10 +220,10 @@
   }
 
   const text = (id, value) => { document.getElementById(id).textContent = value; };
-  text('revealEyebrow', config.eyebrow || 'A once-in-a-lifetime kind of wish');
+  text('revealEyebrow', config.eyebrow || 'Some wishes become people');
   text('revealRecipient', window.BIRTHDAY_STORY.recipient);
-  text('revealTitle', config.title || 'My favorite person.');
-  text('revealSubtitle', config.subtitle || 'Of all the stars I could have wished for, I found you.');
+  text('revealTitle', config.title || 'My brightest wish.');
+  text('revealSubtitle', config.subtitle || 'Among all the wonderful things life could bring, I am grateful it brought me you.');
   const fallback = 'assets/portrait-placeholder.svg';
   const imagePath = String(config.portrait || fallback);
   const allowed = /^(?:https?:\/\/|assets\/|\.\/assets\/)/i.test(imagePath) || /^data:image\/(?:svg\+xml|png|jpeg|webp);base64,[a-z0-9+/]+=*$/i.test(imagePath);
@@ -265,7 +265,7 @@
     start.disabled = true; portraitReplay.disabled = true;
     setStage('wishing');
     window.BIRTHDAY_WISH?.play();
-    status.textContent = 'A little alchemy. A little courage.\nOne extraordinary you.';
+    status.textContent = 'A sky full of possibilities.\nA little birthday magic for you.';
     skip.focus({preventScroll: true});
     if (motion.matches) showReveal();
     else {

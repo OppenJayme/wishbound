@@ -150,7 +150,7 @@ const server = http.createServer((req, res) => {
     await page.waitForFunction(()=>document.getElementById('giftSaveStatus').textContent==='Saved in this browser.');
     assert.equal(await page.locator('#giftSaveButton').isDisabled(),false);
     await page.reload();await page.locator('#introEditGift').waitFor({state:'visible'});
-    assert.equal(await page.locator('#introTitle').textContent(),'A wish, just for you.');
+    assert.equal(await page.locator('#introTitle').textContent(),'A wish with your name on it.');
     await page.locator('#introEditGift').click();
     assert.equal(await page.locator('#introTitle').textContent(),'A wish for Alex');
 
@@ -211,7 +211,7 @@ const server = http.createServer((req, res) => {
     await page.locator('#giftImageForm button[type=submit]').click();
     assert(await page.evaluate(()=>WISHBOUND.story.photos[0].startsWith('data:image/jpeg;base64,')));
     await page.locator('#giftPhotosButton').click();
-    await page.getByRole('button',{name:'Chapter 2 · Little constellations',exact:true}).click();
+    await page.getByRole('button',{name:'Chapter 2 · Sunlit moments',exact:true}).click();
     await page.locator('#giftImageFile').setInputFiles({name:'invalid.svg',mimeType:'image/svg+xml',buffer:Buffer.from('<svg/>')});
     assert(await page.locator('#giftImageError').isVisible());
     assert(await page.locator('#giftImageApply').isDisabled());
@@ -283,13 +283,13 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
     assert.equal(await page.locator('#giftViewSelect').inputValue(),'opening');
     await page.locator('#giftDemoButton').click();
-    assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'my love');
+    assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'dear you');
     await page.reload();await page.locator('#introEditGift').waitFor({state:'visible'});
     assert(await page.evaluate(()=>JSON.stringify(WISHBOUND.snapshot())===JSON.stringify(WISHBOUND.defaults)),'Saved draft replaced the original demo on reload');
     // A second tab in the same browser also starts with the public template.
     const sibling=await context.newPage();await sibling.goto(base+'/ONE_FILE_PREVIEW.html');
     await sibling.locator('#introEditGift').waitFor({state:'visible'});
-    assert.equal(await sibling.evaluate(()=>WISHBOUND.story.recipient),'my love');await sibling.close();
+    assert.equal(await sibling.evaluate(()=>WISHBOUND.story.recipient),'dear you');await sibling.close();
     await page.locator('#introEditGift').click();
     assert.equal(await page.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
     assert.equal(await page.evaluate(()=>WISHBOUND.story.reveal.portrait),portrait);
@@ -429,7 +429,7 @@ const server = http.createServer((req, res) => {
     const phone=await fresh.newPage();phone.on('pageerror',e=>errors.push(e.message));
     await phone.goto(base+'/index.html');
     await phone.locator('#introEditGift').click();
-    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love','Draft leaked into another browser context');
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'dear you','Draft leaked into another browser context');
     assert(await phone.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'));
     await phone.locator('#giftViewSelect').selectOption('greeting');
     await phone.locator('[data-story-text="presentation.birthdayMessage"]').click();
@@ -468,10 +468,10 @@ const server = http.createServer((req, res) => {
     await phone.locator('#giftTextValue').fill('For Jamie');await phone.locator('#giftTextForm button[type=submit]').click();
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.presentation.footerDedication),'For Jamie');
     await phone.locator('#giftResetButton').click();await phone.locator('#giftConfirmReset').click();
-    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love');
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'dear you');
     await phone.waitForFunction(()=>document.getElementById('giftSaveStatus').textContent==='Saved in this browser.');
     await phone.reload();await phone.locator('#introEditGift').waitFor({state:'visible'});
-    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love');
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'dear you');
     // A draft from the previous release keeps the images that used to be shared.
     await phone.evaluate(async ()=>{
       const old=WISHBOUND.clone(WISHBOUND.defaults);old.recipient='Legacy draft';
@@ -482,7 +482,7 @@ const server = http.createServer((req, res) => {
       await new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').put({version:1,story:old},'current:/');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();
     });
     await phone.reload();await phone.locator('#introEditGift').waitFor({state:'visible'});
-    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love');
+    assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'dear you');
     await phone.locator('#introEditGift').click();
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'Legacy draft');
     assert(await phone.evaluate(()=>WISHBOUND.story.photos[3]===WISHBOUND.story.reveal.portrait&&WISHBOUND.story.photos[4]===WISHBOUND.story.photos[1]));
@@ -534,7 +534,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await motionPage.locator('.wish-canvas').getAttribute('data-active'),'false');
     await motionContext.close();
     for (const [width,file] of [[1440,'index.html'],[375,'ONE_FILE_PREVIEW.html']]) {
-      await checkBirthdayOpening(base+'/'+file, width, 'my love');
+      await checkBirthdayOpening(base+'/'+file, width, 'dear you');
     }
     const interruptContext = await browser.newContext({viewport:{width:375,height:812},reducedMotion:'no-preference'});
     const interruptPage = await interruptContext.newPage(); interruptPage.on('pageerror', e => errors.push(e.message));
