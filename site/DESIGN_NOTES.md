@@ -78,3 +78,7 @@ Use `story-config.js` for names, reveal messages, photo paths, chapter labels, l
 Use `editorial.css` for typography and letter layout, `voyage.css` for the entrance and background, and `styles.css` for book geometry and responsive layouts. Rebuild `ONE_FILE_PREVIEW.html` after source changes so the portable version matches.
 
 For the existing portrait alignment check, run `node intro-qa.cjs --journey --alignment` from the repository root. Setup and other checks are documented in the [main README](../README.md).
+
+## Chapter keepsakes
+
+Four original SVG accessories echo the alchemist and captain: a sketchbook and small potion, a white-flower bookmark, a crimson-sail ship in a bottle, and a violet charm with a red tassel. Selected narrative pages carry one keepsake in the lower margin. On phones, each sits after the chapter content so it cannot cover words or photos. They are decorative, stay out of the keyboard order, and are embedded in portable and downloaded gifts.

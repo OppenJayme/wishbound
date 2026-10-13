@@ -17,6 +17,7 @@ const [photo1, photo2, photo3, bookPortrait, galleryPhoto2] = STORY.photos.map(s
 const keepsakePortrait = `<div class="keepsake-portrait"><img data-story-image="photos.3" src="${bookPortrait}" alt="${escapeHTML(STORY.photoAlts[3])}" /></div>`;
 const primogem = 'assets/primogem.svg';
 const pageLabel = n => `<span class="page-number">${String(n).padStart(2, '0')}</span>`;
+const pageKeepsake = (kind, asset) => `<div class="page-keepsake keepsake-${kind}" aria-hidden="true"><img src="${asset}" alt="" draggable="false" /></div>`;
 
 const pages = {
   leftBase: `
@@ -55,7 +56,7 @@ const pages = {
       <div class="rule"></div>
       <p>${storyText('copy.somewhere_between_the_stars_above')}</p>
       <div class="quote-card"><p>${storyText('copy.ever_since_you_life_has')}</p></div>
-      <div class="calligraphy-flower">✦</div>
+      ${pageKeepsake('alchemy', 'assets/alchemist-keepsakes.svg')}
       ${pageLabel(1)}
     </div>`,
 
@@ -83,6 +84,7 @@ const pages = {
       <div class="list-line"><span class="num">01</span><p><strong>${storyText('copy.your_laugh')}</strong>${storyText('copy.it_can_change_the_temperature')}</p></div>
       <div class="list-line"><span class="num">02</span><p><strong>${storyText('copy.your_kindness')}</strong>${storyText('copy.even_the_quiet_kind_that')}</p></div>
       <div class="list-line"><span class="num">03</span><p><strong>${storyText('copy.your_presence')}</strong>${storyText('copy.somehow_every_place_feels_softer')}</p></div>
+      ${pageKeepsake('flower', 'assets/cecilia-bookmark.svg')}
       ${pageLabel(3)}
     </div>`,
 
@@ -102,6 +104,7 @@ const pages = {
       <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.the_first_time_we_set')}</strong><p>${storyText('copy.a_moment_i_would_gladly')}</p></div></div>
       <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.the_unexpected_detours')}</strong><p>${storyText('copy.sometimes_the_best_moments_are')}</p></div></div>
       <div class="timeline-row"><span class="timeline-star">✦</span><div><strong>${storyText('copy.everything_still_ahead')}</strong><p>${storyText('copy.there_are_so_many_horizons')}</p></div></div>
+      ${pageKeepsake('voyage', 'assets/crimson-sail-bottle.svg')}
       ${pageLabel(5)}
     </div>`,
 
@@ -123,6 +126,7 @@ const pages = {
       <p>${storyText('copy.some_feelings_deserve_more_than')}</p>
       <div class="envelope" aria-hidden="true"><div class="wax-seal">✦</div></div>
       <button class="reveal-btn open-letter" type="button">${storyText('presentation.readLetterLabel')} <span aria-hidden="true">↗</span></button>
+      ${pageKeepsake('electro', 'assets/electro-tassel.svg')}
       ${pageLabel(7)}
     </div>`,
 

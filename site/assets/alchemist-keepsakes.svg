@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 135">
+  <defs>
+    <linearGradient id="paper" x2="1" y2="1"><stop stop-color="#fff9e9"/><stop offset="1" stop-color="#ead8b7"/></linearGradient>
+    <linearGradient id="glass" x2=".8" y2="1"><stop stop-color="#efffff" stop-opacity=".9"/><stop offset="1" stop-color="#78a9ae" stop-opacity=".65"/></linearGradient>
+  </defs>
+  <ellipse cx="91" cy="119" rx="73" ry="7" fill="#765339" opacity=".13"/>
+  <g transform="rotate(-10 65 72)" stroke-linejoin="round">
+    <path d="M29 27H95Q103 27 103 35V111H29Q20 111 20 102V37Q20 27 29 27Z" fill="#304753" stroke="#a58a59" stroke-width="2"/>
+    <path d="M30 31H96V105H30Z" fill="url(#paper)" stroke="#c9b17c"/>
+    <path d="M26 31V104M34 107H98" fill="none" stroke="#d6bc87" stroke-width="2"/>
+    <path d="M37 43H85M37 48H70M37 88H87M37 94H76" stroke="#b7a078" stroke-width="1.2" opacity=".6"/>
+    <circle cx="63" cy="69" r="15" fill="none" stroke="#b49150"/>
+    <path d="M63 49 69 62 82 69 69 75 63 88 57 75 44 69 57 62Z" fill="none" stroke="#b49150"/>
+    <path d="m63 60 7 9-7 9-7-9Z" fill="#d7b875" stroke="#8f7445"/>
+    <path d="M90 30V49L96 44 101 49V30" fill="#819999"/>
+  </g>
+  <g stroke="#779493" stroke-width="2" stroke-linejoin="round">
+    <path d="M128 50V71L109 101Q103 112 116 116H151Q163 111 157 102L140 72V50" fill="url(#glass)"/>
+    <path d="M117 91H149L155 104Q160 111 150 112H118Q108 110 114 103Z" fill="#8fbcb1"/>
+    <path d="M125 48H143V54H125Z" fill="#d1ae7c" stroke="#9c8056"/>
+    <path d="M118 100 114 107M131 58V74" stroke="#fffbed" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="134" cy="98" r="3" fill="#e5f4d3" stroke="none"/>
+    <circle cx="145" cy="105" r="2" fill="#e5f4d3" stroke="none"/>
+  </g>
+  <g transform="translate(113 29) rotate(15)" stroke="#8a9278" stroke-width="1.2">
+    <path d="M0 0Q-9 14-8 30M-6 22Q-17 13-14 28Q-7 31-6 22" fill="#92a589"/>
+    <path d="M0 0Q-19-16-17-3Q-12 5 0 0Q-4-20 4-17Q10-8 0 0Q21-13 18-1Q11 7 0 0Q17 15 7 15Q0 10 0 0Q-10 19-13 10Q-12 3 0 0" fill="#fffdf0"/>
+    <circle r="3" fill="#d6b974"/>
+  </g>
+  <path d="m160 35 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#d1b471"/>
+</svg>
