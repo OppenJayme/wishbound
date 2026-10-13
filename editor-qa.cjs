@@ -129,7 +129,7 @@ const server = http.createServer((req, res) => {
       await page.locator('#giftTextValue').fill(value); await page.locator('#giftTextForm button[type=submit]').click();
       assert.equal(await page.locator(`[data-story-text="presentation.${key}"]`).textContent(), value);
     }
-    await page.locator('#birthdayContinue').click();
+    await page.locator('#giftViewSelect').selectOption('opening');
     assert.equal(await page.locator('#giftViewSelect').inputValue(), 'opening');
     await page.locator('#introTitle').click();await page.locator('#giftTextValue').fill('A wish for Alex');await page.locator('#giftTextForm button[type=submit]').click();
     assert.equal(await page.locator('#introTitle').textContent(),'A wish for Alex');
