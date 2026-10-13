@@ -73,7 +73,7 @@ See [DESIGN_NOTES.md](DESIGN_NOTES.md) for typography, the alchemy and nautical 
 
 ## Gift editor and export
 
-Text fragments and photos are bound through `data-story-text` and `data-story-image`. Each photo slot is independent. The editor synchronizes only matching desktop/mobile chapter views; the opening portrait has its own slot. Surrounding labels are editable through `presentation` fields and **Details & text**. Older three-photo drafts migrate without losing uploads. Keep these bindings when adding layouts.
+Text fragments and photos are bound through `data-story-text` and `data-story-image`. The opening reveal and Chapter 1 share `reveal.portrait` and `reveal.portraitAlt`. The legacy `photos.3` and `photoAlts.3` paths alias that shared portrait, so editing either view updates both and the animated photograph matches its book destination. The other four photo slots remain independent. Older drafts prefer the opening portrait, with a fallback to a personalized Chapter 1 portrait if the opening still uses the default placeholder. Surrounding labels are editable through `presentation` fields and **Details & text**. Older three-photo drafts migrate without losing uploads. Keep these bindings when adding layouts.
 
 Public-template drafts use IndexedDB, scoped to the current website path. Editable downloaded gifts use a random gift ID in a separate key namespace; re-exporting an editable gift preserves that ID. Each new gift downloaded from the public template receives a new ID. Photos are decoded, cropped, and re-encoded as JPEGs in the browser; uploads are not sent to a server.
 

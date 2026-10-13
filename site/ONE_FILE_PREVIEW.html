@@ -1517,20 +1517,24 @@ window.BIRTHDAY_STORY = {
     makeWishLabel: 'Make a wish'
   }, story.presentation);
   // Keep the original indices so older drafts can be restored.
-  story.photos[3] ||= story.reveal.portrait;
+  story.photos[3] = story.reveal.portrait;
   story.photos[4] ||= story.photos[1];
   story.photoAlts ||= ['A favorite memory', 'Another favorite memory', 'An adventure to remember'];
-  story.photoAlts[3] ||= story.reveal.portraitAlt;
+  story.photoAlts[3] = story.reveal.portraitAlt;
   story.photoAlts[4] ||= story.photoAlts[1];
   const photoSlots = [
     {path: 'reveal.portrait', altPath: 'reveal.portraitAlt', label: 'Opening wish portrait', portrait: true},
-    {path: 'photos.3', altPath: 'photoAlts.3', label: 'Chapter 1 · Portrait', portrait: true},
     {path: 'photos.1', altPath: 'photoAlts.1', label: 'Chapter 2 · Little constellations'},
     {path: 'photos.2', altPath: 'photoAlts.2', label: 'Chapter 2 · Quiet horizons'},
     {path: 'photos.0', altPath: 'photoAlts.0', label: 'Chapter 3 · Unforgettable day'},
     {path: 'photos.4', altPath: 'photoAlts.4', label: 'Chapter 3 · Beautiful feeling'}
   ];
-  const photoSlot = path => photoSlots.find(slot => slot.path === path);
+  const canonicalPath = path => ({'photos.3':'reveal.portrait','photoAlts.3':'reveal.portraitAlt'}[path] || path);
+  const photoSlot = path => photoSlots.find(slot => slot.path === canonicalPath(path));
+  function syncPortrait() {
+    story.photos[3] = story.reveal.portrait;
+    story.photoAlts[3] = story.reveal.portraitAlt;
+  }
   const defaults = clone(story);
   const template = document.documentElement.outerHTML;
   const fields = new Map();
@@ -1545,6 +1549,7 @@ window.BIRTHDAY_STORY = {
   const get = path => path.split('.').reduce((value, key) => value?.[key], story);
   const imagePath = value => typeof value === 'string' && /^(?:assets\/|\.\/assets\/|https?:\/\/|data:image\/(?:svg\+xml|png|jpeg|webp);base64,)/i.test(value);
   function set(path, value) {
+    path = canonicalPath(path);
     if (path === 'letter.paragraphs') {
       if (!Array.isArray(value) || value.length > 20 || value.some(p => typeof p !== 'string' || p.length > 5000)) throw Error('Keep the letter to 20 short paragraphs.');
       story.letter.paragraphs.splice(0, story.letter.paragraphs.length, ...value);
@@ -1558,17 +1563,21 @@ window.BIRTHDAY_STORY = {
     const keys = path.split('.'); const key = keys.pop();
     const parent = keys.reduce((value, key) => value[key], story);
     parent[key] = value;
+    if (path === "reveal.portrait" || path === "reveal.portraitAlt") syncPortrait();
   }
   function apply(saved) {
     if (!saved || typeof saved !== 'object') return;
     for (const path of fields.keys()) {
+      if (path === 'photos.3' || path === 'photoAlts.3') continue;
       const value = path.split('.').reduce((obj, key) => Object.prototype.hasOwnProperty.call(obj || {}, key) ? obj[key] : undefined, saved);
       if (value !== undefined) { try { set(path, value); } catch {} }
     }
     // Split formerly shared slots without discarding an existing uploaded photo.
     if (Array.isArray(saved.photos)) {
-      if (!saved.photos[3] && saved.reveal?.portrait) {
-        try { set('photos.3', saved.reveal.portrait); set('photoAlts.3', saved.reveal.portraitAlt || story.photoAlts[3]); } catch {}
+      // Prefer the opening portrait; recover a chapter-only upload from older drafts.
+      const opening = saved.reveal?.portrait, legacy = saved.photos[3];
+      if (imagePath(legacy) && (!imagePath(opening) || opening === 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgODAwIj4NCiAgPGRlZnM+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJza3kiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iIzEyMjczNiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzI5NDA0NCIvPjwvbGluZWFyR3JhZGllbnQ+DQogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJoYWxvIj48c3RvcCBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9Ii41Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGNjNjkzIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZHJlc3MiIHgyPSIuOCIgeTI9IjEiPjxzdG9wIHN0b3AtY29sb3I9IiNhODc1NjUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM1NDJlNDAiLz48L2xpbmVhckdyYWRpZW50Pg0KICA8L2RlZnM+DQogIDxwYXRoIGZpbGw9InVybCgjc2t5KSIgZD0iTTAgMGg2MDB2ODAwSDB6Ii8+DQogIDxjaXJjbGUgY3g9IjMwMCIgY3k9IjMwNSIgcj0iMjUwIiBmaWxsPSJ1cmwoI2hhbG8pIi8+DQogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UwYzU4YyIgc3Ryb2tlLW9wYWNpdHk9Ii4zNSI+PGNpcmNsZSBjeD0iMzAwIiBjeT0iMjk4IiByPSIyMTAiLz48Y2lyY2xlIGN4PSIzMDAiIGN5PSIyOTgiIHI9IjE4MyIvPjxwYXRoIGQ9Ik0zMDAgNjl2NDZtMCAzNjd2NDVNNjkgMjk4aDQ2bTM2NyAwaDQ1Ii8+PC9nPg0KICA8cGF0aCBkPSJNMTUyIDQwM2MtMzctMTEyLTE2LTIzNCA2Ni0yNzYgNTctMzAgMTQ0LTIwIDE4MiAzMCA1MiA2OSA0NSAxNjkgMTggMjUybC0xMjYgNTdaIiBmaWxsPSIjMTkyMzI5Ii8+DQogIDxwYXRoIGQ9Ik0yMzkgMzY0aDEyMmw5IDg5LTcxIDY3LTc0LTY3WiIgZmlsbD0iI2M2YTc4ZSIvPg0KICA8cGF0aCBkPSJNMTY3IDc1NGMtNS0xMzMgMTItMjY5IDgxLTMxNGw1MCAzOSA1Mi0zOWM4NSA0MCA5OCAxOTQgOTEgMzE0WiIgZmlsbD0idXJsKCNkcmVzcykiLz4NCiAgPGVsbGlwc2UgY3g9IjMwMCIgY3k9IjI3OCIgcng9Ijg4IiByeT0iMTE2IiBmaWxsPSIjZDBiNDk4Ii8+DQogIDxwYXRoIGQ9Ik0yMDkgMzA1Yy0xMC05MyAzLTE2NyA4OC0xNzYgNjctNyAxMDEgNDQgMTAzIDExOC02NC0xNi0xMDctNDktMTI2LTc2LTIgNTEtMjMgOTgtNjUgMTM0WiIgZmlsbD0iIzIwMjkyZCIvPg0KICA8cGF0aCBkPSJNMjExIDI2M2MtMjggMTI4LTQ3IDE2My0zNCAyNTdsNjEtNDVjLTE2LTY4LTIxLTEzMi0yNy0yMTJtMTgzLTM3YzM2IDEwOSA1MSAyMDggMzYgMjk0bC01OS0zN2MxNS04NSAyMC0xNzEgMjMtMjU3IiBmaWxsPSIjMjAyOTJkIi8+DQogIDxwYXRoIGQ9Ik0yNDkgNDQ2YzIwIDQ2IDgwIDU4IDEwMy0xIiBmaWxsPSJub25lIiBzdHJva2U9IiNkOGJiODAiIHN0cm9rZS13aWR0aD0iMyIvPg0KICA8cGF0aCBkPSJtMjk4IDQ3OSA4IDEyLTggMTItOC0xMloiIGZpbGw9IiNkOGJiODAiLz4NCiAgPGcgZmlsbD0iI2U0ZDBhMyI+PHBhdGggZD0ibTExNyAxMjYgMyAxMCAxMCAzLTEwIDMtMyAxMC0zLTEwLTEwLTMgMTAtM1pNNDczIDM1Nmw0IDEzIDEzIDQtMTMgNC00IDEzLTQtMTMtMTMtNCAxMy00WiIvPjxjaXJjbGUgY3g9IjQzNCIgY3k9IjEwMiIgcj0iMiIvPjxjaXJjbGUgY3g9Ijk0IiBjeT0iMzg3IiByPSIxLjciLz48L2c+DQogIDx0ZXh0IHg9IjMwMCIgeT0iNzE3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZTRkNWI4IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC1zdHlsZT0iaXRhbGljIj5hIHBvcnRyYWl0LCB3YWl0aW5nIGZvciB5b3U8L3RleHQ+DQo8L3N2Zz4NCg==')) {
+        try { set('reveal.portrait', legacy); set('reveal.portraitAlt', saved.photoAlts?.[3] || story.reveal.portraitAlt); } catch {}
       }
       if (!saved.photos[4] && saved.photos[1]) {
         try { set('photos.4', saved.photos[1]); set('photoAlts.4', saved.photoAlts?.[1] || story.photoAlts[1]); } catch {}
@@ -1577,6 +1586,7 @@ window.BIRTHDAY_STORY = {
     if (Array.isArray(saved.letter?.paragraphs)) { try { set('letter.paragraphs', saved.letter.paragraphs); } catch {} }
   }
   function refresh() {
+    syncPortrait();
     document.querySelectorAll('[data-story-text]').forEach(node => {
       const value = get(node.dataset.storyText);
       if (typeof value === 'string') node.textContent = value;
@@ -2016,7 +2026,7 @@ document.addEventListener('keydown', (event) => {
 
 const scene = document.getElementById('scene');
 scene.addEventListener('pointermove', event => {
-  if (event.pointerType === 'touch' || reduceMotion() || isTurning) return;
+  if (event.pointerType === 'touch' || reduceMotion() || isTurning || document.getElementById('wishIntro')?.open) return;
   const bounds = scene.getBoundingClientRect();
   const x = (event.clientX - bounds.left) / bounds.width - .5;
   const y = (event.clientY - bounds.top) / bounds.height - .5;
@@ -2099,11 +2109,17 @@ window.BIRTHDAY_BOOK = {
     render();
   },
   open: async () => {
+    bookEl.style.setProperty('--tilt-x', '0deg');
+    bookEl.style.setProperty('--tilt-y', '0deg');
     if (current === 0) goTo(1);
     await new Promise(resolve => {
       const settled = () => isTurning ? requestAnimationFrame(settled) : resolve();
       settled();
     });
+    // The desk-centering transition can outlast the page turn. Measure the
+    // portrait destination only once the whole book has reached its position.
+    getComputedStyle(bookEl).transform;
+    await Promise.all(bookEl.getAnimations().map(animation => animation.finished.catch(() => {})));
   },
   portrait: () => current === 1 ? (mobileMode() ? mobileCards[1] : sheets[1].querySelector('.front')).querySelector('.keepsake-portrait') : null,
   focus: () => document.getElementById('nextBtn').focus({preventScroll: true}),

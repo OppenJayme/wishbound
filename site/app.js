@@ -414,7 +414,7 @@ document.addEventListener('keydown', (event) => {
 
 const scene = document.getElementById('scene');
 scene.addEventListener('pointermove', event => {
-  if (event.pointerType === 'touch' || reduceMotion() || isTurning) return;
+  if (event.pointerType === 'touch' || reduceMotion() || isTurning || document.getElementById('wishIntro')?.open) return;
   const bounds = scene.getBoundingClientRect();
   const x = (event.clientX - bounds.left) / bounds.width - .5;
   const y = (event.clientY - bounds.top) / bounds.height - .5;
@@ -497,11 +497,17 @@ window.BIRTHDAY_BOOK = {
     render();
   },
   open: async () => {
+    bookEl.style.setProperty('--tilt-x', '0deg');
+    bookEl.style.setProperty('--tilt-y', '0deg');
     if (current === 0) goTo(1);
     await new Promise(resolve => {
       const settled = () => isTurning ? requestAnimationFrame(settled) : resolve();
       settled();
     });
+    // The desk-centering transition can outlast the page turn. Measure the
+    // portrait destination only once the whole book has reached its position.
+    getComputedStyle(bookEl).transform;
+    await Promise.all(bookEl.getAnimations().map(animation => animation.finished.catch(() => {})));
   },
   portrait: () => current === 1 ? (mobileMode() ? mobileCards[1] : sheets[1].querySelector('.front')).querySelector('.keepsake-portrait') : null,
   focus: () => document.getElementById('nextBtn').focus({preventScroll: true}),

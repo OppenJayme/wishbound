@@ -19,14 +19,14 @@ The available space depends on your browser window and display scaling, so diffe
 1. Open the preview and select **Edit your gift**. This opens your own copy at the very first wish screen, even if you were already reading the book. Your saved draft loads only after entering the editor.
 2. **Click a name or message** to edit it, then select **Apply text**. Use **View** to switch between the birthday greeting, opening wish, portrait reveal, and storybook. The birthday greeting stays still while editing so you can change its words. Use the book's arrows or chapter dots to visit other chapters.
 3. **Click a photo** to upload a JPG, PNG, or WebP image. Adjust its crop, zoom, and position, add a description, and select **Use photo**.
-4. Use **Details & text** for names, chapter labels, reveal settings, and all messages, including the header, footer, and surrounding labels. **Letter** edits the complete letter; separate paragraphs with a blank line. **Photos** gives access to all six independent photo slots, labeled by chapter.
+4. Use **Details & text** for names, chapter labels, reveal settings, and all messages, including the header, footer, and surrounding labels. **Letter** edits the complete letter; separate paragraphs with a blank line. **Photos** gives access to five photo slots, with one shared portrait for the opening reveal and Chapter 1, labeled by chapter.
 5. Select **Save draft** to save immediately in this browser. Edits also save automatically. Wait for the **Saved in this browser** confirmation. The public template stays unchanged.
 6. Select **Preview** to hide the editing outlines. Check the chapters, letter, and photos, then select **Back to editing** if you want more changes.
 7. Select **Download gift** to save your personalized birthday website as one HTML file. Open that file in a browser to check it before sharing.
 
 Uploaded photos are cropped and resized in your browser. Portraits use a 3:4 crop; memory photos use square crops. Uploads can be up to 20 MB each.
 
-Each photo has its own upload and crop. Replacing one does not change another chapter’s photo. Desktop and mobile show the same photo for each matching chapter. Older saved drafts keep their existing photos when shared slots are split.
+The opening reveal and Chapter 1 share one portrait and crop. Editing either portrait updates both, so the photograph carried into the book matches its destination. The four memory photos remain independent. Desktop and mobile show the same photo for each matching chapter. Older drafts use their opening portrait for both scenes; if only the Chapter 1 portrait was personalized, that photo is recovered as the shared portrait.
 
 Keep headings and paragraphs short enough to fit the book. The default wording is romantic, so read through every chapter when adapting it for a different recipient.
 

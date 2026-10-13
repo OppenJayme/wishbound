@@ -21,20 +21,24 @@
     makeWishLabel: 'Make a wish'
   }, story.presentation);
   // Keep the original indices so older drafts can be restored.
-  story.photos[3] ||= story.reveal.portrait;
+  story.photos[3] = story.reveal.portrait;
   story.photos[4] ||= story.photos[1];
   story.photoAlts ||= ['A favorite memory', 'Another favorite memory', 'An adventure to remember'];
-  story.photoAlts[3] ||= story.reveal.portraitAlt;
+  story.photoAlts[3] = story.reveal.portraitAlt;
   story.photoAlts[4] ||= story.photoAlts[1];
   const photoSlots = [
     {path: 'reveal.portrait', altPath: 'reveal.portraitAlt', label: 'Opening wish portrait', portrait: true},
-    {path: 'photos.3', altPath: 'photoAlts.3', label: 'Chapter 1 · Portrait', portrait: true},
     {path: 'photos.1', altPath: 'photoAlts.1', label: 'Chapter 2 · Little constellations'},
     {path: 'photos.2', altPath: 'photoAlts.2', label: 'Chapter 2 · Quiet horizons'},
     {path: 'photos.0', altPath: 'photoAlts.0', label: 'Chapter 3 · Unforgettable day'},
     {path: 'photos.4', altPath: 'photoAlts.4', label: 'Chapter 3 · Beautiful feeling'}
   ];
-  const photoSlot = path => photoSlots.find(slot => slot.path === path);
+  const canonicalPath = path => ({'photos.3':'reveal.portrait','photoAlts.3':'reveal.portraitAlt'}[path] || path);
+  const photoSlot = path => photoSlots.find(slot => slot.path === canonicalPath(path));
+  function syncPortrait() {
+    story.photos[3] = story.reveal.portrait;
+    story.photoAlts[3] = story.reveal.portraitAlt;
+  }
   const defaults = clone(story);
   const template = document.documentElement.outerHTML;
   const fields = new Map();
@@ -49,6 +53,7 @@
   const get = path => path.split('.').reduce((value, key) => value?.[key], story);
   const imagePath = value => typeof value === 'string' && /^(?:assets\/|\.\/assets\/|https?:\/\/|data:image\/(?:svg\+xml|png|jpeg|webp);base64,)/i.test(value);
   function set(path, value) {
+    path = canonicalPath(path);
     if (path === 'letter.paragraphs') {
       if (!Array.isArray(value) || value.length > 20 || value.some(p => typeof p !== 'string' || p.length > 5000)) throw Error('Keep the letter to 20 short paragraphs.');
       story.letter.paragraphs.splice(0, story.letter.paragraphs.length, ...value);
@@ -62,17 +67,21 @@
     const keys = path.split('.'); const key = keys.pop();
     const parent = keys.reduce((value, key) => value[key], story);
     parent[key] = value;
+    if (path === "reveal.portrait" || path === "reveal.portraitAlt") syncPortrait();
   }
   function apply(saved) {
     if (!saved || typeof saved !== 'object') return;
     for (const path of fields.keys()) {
+      if (path === 'photos.3' || path === 'photoAlts.3') continue;
       const value = path.split('.').reduce((obj, key) => Object.prototype.hasOwnProperty.call(obj || {}, key) ? obj[key] : undefined, saved);
       if (value !== undefined) { try { set(path, value); } catch {} }
     }
     // Split formerly shared slots without discarding an existing uploaded photo.
     if (Array.isArray(saved.photos)) {
-      if (!saved.photos[3] && saved.reveal?.portrait) {
-        try { set('photos.3', saved.reveal.portrait); set('photoAlts.3', saved.reveal.portraitAlt || story.photoAlts[3]); } catch {}
+      // Prefer the opening portrait; recover a chapter-only upload from older drafts.
+      const opening = saved.reveal?.portrait, legacy = saved.photos[3];
+      if (imagePath(legacy) && (!imagePath(opening) || opening === 'assets/portrait-placeholder.svg')) {
+        try { set('reveal.portrait', legacy); set('reveal.portraitAlt', saved.photoAlts?.[3] || story.reveal.portraitAlt); } catch {}
       }
       if (!saved.photos[4] && saved.photos[1]) {
         try { set('photos.4', saved.photos[1]); set('photoAlts.4', saved.photoAlts?.[1] || story.photoAlts[1]); } catch {}
@@ -81,6 +90,7 @@
     if (Array.isArray(saved.letter?.paragraphs)) { try { set('letter.paragraphs', saved.letter.paragraphs); } catch {} }
   }
   function refresh() {
+    syncPortrait();
     document.querySelectorAll('[data-story-text]').forEach(node => {
       const value = get(node.dataset.storyText);
       if (typeof value === 'string') node.textContent = value;

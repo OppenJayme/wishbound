@@ -218,8 +218,10 @@ const server = http.createServer((req, res) => {
     await page.locator('#giftImageDialog [data-close-editor]').click();
     // Give every remaining slot a different image; replacing one must leave the others untouched.
     const slots=await page.evaluate(()=>WISHBOUND.photoSlots);
-    assert.equal(slots.length,6);
+    assert.equal(slots.length,5);
     const photoValues={'reveal.portrait':portrait};
+    assert.equal(await page.evaluate(()=>WISHBOUND.story.photos[3]),portrait,'Opening portrait must connect to Chapter 1');
+    await page.evaluate(()=>{const s=WISHBOUND.snapshot();WISHBOUND.set('photos.3','assets/moonlight.svg');WISHBOUND.refresh();if(WISHBOUND.story.reveal.portrait!=='assets/moonlight.svg')throw Error('Book portrait edit did not update opening');WISHBOUND.apply(s);WISHBOUND.refresh();});
     for (const [index,slot] of slots.entries()) {
       if (slot.path==='reveal.portrait') continue;
       const before=await page.evaluate(()=>WISHBOUND.photoSlots.map(s=>WISHBOUND.get(s.path)));
@@ -229,7 +231,7 @@ const server = http.createServer((req, res) => {
         return c.toDataURL('image/png').split(',')[1];
       },index);
       await page.locator('#giftPhotosButton').click();
-      assert.equal(await page.locator('#giftPhotoGrid button').count(),6);
+      assert.equal(await page.locator('#giftPhotoGrid button').count(),5);
       await page.getByRole('button',{name:slot.label,exact:true}).click();
       await page.locator('#giftImageFile').setInputFiles({name:`photo-${index}.png`,mimeType:'image/png',buffer:Buffer.from(colorPng,'base64')});
       await page.waitForFunction(()=>!document.getElementById('giftImageApply').disabled);
@@ -242,7 +244,7 @@ const server = http.createServer((req, res) => {
       assert(await instances.count()>0);
       assert(await instances.evaluateAll((imgs,{src,alt})=>imgs.every(i=>i.src===src&&i.alt===alt),{src:after[index],alt:slot.label}));
     }
-    assert.equal(new Set(Object.values(photoValues)).size,6,'Independent slots lost their distinct images');
+    assert.equal(new Set(Object.values(photoValues)).size,slots.length,'Independent slots lost their distinct images');
     // Restore only one placeholder, then put its upload back; no other slot may change.
     const slot=slots[2]; const snapshot=await page.evaluate(()=>WISHBOUND.snapshot());
     await page.locator('#giftPhotosButton').click();await page.getByRole('button',{name:slot.label,exact:true}).click();
@@ -552,7 +554,7 @@ const server = http.createServer((req, res) => {
     assert.equal(fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8'),originalTemplate);
     await fresh.close();
     assert.deepEqual(errors,[]);
-    console.log('Editor checks passed: cinematic birthday opening and automatic handoff, personalized greeting exports, still greeting editing on desktop/mobile, greeting skip/Escape/reduced-motion cleanup, no first-paint book flash, portrait replay, manual browser-only saving, template/draft isolation, inline and edge text, six independent photos, legacy draft migration, letter, crop, invalid uploads, preview, reset, and standalone HTML exports.');
+    console.log('Editor checks passed: cinematic birthday opening and automatic handoff, personalized greeting exports, still greeting editing on desktop/mobile, greeting skip/Escape/reduced-motion cleanup, no first-paint book flash, portrait replay, manual browser-only saving, template/draft isolation, inline and edge text, one linked portrait and four independent memory photos, legacy draft migration, letter, crop, invalid uploads, preview, reset, and standalone HTML exports.');
   } catch(e) {
     await page.screenshot({path:'qa/editor-failure.png',fullPage:true}).catch(()=>{}); throw e;
   } finally { await browser.close(); await new Promise(resolve=>server.close(resolve)); }
