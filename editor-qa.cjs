@@ -24,8 +24,8 @@ const server = http.createServer((req, res) => {
   const originalTemplate=fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8');
   fs.mkdirSync('qa', {recursive:true});
   // Hold startup for longer than the reported flash and inspect actual painted frames.
-  async function checkStartup(markup, width, label, enabled = true) {
-    const startupContext = await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+  async function checkStartup(markup, width, label, enabled = true, reducedMotion = 'reduce') {
+    const startupContext = await browser.newContext({viewport:{width,height:900},reducedMotion});
     const startupPage = await startupContext.newPage();
     startupPage.on('pageerror', e => errors.push(e.message));
     let release;
@@ -53,7 +53,9 @@ const server = http.createServer((req, res) => {
       assert(frames.length > 1, 'No startup frames were captured');
       if (enabled) {
         assert(frames.every(frame => frame.starting && frame.book === '0' && frame.wish === 'grid' && !frame.modal), 'The book flashed during delayed startup: '+JSON.stringify(frames));
-        assert(await startupPage.locator('#introInvitation').isVisible());
+        assert(await startupPage.locator('#birthdayWelcome').isVisible());
+        assert(await startupPage.locator('#birthdayTitle').textContent().then(text => text.includes('Happy') && text.includes('birthday.')));
+        if (reducedMotion === 'no-preference') assert.equal(await startupPage.locator('.birthday-welcome-copy').evaluate(el => getComputedStyle(el).opacity), '0', 'The complete title flashed before its animation');
       } else {
         assert(frames.every(frame => !frame.starting && frame.book === '1' && frame.wish === 'none'), 'A disabled wish appeared during startup');
       }
@@ -75,11 +77,45 @@ const server = http.createServer((req, res) => {
       console.log(`First-paint startup passed: ${label}, ${width}px, ${frames.length} delayed frames, wish ${enabled ? 'enabled' : 'disabled'}.`);
     } finally { release(); await startupContext.close(); }
   }
+  async function checkBirthdayOpening(url, width, recipient, firstLine = 'Happy', secondLine = 'birthday.') {
+    const recording = process.env.RECORD_BIRTHDAY_VIDEO === '1' ? {recordVideo:{dir:'qa/birthday-videos',size:{width,height:900}}} : {};
+    const birthdayContext = await browser.newContext({viewport:{width,height:900},reducedMotion:'no-preference',...recording});
+    const birthdayPage = await birthdayContext.newPage();
+    birthdayPage.on('pageerror', e => errors.push(e.message));
+    await birthdayPage.route('https://**', route => route.abort());
+    try {
+      await birthdayPage.goto(url);
+      assert.equal(await birthdayPage.locator('#wishIntro').getAttribute('data-welcome'), 'playing');
+      assert.equal(await birthdayPage.locator('#birthdayTitle').getAttribute('aria-label'), firstLine+' '+secondLine);
+      assert.equal(await birthdayPage.locator('.birthday-recipient [data-story-text="recipient"]').textContent(), recipient);
+      assert(await birthdayPage.locator('.birthday-letter').count() > 5);
+      assert.equal(await birthdayPage.locator('#birthdayStarlight').getAttribute('data-active'), 'true');
+      assert.equal(await birthdayPage.locator('#introInvitation').isVisible(), false);
+      await birthdayPage.waitForTimeout(2100);
+      const pixels = await birthdayPage.locator('#birthdayStarlight').evaluate(canvas => {
+        const data = canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+        let painted = 0; for(let i=3;i<data.length;i+=4) if(data[i]>10) painted++;
+        return painted;
+      });
+      assert(pixels > 50, 'Birthday starlight did not paint');
+      assert.equal(await birthdayPage.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+      const bounds = await birthdayPage.locator('.birthday-welcome-copy').boundingBox();
+      assert(bounds.x >= 0 && bounds.x+bounds.width <= width+1 && bounds.y >= 0 && bounds.y+bounds.height <= 900, 'Birthday greeting is clipped');
+      await birthdayPage.screenshot({path:`qa/editor-birthday-${width}.png`});
+      await birthdayPage.waitForFunction(() => !document.getElementById('wishIntro').dataset.welcome);
+      assert(await birthdayPage.locator('#startWish').isVisible());
+      assert.equal(await birthdayPage.locator('#birthdayStarlight').getAttribute('data-active'), 'false');
+      assert.equal(await birthdayPage.evaluate(() => document.activeElement.id), 'startWish');
+      await birthdayPage.screenshot({path:`qa/editor-birthday-handoff-${width}.png`});
+      console.log(`Birthday opening passed: ${width}px, gold lettering, projected starlight, automatic handoff, focus, and cleanup.`);
+    } finally { await birthdayContext.close(); }
+  }
   try {
     for (const width of [1440,375]) {
       await checkStartup(fs.readFileSync(path.join(dir,'index.html'),'utf8'), width, 'source');
       await checkStartup(originalTemplate, width, 'portable');
     }
+    await checkStartup(originalTemplate, 1440, 'animated', true, 'no-preference');
     await page.goto(base + '/ONE_FILE_PREVIEW.html');
     assert.equal(await page.evaluate(()=>document.body.dataset.giftMode),'template');
     await page.locator('#introEditGift').click();
@@ -87,6 +123,17 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#giftViewSelect').inputValue(),'opening');
     assert(await page.locator('#giftToolbar').isVisible());
     assert(await page.locator('#giftToolbar').evaluate(el=>el.parentElement.id==='wishIntro'),'Toolbar is blocked by the modal');
+    const birthdayCopy = {birthdayFirstLine:'Wonderful', birthdaySecondLine:'birthday, Alex!'};
+    await page.locator('#giftViewSelect').selectOption('greeting');
+    assert.equal(await page.locator('#wishIntro').getAttribute('data-welcome'), 'editing');
+    assert.equal(await page.locator('#birthdayStarlight').getAttribute('data-active'), 'false');
+    for (const [key,value] of Object.entries(birthdayCopy)) {
+      await page.locator(`[data-story-text="presentation.${key}"]`).click();
+      await page.locator('#giftTextValue').fill(value); await page.locator('#giftTextForm button[type=submit]').click();
+      assert.equal(await page.locator(`[data-story-text="presentation.${key}"]`).textContent(), value);
+    }
+    await page.locator('#giftViewSelect').selectOption('opening');
+    assert.equal(await page.locator('#giftViewSelect').inputValue(), 'opening');
     await page.locator('#introTitle').click();await page.locator('#giftTextValue').fill('A wish for Alex');await page.locator('#giftTextForm button[type=submit]').click();
     assert.equal(await page.locator('#introTitle').textContent(),'A wish for Alex');
     // The explicit save button stores the draft locally and keeps the demo original.
@@ -195,7 +242,7 @@ const server = http.createServer((req, res) => {
     for(const other of slots.filter(s=>s.path!==slot.path)) assert.equal(await page.evaluate(path=>WISHBOUND.get(path),other.path),photoValues[other.path]);
     await page.evaluate(snapshot=>{WISHBOUND.apply(snapshot);WISHBOUND.refresh();},snapshot);
     // Click the actual surrounding labels, including the caption formerly ignoring pointer events.
-    const edgeValues={};
+    const edgeValues={...birthdayCopy};
     for(const key of ['monogramFirst','monogramLast','themeTitle','heroEyebrow','keepsakeLabel','bottomHint','footerNote','footerDedication']) {
       const value=key.startsWith('monogram')?'A':'Our '+key;
       await page.locator(`[data-story-text="presentation.${key}"]:visible`).click();
@@ -244,6 +291,7 @@ const server = http.createServer((req, res) => {
     giftHtml=fs.readFileSync(await download.path(),'utf8');
     assert(!giftHtml.includes('id="giftToolbar"'));
     await checkStartup(giftHtml, 1280, 'exported');
+    await checkBirthdayOpening(base+'/personalized.html', 1280, 'Alex Rivera', birthdayCopy.birthdayFirstLine, birthdayCopy.birthdaySecondLine);
     const giftContext=await browser.newContext({viewport:{width:1280,height:900},reducedMotion:'reduce'});
     const giftPage=await giftContext.newPage();giftPage.on('pageerror',e=>errors.push(e.message));
     await giftPage.route('https://**',route=>route.abort());
@@ -279,6 +327,11 @@ const server = http.createServer((req, res) => {
     await phone.locator('#introEditGift').click();
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love','Draft leaked into another browser context');
     assert(await phone.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'));
+    await phone.locator('#giftViewSelect').selectOption('greeting');
+    await phone.locator('[data-story-text="presentation.birthdayMessage"]').click();
+    await phone.locator('#giftTextValue').fill('A universe for Jamie'); await phone.locator('#giftTextForm button[type=submit]').click();
+    assert.equal(await phone.locator('[data-story-text="presentation.birthdayMessage"]').textContent(), 'A universe for Jamie');
+    await phone.screenshot({path:'qa/editor-birthday-mobile-edit.png'});
     await phone.locator('#giftViewSelect').selectOption('reveal');
     await phone.locator('#revealRecipient').click();
     await phone.locator('#giftTextValue').fill('Jamie');await phone.locator('#giftTextForm button[type=submit]').click();
@@ -359,6 +412,9 @@ const server = http.createServer((req, res) => {
     const motionContext=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
     const motionPage=await motionContext.newPage();motionPage.on('pageerror',e=>errors.push(e.message));
     await motionPage.goto(base+'/ONE_FILE_PREVIEW.html');
+    assert.equal(await motionPage.locator('#wishIntro').getAttribute('data-welcome'), 'playing');
+    await motionPage.locator('#birthdayContinue').click();
+    await motionPage.waitForFunction(() => !document.getElementById('wishIntro').dataset.welcome);
     await motionPage.evaluate(()=>{
       window.replayStarts=0;const play=BIRTHDAY_WISH.play;
       BIRTHDAY_WISH.play=()=>{window.replayStarts++;return play();};
@@ -376,12 +432,28 @@ const server = http.createServer((req, res) => {
     await motionPage.locator('#skipIntro').click();await motionPage.waitForFunction(()=>!document.getElementById('wishIntro').open);
     assert.equal(await motionPage.locator('.wish-canvas').getAttribute('data-active'),'false');
     await motionContext.close();
+    for (const [width,file] of [[1440,'index.html'],[375,'ONE_FILE_PREVIEW.html']]) {
+      await checkBirthdayOpening(base+'/'+file, width, 'my love');
+    }
+    const interruptContext = await browser.newContext({viewport:{width:375,height:812},reducedMotion:'no-preference'});
+    const interruptPage = await interruptContext.newPage(); interruptPage.on('pageerror', e => errors.push(e.message));
+    await interruptPage.route('https://**', route => route.abort());
+    await interruptPage.goto(base+'/ONE_FILE_PREVIEW.html');
+    await interruptPage.keyboard.press('Escape');
+    await interruptPage.waitForFunction(() => !document.getElementById('wishIntro').open);
+    assert.equal(await interruptPage.locator('#birthdayStarlight').getAttribute('data-active'), 'false');
+    await interruptPage.goto(base+'/ONE_FILE_PREVIEW.html');
+    await interruptPage.emulateMedia({reducedMotion:'reduce'});
+    await interruptPage.waitForFunction(() => !document.getElementById('wishIntro').dataset.welcome);
+    assert(await interruptPage.locator('#startWish').isVisible());
+    assert.equal(await interruptPage.locator('#birthdayStarlight').getAttribute('data-active'), 'false');
+    await interruptContext.close();
     assert.deepEqual(writeRequests,[],'Editor attempted to write changes over the network');
     assert.equal(await (await page.request.get(base+'/ONE_FILE_PREVIEW.html')).text(),originalTemplate,'Public template changed after editing');
     assert.equal(fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8'),originalTemplate);
     await fresh.close();
     assert.deepEqual(errors,[]);
-    console.log('Editor checks passed: portrait replay with normal/reduced motion, repeated replay and standalone gifts, manual browser-only saving on desktop and mobile, first-screen editing, template/draft isolation on reload and new tabs, return to template, read-only network use, inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
+    console.log('Editor checks passed: cinematic birthday opening and automatic handoff, personalized greeting exports, still greeting editing on desktop/mobile, greeting skip/Escape/reduced-motion cleanup, no first-paint book flash, portrait replay, manual browser-only saving, template/draft isolation, inline and edge text, six independent photos, legacy draft migration, letter, crop, invalid uploads, preview, reset, and standalone HTML exports.');
   } catch(e) {
     await page.screenshot({path:'qa/editor-failure.png',fullPage:true}).catch(()=>{}); throw e;
   } finally { await browser.close(); await new Promise(resolve=>server.close(resolve)); }

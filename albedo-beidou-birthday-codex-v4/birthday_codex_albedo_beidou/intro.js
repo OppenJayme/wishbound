@@ -12,6 +12,12 @@
   const status = document.getElementById('introStatus');
   const portrait = document.getElementById('revealPortrait');
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const welcome = document.getElementById('birthdayWelcome');
+  const welcomeCanvas = document.getElementById('birthdayStarlight');
+  const welcomeContinue = document.getElementById('birthdayContinue');
+  const welcomeContext = welcomeCanvas.getContext('2d');
+  let welcomeTimer, welcomeExitTimer, welcomeFrame = 0;
+  let welcomeWidth = 0, welcomeHeight = 0;
   let revealTimer;
   let manifestTimer;
   let leaveTimer;
@@ -21,6 +27,118 @@
   let veil;
   let destination;
   const animations = new Set();
+
+  function splitBirthdayTitle() {
+    let order = 0;
+    const lines = [...welcome.querySelectorAll('[data-birthday-letters]')];
+    document.getElementById('birthdayTitle').setAttribute('aria-label', lines.map(line => line.textContent).join(' '));
+    if (!intro.dataset.welcome || motion.matches) return;
+    lines.forEach(line => {
+      const value = line.textContent;
+      // Keep unusually long custom greetings as ordinary wrapping text.
+      if (value.length > 80) return;
+      const fragment = document.createDocumentFragment();
+      for (const letter of Array.from(value)) {
+        const glyph = document.createElement('span');
+        glyph.className = 'birthday-letter'; glyph.textContent = letter;
+        glyph.setAttribute('aria-hidden', 'true');
+        glyph.style.setProperty('--letter-order', order++);
+        fragment.append(glyph);
+      }
+      line.replaceChildren(fragment);
+    });
+  }
+
+  function resizeWelcome() {
+    welcomeWidth = document.documentElement.clientWidth;
+    welcomeHeight = innerHeight;
+    const density = Math.min(devicePixelRatio || 1, 1.5);
+    welcomeCanvas.width = Math.round(welcomeWidth * density);
+    welcomeCanvas.height = Math.round(welcomeHeight * density);
+    welcomeContext?.setTransform(density, 0, 0, density, 0, 0);
+  }
+
+  function stopWelcome() {
+    clearTimeout(welcomeTimer); clearTimeout(welcomeExitTimer);
+    cancelAnimationFrame(welcomeFrame); welcomeFrame = 0;
+    welcomeCanvas.dataset.active = 'false';
+    welcomeContext?.clearRect(0, 0, welcomeWidth, welcomeHeight);
+    welcome.hidden = true;
+    delete intro.dataset.welcome;
+  }
+
+  function finishWelcome(immediate = false) {
+    if (!intro.dataset.welcome || !intro.open) return;
+    if (intro.dataset.welcome === 'leaving' && !immediate) return;
+    clearTimeout(welcomeTimer);
+    cancelAnimationFrame(welcomeFrame); welcomeFrame = 0;
+    welcomeCanvas.dataset.active = 'false';
+    const complete = () => {
+      stopWelcome(); invitation.hidden = false; start.disabled = false;
+      intro.setAttribute('aria-labelledby', 'introTitle');
+      start.focus({preventScroll: true});
+      document.dispatchEvent(new CustomEvent('wishbound:intro'));
+    };
+    if (immediate || motion.matches || intro.dataset.welcome === 'editing') complete();
+    else {
+      invitation.hidden = false;
+      intro.dataset.welcome = 'leaving';
+      welcomeExitTimer = setTimeout(complete, 800);
+    }
+  }
+
+  function playWelcome() {
+    welcome.hidden = false; invitation.hidden = true; start.disabled = true;
+    intro.dataset.welcome = 'playing';
+    intro.setAttribute('aria-labelledby', 'birthdayTitle');
+    splitBirthdayTitle();
+    welcomeContinue.focus({preventScroll: true});
+    resizeWelcome();
+    const began = performance.now();
+    const seed = n => { const v = Math.sin(n * 127.1 + 31.7) * 43758.5453; return v - Math.floor(v); };
+    const particles = Array.from({length: welcomeWidth < 600 ? 64 : 112}, (_, i) => ({
+      angle: seed(i + 1) * Math.PI * 2,
+      radius: .35 + seed(i + 7) * .8, depth: (seed(i + 13) - .5) * 360,
+      size: .7 + seed(i + 23) * 1.8, blue: i % 9 === 0
+    }));
+    function draw(now) {
+      if (!intro.open || intro.dataset.welcome !== 'playing' || !welcomeContext) return;
+      const t = (now - began) / 1000;
+      const expansion = 1 - Math.pow(1 - Math.min(1, t / 2), 3);
+      const radius = Math.min(380, welcomeWidth * .43);
+      welcomeContext.clearRect(0, 0, welcomeWidth, welcomeHeight);
+      welcomeContext.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i], angle = p.angle + t * .12;
+        // Rotate a cloud of points in 3D, then project it toward the camera.
+        const x = Math.cos(angle) * radius * p.radius * (.1 + .9 * expansion);
+        const z = p.depth + Math.sin(angle) * 90;
+        const rotation = t * .16;
+        const depth = z * Math.cos(rotation) - x * Math.sin(rotation);
+        const perspective = 700 / (700 + depth);
+        const px = welcomeWidth / 2 + (x * Math.cos(rotation) + z * Math.sin(rotation)) * perspective;
+        const py = welcomeHeight * .44 + Math.sin(angle) * radius * p.radius * .7 * expansion * perspective;
+        const size = p.size * perspective;
+        const alpha = Math.min(1, t * 1.5) * (.22 + .45 * (Math.sin(t * 1.8 + i) * .5 + .5));
+        welcomeContext.fillStyle = p.blue ? `rgba(142,214,231,${alpha})` : `rgba(246,212,154,${alpha})`;
+        welcomeContext.beginPath();
+        if (i % 7 === 0) {
+          welcomeContext.moveTo(px, py - size * 3);
+          welcomeContext.lineTo(px + size, py); welcomeContext.lineTo(px, py + size * 3); welcomeContext.lineTo(px - size, py);
+        } else welcomeContext.arc(px, py, size, 0, Math.PI * 2);
+        welcomeContext.closePath(); welcomeContext.fill();
+      }
+      welcomeFrame = requestAnimationFrame(draw);
+    }
+    if (welcomeContext) {
+      welcomeCanvas.dataset.active = 'true';
+      welcomeFrame = requestAnimationFrame(draw);
+    }
+    welcomeTimer = setTimeout(() => finishWelcome(), 3400);
+  }
+
+  document.addEventListener('wishbound:refresh', splitBirthdayTitle);
+  welcomeContinue.addEventListener('click', () => finishWelcome());
 
   function cleanupJourney() {
     journey++;
@@ -143,6 +261,7 @@
 
   function makeWish() {
     if (stage !== 'ready') return;
+    stopWelcome();
     start.disabled = true; portraitReplay.disabled = true;
     setStage('wishing');
     window.BIRTHDAY_WISH?.play();
@@ -157,6 +276,7 @@
 
   function finish(openBook) {
     if (!intro.open || stage === 'leaving') return;
+    stopWelcome();
     portraitReplay.disabled = true;
     clearTimeout(revealTimer);
     clearTimeout(manifestTimer);
@@ -182,8 +302,9 @@
     else leaveTimer = setTimeout(close, 400);
   }
 
-  function showIntro(restart = false) {
+  function showIntro(restart = false, celebrate = false) {
     if (intro.open && !restart) return;
+    stopWelcome();
     cleanupJourney();
     clearTimeout(revealTimer);
     clearTimeout(manifestTimer);
@@ -199,7 +320,8 @@
     if (!intro.open) intro.showModal();
     document.dispatchEvent(new CustomEvent('wishbound:intro'));
     intro.scrollTop = 0;
-    start.focus({preventScroll: true});
+    if (celebrate && !motion.matches) playWelcome();
+    else start.focus({preventScroll: true});
   }
 
   start.addEventListener('click', makeWish);
@@ -212,19 +334,30 @@
     makeWish();
   });
   intro.addEventListener('cancel', event => { event.preventDefault(); finish(false); });
-  intro.addEventListener('close', () => { clearTimeout(revealTimer); clearTimeout(manifestTimer); clearTimeout(leaveTimer); cleanupJourney(); window.BIRTHDAY_WISH?.stop(); document.dispatchEvent(new CustomEvent('wishbound:intro')); });
+  intro.addEventListener('close', () => { stopWelcome(); clearTimeout(revealTimer); clearTimeout(manifestTimer); clearTimeout(leaveTimer); cleanupJourney(); window.BIRTHDAY_WISH?.stop(); document.dispatchEvent(new CustomEvent('wishbound:intro')); });
   motion.addEventListener('change', event => {
+    if (event.matches) finishWelcome(true);
     if (event.matches) window.BIRTHDAY_WISH?.stop();
     if (event.matches && ['wishing', 'manifesting'].includes(stage)) showReveal();
     if (event.matches && stage === 'travelling') finish(false);
   });
   window.addEventListener('resize', () => { if (stage === 'travelling') finish(false); });
+  window.addEventListener('resize', () => { if (intro.dataset.welcome === 'playing') resizeWelcome(); });
   window.WISHBOUND_INTRO = {
-    start: () => showIntro(true),
-    reveal: () => { showIntro(true); showReveal(); }
+    start: (celebrate = false) => showIntro(true, celebrate),
+    reveal: () => { showIntro(true); showReveal(); },
+    greeting: () => {
+      showIntro(true); welcome.hidden = false; invitation.hidden = true;
+      intro.dataset.welcome = 'editing';
+      intro.setAttribute('aria-labelledby', 'birthdayTitle');
+      splitBirthdayTitle();
+      document.dispatchEvent(new CustomEvent('wishbound:intro'));
+      welcomeContinue.focus({preventScroll: true});
+    }
   };
   replay.hidden = config.enabled === false;
-  if (config.enabled !== false) showIntro();
+  if (config.enabled !== false) showIntro(false, true);
+  else stopWelcome();
   // Remove the first-paint cover only after the real modal is ready (or disabled).
   document.documentElement.removeAttribute('data-wishbound-starting');
 })();

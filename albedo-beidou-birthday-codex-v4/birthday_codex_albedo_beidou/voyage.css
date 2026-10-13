@@ -221,3 +221,74 @@ body { background: #10212a; }
 .portrait-replay:focus-visible { outline: 2px solid #f2d697; outline-offset: 4px; }
 .portrait-replay:disabled { opacity: .5; cursor: default; }
 @media (max-width: 900px) { .reveal-actions { justify-content: center; } }
+
+/* A brief birthday title sequence, then the familiar wish invitation. */
+.birthday-welcome { position: relative; z-index: 2; display: grid; place-items: center; width: 100%; min-height: 100svh; padding: 85px 24px 70px; text-align: center; isolation: isolate; }
+.birthday-welcome[hidden], .intro-invitation[hidden] { display: none; }
+.is-editing .birthday-welcome { min-height: calc(100svh - 155px); padding-block: 70px 40px; }
+.birthday-starlight { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+.birthday-halo { position: absolute; inset: 5% 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at 50% 43%, #e7b66720, transparent 53%); }
+.birthday-welcome-copy { position: relative; width: min(760px, 100%); perspective: 1100px; }
+.birthday-overline { display: block; color: #ccbc98; font: 500 9px/1.8 var(--type-ui); letter-spacing: .24em; }
+.birthday-seal { position: relative; width: 140px; height: 120px; margin: 22px auto 20px; display: grid; place-items: center; perspective: 700px; }
+.birthday-seal img { position: absolute; width: 96px; height: 96px; opacity: .65; transform: translateZ(-10px); }
+.birthday-core { width: 58px; height: 58px; filter: drop-shadow(0 0 18px #e5c18460); transform: translateZ(18px); }
+.birthday-orbit { position: absolute; inset: -4px -8px; border: 1px solid #e4c38785; border-radius: 50%; box-shadow: 0 0 14px #dcbe7420; transform: rotateX(64deg) rotateZ(-28deg); }
+.birthday-orbit::after { content: ''; position: absolute; top: 8%; left: 17%; width: 5px; height: 5px; border-radius: 50%; background: #f7d9a1; box-shadow: 0 0 12px #f7d9a1; }
+.orbit-blue { inset: -17px -14px; border-color: #92cbd55e; transform: rotateX(-57deg) rotateY(20deg) rotateZ(35deg); }
+.orbit-blue::after { background: #9ae0f0; box-shadow: 0 0 12px #9ae0f0; }
+.orbit-fine { inset: -10px -25px; border-style: dashed; border-color: #d4bb833b; transform: rotateX(22deg) rotateY(52deg) rotateZ(-18deg); }
+.orbit-fine::after { display: none; }
+.birthday-seal-spark { position: absolute; right: 2px; bottom: 18px; color: #f1d8a7; font: 22px var(--type-display); text-shadow: 0 0 14px #f1d8a780; }
+.birthday-title { position: relative; margin: 0; font: 400 clamp(75px, 7.8vw, 112px)/.88 var(--type-display); letter-spacing: -.045em; perspective: 1000px; }
+.birthday-line { display: block; overflow-wrap: anywhere; color: #f6ecd5; text-shadow: 0 1px 0 #c6b895, 0 2px 0 #827568, 0 8px 22px #030e1d70; }
+.birthday-gold { font-style: italic; color: #e8c486; padding: 0 .12em .14em; margin-top: .04em; text-shadow: 0 1px 0 #ae834c, 0 2px 0 #75563c, 0 8px 25px #030e1d80, 0 0 45px #e5bd6a18; }
+.birthday-letter { display: inline-block; transform-origin: 50% 85%; white-space: pre; }
+.birthday-recipient { margin: 20px auto 0; max-width: 26ch; color: #e3d3b3; font: italic clamp(25px, 2.6vw, 36px)/1.3 var(--type-display); overflow-wrap: anywhere; }
+.birthday-dedication { color: #94b3b7; font-size: .65em; margin-right: .1em; }
+.birthday-message { margin: 17px auto 25px; max-width: 44ch; color: #adc2c5; font: 15px/1.7 var(--type-reading); text-wrap: balance; }
+.birthday-continue { display: inline-flex; align-items: center; gap: 26px; min-height: 44px; padding: 10px 0; border: 0; border-bottom: 1px solid #d7b87b55; color: #e6d3ad; background: transparent; font: 11px var(--type-ui); cursor: pointer; }
+.birthday-continue:hover { color: #fff0cb; border-bottom-color: #e7c790; }
+.birthday-continue:focus-visible { outline: 2px solid #e7c790; outline-offset: 7px; }
+.wish-intro[data-welcome='playing'] .birthday-letter { animation: birthdayLetterArrive 1.2s cubic-bezier(.18,.7,.22,1) both; animation-delay: calc(.2s + var(--letter-order, 0) * .045s); }
+.wish-intro[data-welcome='playing'] .birthday-overline { animation: birthdaySoftArrive 1s ease both; }
+.wish-intro[data-welcome='playing'] .birthday-seal { animation: birthdaySealArrive 1.6s cubic-bezier(.16,.7,.2,1) both; }
+.wish-intro[data-welcome='playing'] .birthday-recipient { animation: birthdaySoftArrive .9s ease .9s both; }
+.wish-intro[data-welcome='playing'] .birthday-message { animation: birthdaySoftArrive .9s ease 1.15s both; }
+.wish-intro[data-welcome='playing'] .birthday-continue { animation: birthdaySoftArrive .8s ease 1.4s both; }
+.wish-intro[data-welcome='playing'] .orbit-gold { animation: birthdayGoldOrbit 8s ease-in-out both; }
+.wish-intro[data-welcome='playing'] .orbit-blue { animation: birthdayBlueOrbit 9s ease-in-out both; }
+.wish-intro[data-welcome='leaving'] .birthday-welcome-copy { animation: birthdayWelcomeAway .7s cubic-bezier(.45,0,.3,1) forwards; }
+.wish-intro[data-welcome='leaving'] .birthday-starlight, .wish-intro[data-welcome='leaving'] .birthday-halo { opacity: 0; transition: opacity .7s; }
+.wish-intro[data-welcome='leaving'] .intro-invitation { position: absolute; top: 50%; left: 50%; animation: birthdayWishArrive .7s ease .1s both; }
+@keyframes birthdayLetterArrive { from { opacity: 0; transform: translate3d(10px, 26px, -130px) rotateY(-50deg) rotateX(24deg); filter: blur(5px); } 70% { opacity: 1; filter: blur(0); } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes birthdaySoftArrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes birthdaySealArrive { from { opacity: 0; transform: translateZ(-120px) rotateY(-28deg) scale(.7); } to { opacity: 1; transform: none; } }
+@keyframes birthdayGoldOrbit { from { transform: rotateX(64deg) rotateZ(-70deg); } to { transform: rotateX(64deg) rotateZ(50deg); } }
+@keyframes birthdayBlueOrbit { from { transform: rotateX(-57deg) rotateY(20deg) rotateZ(65deg); } to { transform: rotateX(-57deg) rotateY(20deg) rotateZ(-25deg); } }
+@keyframes birthdayWelcomeAway { to { opacity: 0; transform: translateY(-20px) translateZ(-120px) scale(.94); filter: blur(3px); } }
+@keyframes birthdayWishArrive { from { opacity: 0; transform: translate(-50%, calc(-50% + 16px)); } to { opacity: 1; transform: translate(-50%, -50%); } }
+@media (max-width: 600px) {
+  .birthday-welcome { padding: 85px 22px 65px; }
+  .is-editing .birthday-welcome { min-height: calc(100svh - 215px); padding-block: 75px 35px; }
+  .birthday-overline { font-size: 8px; letter-spacing: .16em; max-width: 29ch; margin: auto; }
+  .birthday-seal { width: 112px; height: 100px; margin: 22px auto 18px; }
+  .birthday-seal img { width: 80px; height: 80px; }
+  .birthday-core { width: 48px; height: 48px; }
+  .birthday-title { font-size: clamp(65px, 19vw, 96px); }
+  .birthday-recipient { margin-top: 15px; font-size: 27px; }
+  .birthday-message { font-size: 13px; margin: 15px auto 20px; }
+}
+@media (max-height: 650px) and (min-width: 601px) {
+  .birthday-welcome { padding-block: 65px 40px; }
+  .birthday-seal { height: 70px; width: 100px; margin-block: 12px; }
+  .birthday-seal img { width: 65px; height: 65px; }
+  .birthday-core { width: 38px; height: 38px; }
+  .birthday-title { font-size: 76px; }
+  .birthday-recipient { margin-top: 8px; font-size: 27px; }
+  .birthday-message { margin-block: 10px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .birthday-starlight { display: none; }
+  .wish-intro[data-welcome='leaving'] .intro-invitation { transform: translate(-50%, -50%); }
+}

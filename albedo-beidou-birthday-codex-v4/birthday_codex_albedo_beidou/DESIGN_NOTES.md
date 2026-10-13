@@ -32,6 +32,10 @@ On smaller screens, the book uses readable single pages rather than a scaled-dow
 
 ## Entrance and portrait transition
 
+On first opening, a short Happy Birthday title sequence celebrates the configured recipient. Letters turn into view with a gentle stagger, gold and blue rings tilt in perspective, and projected starlight spreads around the greeting. After about four seconds, the greeting crossfades into the wish invitation. A visible **Let the magic begin** button can continue sooner.
+
+The greeting is part of the existing entrance dialog, keeping the book covered from first paint. Entering the editor goes to the wish screen immediately; the **Birthday greeting** view holds the greeting still for direct text editing. Preview and exported gifts play it, while replaying a wish avoids repeating the greeting. Closing, skipping, changing reduced-motion preferences, and entering the editor stop its timers and particle loop.
+
 The wish begins with a cloud aperture, followed by a blue comet that turns gold before arriving at the portrait. Frame lighting, a constellation backdrop, and five stars introduce the recipient.
 
 Selecting **Open your story** carries the portrait toward the book and settles it into the first spread. The reveal and chapter use the same configured image. The transition measures the destination image so the floating portrait can hand off at the same visible position and size.
@@ -43,6 +47,16 @@ Replaying from a later chapter preserves the reading position and uses a recedin
 The entrance uses Canvas 2D for projected clouds, comet geometry, and trails. Cloud lighting is prepared on offscreen canvases and reused during the animation. Pixel density is capped to limit rendering cost.
 
 The portrait flight uses the Web Animations API. The book uses CSS transforms. The frame loop ends after the reveal or when the sequence is cancelled. These effects work without an external animation runtime or WebGL dependency.
+
+### Birthday opening references
+
+The birthday sequence uses an original implementation inspired by these motion studies:
+
+- [Making Stagger Reveal Animations for Text](https://tympanus.net/codrops/2020/06/17/making-stagger-reveal-animations-for-text/) by Manoela Ilic: the rhythm of sequential letter reveals.
+- [Building an On-Scroll 3D Circle Text Animation](https://tympanus.net/codrops/2025/02/03/building-an-on-scroll-3d-circle-text-animation-with-three-js-and-shaders/) by David Faure: circular forms and perspective.
+- [3D Typing Effects with Three.js](https://tympanus.net/codrops/2022/11/08/3d-typing-effects-with-three-js/) by Ksenia Kondrashova: typography accompanied by particles in depth.
+
+Their code, assets, and dependencies are not bundled. The birthday sequence uses CSS transforms and a small Canvas 2D particle loop, with pixel density and particle counts capped for phones. The text remains editable HTML.
 
 ## Accessibility and controls
 
