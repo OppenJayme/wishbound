@@ -82,7 +82,7 @@ In **Edit your gift** mode, use **♫ Music & background** in the editor toolbar
 1. Select **Edit your gift**, then open **Music & background** in the editor toolbar. It is available while editing the entrance or the book.
 2. Choose an MP3, M4A, OGG, WAV, or WebM audio file smaller than 15 MB.
 3. Set **Start music at**, adjust **Volume**, and leave **Enable background music** checked.
-4. Replay the wish to check the portrait start, or choose book opening to keep the wish silent.
+4. Replay the wish to check the portrait start, or choose book opening to keep the wish silent. Playback also works while editing: use **View → Storybook** to test the book start. Text edits do not stop the music.
 5. Use **Preview** to test playback, then return to editing to download your gift. The soundtrack, start scene, volume, and background are included in the HTML file.
 
 Adding, replacing, removing, and configuring music is available only while editing. Preview and gift viewing keep play/pause controls for the selected soundtrack; they cannot open the upload/settings panel.

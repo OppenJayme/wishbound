@@ -207,7 +207,7 @@ const photoStrip = (first, second) => `<div class="mobile-photo-strip"><img data
 const mobileTemplates = [
   pages.cover,
   pages.openingLeft.replace('<h2>', `${keepsakePortrait}<h2>`),
-  pages.thingsLeft.replace(pageLabel(3), photoStrip(1, 2)),
+  pages.thingsLeft.replace(pageLabel(3), `<div class="mobile-photo-strip mobile-captioned-photos">${[1,2].map((slot,index) => `<figure><img data-story-image="photos.${slot}" src="${safeImage(STORY.photos[slot])}" alt="${escapeHTML(STORY.photoAlts[slot])}"><figcaption>${storyText(index ? 'copy.quiet_horizons' : 'copy.little_constellations')}</figcaption></figure>`).join('')}</div>`),
   pages.memoriesLeft.replace(pageLabel(5), photoStrip(0, 4)),
   pages.letterLeft,
   pages.wishesRight,

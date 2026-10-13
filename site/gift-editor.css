@@ -10,6 +10,7 @@ body.is-editing { padding-bottom: 105px; }
 .is-editing [data-story-text]:hover, .is-editing [data-story-text]:focus-visible { outline: 2px solid #9b6056; background: #d9ba7640; }
 .is-editing img[data-story-image] { cursor: pointer; outline: 3px dashed #b98763; outline-offset: 3px; }
 .is-editing img[data-story-image]:hover, .is-editing img[data-story-image]:focus-visible { outline-style: solid; }
+.is-editing .photo-mini { transform: none; }
 .gift-toolbar { position: fixed; z-index: 100; bottom: 16px; left: 50%; transform: translateX(-50%); width: min(840px, calc(100% - 28px)); border: 1px solid #c8b89166; border-radius: 10px; padding: 13px 16px; color: #f4ead7; background: #132b32f5; box-shadow: 0 12px 45px #0008; font: 13px var(--type-ui); }
 .gift-toolbar-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .gift-toolbar-top strong { font-weight: 600; }

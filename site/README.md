@@ -96,3 +96,5 @@ The builder embeds local MP3, M4A, OGG, WAV, and WebM assets as well as images. 
 Run `npm run test:media` after soundtrack changes. It uses a generated test tone to check upload and restoration, both start scenes, silent priming through the full wish, fades, pause/replay, exported audio, phone controls, and blocked playback. It requires the same Playwright and Chrome setup as the other browser checks.
 
 Music and scenery settings are restricted to `giftMode === "draft"`. The settings button moves into the editor toolbar so it remains usable inside the opening modal. `wishbound:mode` synchronizes mode changes; a body attribute observer covers other mode updates. Leaving editing closes settings and disables uploads and configuration inputs. Handlers also check editing mode. Preview, template viewing, and gifts retain only play/pause controls when a soundtrack exists.
+
+Soundtrack playback also works while editing: switching View to the book starts the selected track, and editing text does not pause it. Re-enabling background music or choosing a start scene clears an earlier manual pause; normal replay continues to respect pause.

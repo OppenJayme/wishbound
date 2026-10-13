@@ -32,7 +32,15 @@ const server=http.createServer((req,res)=>{
  await page.locator('#visitorMusicEdit').click();
  await page.locator('#visitorMusicFile').setInputFiles({name:'test-tone.wav',mimeType:'audio/wav',buffer:wav});
  await page.waitForFunction(()=>document.getElementById('visitorMusicStatus').textContent.includes('saved'));
+ await page.locator('#visitorMusicEnabled').uncheck();
+ await page.locator('#visitorMusicEnabled').check();
  await page.locator('#visitorMusicStart').selectOption('book');
+ await page.locator('#visitorMusicClose').click();
+ await page.locator('#giftViewSelect').selectOption('book');
+ await page.waitForFunction(()=>{const a=document.getElementById('visitorMusicAudio');return !a.paused&&a.volume>.3&&a.currentTime>0});
+ await page.evaluate(()=>WISHBOUND.refresh());
+ assert(!(await page.locator('#visitorMusicAudio').evaluate(a=>a.paused)),'Editing text does not stop the soundtrack');
+ await page.locator('#visitorMusicEdit').click();
  await page.evaluate(()=>document.getElementById('giftPreviewButton').click());
  assert(!(await page.locator('#visitorMusicDialog').evaluate(d=>d.open)),'Leaving edit mode closes settings');
  assert(await page.locator('#visitorMusicFile').isDisabled(),'Leaving edit mode disables upload');
@@ -48,6 +56,9 @@ const server=http.createServer((req,res)=>{
  assert(!(await page.locator('#visitorMusicEdit').isVisible()),'Settings hidden in preview');
  assert(await page.locator('#visitorMusicFile').isDisabled(),'Upload disabled in preview');
  await page.locator('#startWish').click();
+ await page.waitForFunction(()=>{const a=document.getElementById('visitorMusicAudio');return !a.paused&&a.volume>.3});
+ await page.locator('#visitorRevealMusic').click();
+ await page.locator('#replayPortraitWish').click();
  assert(await page.locator('#visitorMusicAudio').evaluate(a=>a.paused),'Manual pause survives replay');
  await page.locator('#visitorRevealMusic').click();await page.waitForFunction(()=>{const a=document.getElementById('visitorMusicAudio');return !a.paused&&a.volume>.3});
  const time=await page.locator('#visitorMusicAudio').evaluate(a=>a.currentTime);

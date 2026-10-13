@@ -748,3 +748,7 @@ body{
   .book{transform:none;transition:none}
   .mobile-card.active{animation:none}
 }
+
+.mobile-captioned-photos figure{margin:0;min-width:0}
+.mobile-captioned-photos img{height:auto}
+.mobile-captioned-photos figcaption{margin-top:8px;text-align:center;font:italic 15px/1.35 var(--type-display,Georgia);color:#7a6437;overflow-wrap:anywhere}
