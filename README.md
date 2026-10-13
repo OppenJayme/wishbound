@@ -103,3 +103,5 @@ For a default soundtrack in your own repository, put a file at `site/assets/our-
 ```
 
 Use `"book"` for `startAt` to begin on entering or turning the book. `volume` is 0–100; `fadeMs` is 0–5000 milliseconds. An empty `src` leaves the soundtrack optional. Visitor choices override these defaults. Run `npm run preview:build` after changing the file or settings. Local audio under `assets/` is embedded in the portable preview, subject to the 15 MB limit. HTTPS tracks remain external in the preview; gift downloads try to embed them and require the audio host to allow browser access. For reliable offline sharing, upload the track through **Music & background** or use a local asset.
+
+Music follows the active scene while editing. Returning to the birthday greeting or opening wish stops it; a book-only track stays silent in the portrait editor. Starting Preview stops editor playback and begins a fresh soundtrack at the selected portrait or book moment. A track auditioned in settings stops on closing the panel if its selected scene is not active. Editing text within the book keeps its background music playing, and normal portrait-to-book playback remains continuous.

@@ -34,7 +34,19 @@
   const canEdit = () => document.body.dataset.giftMode === 'draft';
   const settingsHome = $('visitorMusicEdit').parentElement;
   const editableInputs = [...$('visitorMusicDialog').querySelectorAll('input,select'), $('visitorMusicReset'), $('visitorBackgroundReset')];
+  let lastMode = document.body.dataset.giftMode;
+  const appropriateScene = () => {
+    const intro = $('wishIntro');
+    return intro?.open ? intro.dataset.stage === 'revealed' && prefs.startAt === 'portrait' : bookOpened;
+  };
   function syncEditing() {
+    const mode = document.body.dataset.giftMode;
+    if (mode !== lastMode) {
+      lastMode = mode;
+      bookOpened = false;
+      pause();
+      if (mode === 'preview' && audio.getAttribute('src')) audio.currentTime = 0;
+    }
     const editing = canEdit();
     $('visitorMusicEdit').hidden = !editing;
     editableInputs.forEach(input => { input.disabled = !editing; });
@@ -145,6 +157,7 @@
   }
   $('visitorMusicEdit').onclick = () => { if (canEdit()) $('visitorMusicDialog').showModal(); };
   $('visitorMusicClose').onclick = () => $('visitorMusicDialog').close();
+  $('visitorMusicDialog').addEventListener('close', () => { if (!appropriateScene()) pause(); });
   $('visitorMusicDialog').onclick = e => { if (e.target === $('visitorMusicDialog')) e.target.close(); };
   $('visitorMusicPlay').onclick = toggle;
   $('visitorRevealMusic').onclick = toggle;
@@ -159,7 +172,7 @@
     else if (!intro?.open && bookOpened) play(false, true);
   };
   audio.addEventListener('error', () => { cancelFade(); playbackStatus('This track could not load. Choose another audio file.'); syncButtons(); });
-  $('visitorMusicEnabled').onchange = e => { if (!canEdit()) return; prefs.enabled=e.target.checked; if (prefs.enabled) manuallyPaused=false; save(); if (!prefs.enabled) pause(true); else if ((bookOpened || $('wishIntro')?.dataset.stage === 'revealed') && audio.src) play(); syncButtons(); };
+  $('visitorMusicEnabled').onchange = e => { if (!canEdit()) return; prefs.enabled=e.target.checked; if (prefs.enabled) manuallyPaused=false; save(); if (!prefs.enabled) pause(true); else if (appropriateScene() && audio.src) play(); syncButtons(); };
   for (const input of document.querySelectorAll('input[name="visitorTheme"]')) input.onchange = () => { if (canEdit() && input.checked) { prefs.theme=input.value; save(); applyTheme(); } };
   $('visitorMusicFile').onchange = async e => {
     if (!canEdit()) { e.target.value=''; return; }
@@ -171,7 +184,7 @@
     chooseAudio(URL.createObjectURL(musicBlob),file.name);
     try { await store('put','music',musicBlob); status('Music saved in this browser. It will also be included when you download your gift.'); }
     catch (_) { status('Music works for this visit and downloads, but browser storage could not save it.'); }
-    if ((bookOpened || $('wishIntro')?.dataset.stage === 'revealed') && prefs.enabled) play();
+    if (appropriateScene() && prefs.enabled) play();
   };
   $('visitorMusicReset').onclick = async () => {
     if (!canEdit()) return;
@@ -196,7 +209,6 @@
   const canAutoStart = () => prefs.enabled && !manuallyPaused;
   document.addEventListener('click', e => {
     if (!canAutoStart()) return;
-    if (e.target.closest('#startWish,#replayPortraitWish') && prefs.startAt === 'portrait') play(true, true);
     if (e.target.closest('#enterBook,#skipIntro,#cornerNext,#nextBtn,.cover')) {
       bookOpened = true; play(false, true);
     }
@@ -208,8 +220,16 @@
   }, true);
   document.addEventListener('wishbound:intro', () => {
     const intro = $('wishIntro');
-    if (intro?.open && intro.dataset.stage === 'revealed' && prefs.startAt === 'portrait' && canAutoStart()) play(false, true);
-    if (!intro?.open && !audio.paused && audio.volume === 0 && !bookOpened) pause();
+    if (intro?.dataset.stage === 'ready') {
+      bookOpened = false;
+      pause();
+    } else if (intro?.open && intro.dataset.stage === 'wishing') {
+      if (prefs.startAt === 'portrait' && canAutoStart()) play(true, true);
+      else pause();
+    } else if (intro?.open && intro.dataset.stage === 'revealed') {
+      if (prefs.startAt === 'portrait' && canAutoStart()) play(false, true);
+      else pause();
+    } else if (!intro?.open && !bookOpened) pause();
   });
   function blobData(blob) { return new Promise((resolve,reject) => {const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob);}); }
   window.WISHBOUND_MEDIA = {
