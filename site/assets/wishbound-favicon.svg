@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Wishbound — the captain's birthday wish</title>
+  <defs>
+    <linearGradient id="captain-red" x2="0" y2="1"><stop stop-color="#873447"/><stop offset="1" stop-color="#391e34"/></linearGradient>
+    <linearGradient id="captain-hair" x2=".6" y2="1"><stop stop-color="#493038"/><stop offset="1" stop-color="#1d1d2a"/></linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="#102534" stroke="#e7c488" stroke-width="2"/>
+  <path d="M7 44C6 24 11 8 32 7 52 6 58 25 57 48L52 59H12Z" fill="url(#captain-hair)"/>
+  <path d="M9 59 14 50 26 45H39L50 50 55 59Z" fill="url(#captain-red)"/>
+  <path d="M25 41V48L32 54 40 47V39Z" fill="#d8a384"/>
+  <path d="M15 24C15 13 49 13 49 26V33C48 45 40 49 32 49 22 47 16 41 15 31Z" fill="#f2ceaa"/>
+  <path d="M12 25C13 12 24 8 33 10 47 10 53 22 51 31L43 27 34 17 24 25 13 30Z" fill="url(#captain-hair)"/>
+  <path d="M14 27 20 43 17 53 10 45Z" fill="#302332"/>
+  <path d="M49 24 45 43 49 53 55 43Z" fill="#302332"/>
+  <path d="M16 27 48 34" fill="none" stroke="#3b2333" stroke-width="2.4"/>
+  <path d="M34 30Q42 27 49 33L47 40Q40 45 34 38Z" fill="#232131" stroke="#765049" stroke-width="1"/>
+  <path d="M20 32Q25 28 29 32" fill="none" stroke="#522737" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M23 33V36" stroke="#a53452" stroke-width="3" stroke-linecap="round"/>
+  <path d="M29 42Q33 45 37 42" fill="none" stroke="#a55960" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M46 11 42 18 47 18 44 24 53 15 48 15 51 11Z" fill="#f4d697"/>
+  <circle cx="48" cy="44" r="2.2" fill="#edcc89"/>
+  <path d="M17 52 25 57M47 52 40 57" stroke="#e7c488" stroke-width="2.8" stroke-linecap="round"/>
+  <path d="m32 50 4 5-4 5-4-5Z" fill="#e9c587"/>
+</svg>
