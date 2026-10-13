@@ -295,6 +295,7 @@
     // A gift with its wish disabled opens straight to the book, including first paint.
     doc.getElementById('wishboundStartup')?.setAttribute('data-enabled', String(snapshot.reveal.enabled !== false));
     if (!allowEditing) doc.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
+    if (window.WISHBOUND_MEDIA?.exportToDocument) await window.WISHBOUND_MEDIA.exportToDocument(doc);
     const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     const blob = new Blob([html], {type:'text/html;charset=utf-8'}); const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); const name = snapshot.recipient.normalize('NFKD').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').slice(0,40) || 'you';

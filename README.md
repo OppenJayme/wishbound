@@ -74,3 +74,7 @@ The included GitHub Actions workflow rebuilds the HTML, checks the editor, expor
 See the [website reference](site/README.md) for file responsibilities and developer checks, and the [design notes](site/DESIGN_NOTES.md) for the visual theme.
 
 wishbound uses original placeholder illustrations inspired by Albedo and Beidou. No official game artwork or audio is included.
+
+## Optional music and backgrounds
+
+Everyone can use **♫ Music & background** on the published site. Choose a local audio file (MP3/M4A/OGG/WAV), change volume, pause/play it, and choose a scenery theme or image. Files are saved only in the visitor's browser when browser storage is available; nothing is uploaded to the GitHub repository or other visitors. Music begins after a click to open/read the book, not on initial page load. The public demo does not ship with copyrighted Genshin music. If you have permission to host a Liyue soundtrack, place it at `site/assets/liyue-theme.mp3` and rebuild the portable HTML (the build embeds supported image assets but not audio by default). A selected custom track and background are embedded in the visitor's **downloaded gift**, so their personalized file works without a separate audio upload. Keep music files under 15 MB. Sharing the downloaded HTML also shares its embedded music; only include audio you have permission to redistribute.
