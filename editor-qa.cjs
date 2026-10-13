@@ -23,7 +23,63 @@ const server = http.createServer((req, res) => {
   const writeRequests=[];context.on('request',r=>{if(!['GET','HEAD'].includes(r.method()))writeRequests.push(r.method()+' '+r.url());});
   const originalTemplate=fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8');
   fs.mkdirSync('qa', {recursive:true});
+  // Hold startup for longer than the reported flash and inspect actual painted frames.
+  async function checkStartup(markup, width, label, enabled = true) {
+    const startupContext = await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+    const startupPage = await startupContext.newPage();
+    startupPage.on('pageerror', e => errors.push(e.message));
+    let release;
+    const gate = new Promise(resolve => { release = resolve; });
+    await startupPage.route('https://**', route => route.abort());
+    await startupPage.route('**/startup-check.html', route => route.fulfill({contentType:'text/html',body:markup.replace('<link rel="preconnect"', '<script src="/startup-gate.js" defer></script><link rel="preconnect"')}));
+    await startupPage.route('**/startup-gate.js', async route => { await gate; await route.fulfill({contentType:'text/javascript',body:''}); });
+    try {
+      await startupPage.goto(base+'/startup-check.html', {waitUntil:'commit'});
+      await startupPage.waitForFunction(() => document.getElementById('scene') && document.getElementById('wishIntro') && getComputedStyle(document.getElementById('wishIntro')).position === 'fixed');
+      const frames = await startupPage.evaluate(async () => {
+        const samples = [];
+        const until = performance.now() + 1000;
+        while (performance.now() < until) {
+          await new Promise(requestAnimationFrame);
+          samples.push({
+            starting: document.documentElement.hasAttribute('data-wishbound-starting'),
+            book: getComputedStyle(document.getElementById('main')).opacity,
+            wish: getComputedStyle(document.getElementById('wishIntro')).display,
+            modal: document.getElementById('wishIntro').matches(':modal')
+          });
+        }
+        return samples;
+      });
+      assert(frames.length > 1, 'No startup frames were captured');
+      if (enabled) {
+        assert(frames.every(frame => frame.starting && frame.book === '0' && frame.wish === 'grid' && !frame.modal), 'The book flashed during delayed startup: '+JSON.stringify(frames));
+        assert(await startupPage.locator('#introInvitation').isVisible());
+      } else {
+        assert(frames.every(frame => !frame.starting && frame.book === '1' && frame.wish === 'none'), 'A disabled wish appeared during startup');
+      }
+      await startupPage.screenshot({path:`qa/editor-startup-${label}-${width}.png`});
+      release();
+      await startupPage.waitForLoadState('load');
+      assert.equal(await startupPage.evaluate(() => document.documentElement.hasAttribute('data-wishbound-starting')), false);
+      assert.equal(await startupPage.evaluate(() => document.getElementById('wishIntro').matches(':modal')), enabled);
+      if (enabled) {
+        await startupPage.locator('#skipIntro').click();
+        await startupPage.waitForFunction(() => !document.getElementById('wishIntro').open);
+        await startupPage.waitForFunction(() => getComputedStyle(document.getElementById('main')).opacity === '1');
+        assert(await startupPage.locator('#main').isVisible());
+        await startupPage.locator('#replayIntro').click();
+        assert(await startupPage.evaluate(() => document.getElementById('wishIntro').matches(':modal')));
+      } else {
+        assert.equal(await startupPage.locator('#main').evaluate(el => getComputedStyle(el).opacity), '1');
+      }
+      console.log(`First-paint startup passed: ${label}, ${width}px, ${frames.length} delayed frames, wish ${enabled ? 'enabled' : 'disabled'}.`);
+    } finally { release(); await startupContext.close(); }
+  }
   try {
+    for (const width of [1440,375]) {
+      await checkStartup(fs.readFileSync(path.join(dir,'index.html'),'utf8'), width, 'source');
+      await checkStartup(originalTemplate, width, 'portable');
+    }
     await page.goto(base + '/ONE_FILE_PREVIEW.html');
     assert.equal(await page.evaluate(()=>document.body.dataset.giftMode),'template');
     await page.locator('#introEditGift').click();
@@ -187,6 +243,7 @@ const server = http.createServer((req, res) => {
     const download=await pending; assert.equal(download.suggestedFilename(),'wishbound-for-alex-rivera.html');
     giftHtml=fs.readFileSync(await download.path(),'utf8');
     assert(!giftHtml.includes('id="giftToolbar"'));
+    await checkStartup(giftHtml, 1280, 'exported');
     const giftContext=await browser.newContext({viewport:{width:1280,height:900},reducedMotion:'reduce'});
     const giftPage=await giftContext.newPage();giftPage.on('pageerror',e=>errors.push(e.message));
     await giftPage.route('https://**',route=>route.abort());
@@ -286,6 +343,11 @@ const server = http.createServer((req, res) => {
     await phone.locator('#giftDemoButton').click();await phone.locator('#introEditGift').click();
     assert(await phone.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'));
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.reveal.enabled),false);
+    const disabledDownload = phone.waitForEvent('download');
+    await phone.locator('#giftDownloadButton').click();
+    const disabledGift = fs.readFileSync(await (await disabledDownload).path(),'utf8');
+    assert(disabledGift.includes('data-enabled="false"'));
+    await checkStartup(disabledGift, 375, 'disabled-export', false);
     // Starting the editor from an already-read demo returns to the first screen.
     await phone.locator('#giftDemoButton').click();await phone.locator('#skipIntro').click();
     await phone.waitForFunction(()=>!document.getElementById('wishIntro').open);
