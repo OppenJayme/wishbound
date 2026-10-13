@@ -265,10 +265,14 @@
     snapshot.reveal.portrait = await embed(snapshot.reveal.portrait);
     snapshot.photos = await Promise.all(snapshot.photos.map(embed));
     const doc = new DOMParser().parseFromString(markup, 'text/html');
+    // The template snapshot may have been captured while the opening was booting.
+    doc.documentElement.removeAttribute('data-wishbound-starting');
     const config = doc.querySelector('script[data-wishbound-source="story-config.js"]');
     if (!config) throw Error('The portable template is unavailable. Please refresh the live preview.');
     const json = JSON.stringify(snapshot).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
     config.textContent = `document.addEventListener('DOMContentLoaded', () => { window.BIRTHDAY_STORY = ${json}; window.WISHBOUND_GIFT = true; });`;
+    // A gift with its wish disabled opens straight to the book, including first paint.
+    if (snapshot.reveal.enabled === false) doc.getElementById('wishboundStartup')?.setAttribute('data-enabled', 'false');
     doc.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
     const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     const blob = new Blob([html], {type:'text/html;charset=utf-8'}); const url = URL.createObjectURL(blob);

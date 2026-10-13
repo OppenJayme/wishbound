@@ -6,6 +6,19 @@
   <meta name="theme-color" content="#111d2b" />
   <meta name="description" content="An immersive fantasy-inspired birthday storybook with elegant 3D page turns." />
   <title>For You, Always — The Alchemist & the Captain — A Birthday Codex</title>
+  <style>
+    /* Show the invitation while deferred scripts prepare the book behind it. */
+    html[data-wishbound-starting] { background: #0c1b29; }
+    html[data-wishbound-starting] body > :not(#wishIntro) { opacity: 0; pointer-events: none; }
+    html[data-wishbound-starting] #wishIntro { display: grid; place-items: center; z-index: 10; pointer-events: none; }
+  </style>
+  <script id="wishboundStartup">
+    if (document.currentScript.dataset.enabled !== 'false') {
+      document.documentElement.setAttribute('data-wishbound-starting', '');
+      // Leave the book readable if another startup script fails to load.
+      window.addEventListener('load', () => document.documentElement.removeAttribute('data-wishbound-starting'), {once: true});
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
@@ -2541,6 +2554,8 @@ window.BIRTHDAY_BOOK = {
   };
   replay.hidden = config.enabled === false;
   if (config.enabled !== false) showIntro();
+  // Remove the first-paint cover only after the real modal is ready (or disabled).
+  document.documentElement.removeAttribute('data-wishbound-starting');
 })();
 
 });</script>
@@ -2812,10 +2827,14 @@ window.BIRTHDAY_BOOK = {
     snapshot.reveal.portrait = await embed(snapshot.reveal.portrait);
     snapshot.photos = await Promise.all(snapshot.photos.map(embed));
     const doc = new DOMParser().parseFromString(markup, 'text/html');
+    // The template snapshot may have been captured while the opening was booting.
+    doc.documentElement.removeAttribute('data-wishbound-starting');
     const config = doc.querySelector('script[data-wishbound-source="story-config.js"]');
     if (!config) throw Error('The portable template is unavailable. Please refresh the live preview.');
     const json = JSON.stringify(snapshot).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
     config.textContent = `document.addEventListener('DOMContentLoaded', () => { window.BIRTHDAY_STORY = ${json}; window.WISHBOUND_GIFT = true; });`;
+    // A gift with its wish disabled opens straight to the book, including first paint.
+    if (snapshot.reveal.enabled === false) doc.getElementById('wishboundStartup')?.setAttribute('data-enabled', 'false');
     doc.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
     const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     const blob = new Blob([html], {type:'text/html;charset=utf-8'}); const url = URL.createObjectURL(blob);

@@ -225,4 +225,6 @@
   };
   replay.hidden = config.enabled === false;
   if (config.enabled !== false) showIntro();
+  // Remove the first-paint cover only after the real modal is ready (or disabled).
+  document.documentElement.removeAttribute('data-wishbound-starting');
 })();
