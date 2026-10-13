@@ -17,9 +17,11 @@ jobs:
       - name: Build and check birthday opening, editor, and exported gifts
         env:
           CHROME_PATH: /usr/bin/google-chrome
+          RECORD_BIRTHDAY_VIDEO: '1'
         run: |
           node build-preview.cjs
           npm install --ignore-scripts --no-save --package-lock=false playwright@1.62.1
+          npx playwright install ffmpeg
           node editor-qa.cjs
       - name: Save verification images and videos
         if: always()

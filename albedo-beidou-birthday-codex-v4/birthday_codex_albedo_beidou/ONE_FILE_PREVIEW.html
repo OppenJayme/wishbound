@@ -1163,7 +1163,8 @@ body { background: #10212a; }
 .birthday-welcome-copy { position: relative; width: min(760px, 100%); perspective: 1100px; }
 .birthday-overline { display: block; color: #ccbc98; font: 500 9px/1.8 var(--type-ui); letter-spacing: .24em; }
 .birthday-seal { position: relative; width: 140px; height: 120px; margin: 22px auto 20px; display: grid; place-items: center; perspective: 700px; }
-.birthday-seal img { width: 62px; height: 62px; filter: drop-shadow(0 0 18px #e5c18460); transform: translateZ(18px); }
+.birthday-seal img { position: absolute; width: 96px; height: 96px; opacity: .65; transform: translateZ(-10px); }
+.birthday-core { width: 58px; height: 58px; filter: drop-shadow(0 0 18px #e5c18460); transform: translateZ(18px); }
 .birthday-orbit { position: absolute; inset: -4px -8px; border: 1px solid #e4c38785; border-radius: 50%; box-shadow: 0 0 14px #dcbe7420; transform: rotateX(64deg) rotateZ(-28deg); }
 .birthday-orbit::after { content: ''; position: absolute; top: 8%; left: 17%; width: 5px; height: 5px; border-radius: 50%; background: #f7d9a1; box-shadow: 0 0 12px #f7d9a1; }
 .orbit-blue { inset: -17px -14px; border-color: #92cbd55e; transform: rotateX(-57deg) rotateY(20deg) rotateZ(35deg); }
@@ -1177,7 +1178,7 @@ body { background: #10212a; }
 .birthday-letter { display: inline-block; transform-origin: 50% 85%; white-space: pre; }
 .birthday-recipient { margin: 20px auto 0; max-width: 26ch; color: #e3d3b3; font: italic clamp(25px, 2.6vw, 36px)/1.3 var(--type-display); overflow-wrap: anywhere; }
 .birthday-dedication { color: #94b3b7; font-size: .65em; margin-right: .1em; }
-.birthday-message { margin: 17px auto 25px; max-width: 33ch; color: #adc2c5; font: 15px/1.7 var(--type-reading); }
+.birthday-message { margin: 17px auto 25px; max-width: 44ch; color: #adc2c5; font: 15px/1.7 var(--type-reading); text-wrap: balance; }
 .birthday-continue { display: inline-flex; align-items: center; gap: 26px; min-height: 44px; padding: 10px 0; border: 0; border-bottom: 1px solid #d7b87b55; color: #e6d3ad; background: transparent; font: 11px var(--type-ui); cursor: pointer; }
 .birthday-continue:hover { color: #fff0cb; border-bottom-color: #e7c790; }
 .birthday-continue:focus-visible { outline: 2px solid #e7c790; outline-offset: 7px; }
@@ -1204,7 +1205,8 @@ body { background: #10212a; }
   .is-editing .birthday-welcome { min-height: calc(100svh - 215px); padding-block: 75px 35px; }
   .birthday-overline { font-size: 8px; letter-spacing: .16em; max-width: 29ch; margin: auto; }
   .birthday-seal { width: 112px; height: 100px; margin: 22px auto 18px; }
-  .birthday-seal img { width: 50px; height: 50px; }
+  .birthday-seal img { width: 80px; height: 80px; }
+  .birthday-core { width: 48px; height: 48px; }
   .birthday-title { font-size: clamp(65px, 19vw, 96px); }
   .birthday-recipient { margin-top: 15px; font-size: 27px; }
   .birthday-message { font-size: 13px; margin: 15px auto 20px; }
@@ -1212,7 +1214,8 @@ body { background: #10212a; }
 @media (max-height: 650px) and (min-width: 601px) {
   .birthday-welcome { padding-block: 65px 40px; }
   .birthday-seal { height: 70px; width: 100px; margin-block: 12px; }
-  .birthday-seal img { width: 40px; height: 40px; }
+  .birthday-seal img { width: 65px; height: 65px; }
+  .birthday-core { width: 38px; height: 38px; }
   .birthday-title { font-size: 76px; }
   .birthday-recipient { margin-top: 8px; font-size: 27px; }
   .birthday-message { margin-block: 10px 12px; }
@@ -3134,7 +3137,7 @@ window.BIRTHDAY_BOOK = {
       <div class="birthday-halo" aria-hidden="true"></div>
       <div class="birthday-welcome-copy">
         <span class="birthday-overline" data-story-text="presentation.birthdayOverline">THE STARS HAVE A REASON TO CELEBRATE</span>
-        <div class="birthday-seal" aria-hidden="true"><span class="birthday-orbit orbit-gold"></span><span class="birthday-orbit orbit-blue"></span><span class="birthday-orbit orbit-fine"></span><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNjAwIj4KPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYmE5YTYzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8Y2lyY2xlIGN4PSIzMDAiIGN5PSIzMDAiIHI9IjIzMCIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuNTUiLz4KPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzAwIiByPSIxNzgiIHN0cm9rZS13aWR0aD0iMS44IiBvcGFjaXR5PSIuNjIiLz4KPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzAwIiByPSIxMDQiIHN0cm9rZS13aWR0aD0iMS44IiBvcGFjaXR5PSIuNzUiLz4KPHBhdGggZD0iTTMwMCA4OGwxOTQgMzM1SDEwNnpNMzAwIDUxMkwxMDYgMTc3aDM4OHoiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iLjU2Ii8+CjxwYXRoIGQ9Ik0zMDAgMTg2bDI4IDg1IDg2IDI5LTg2IDI5LTI4IDg1LTI4LTg1LTg2LTI5IDg2LTI5eiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuOCIvPgo8cGF0aCBkPSJNMzAwIDcwdjgyTTMwMCA0NDh2ODJNNzAgMzAwaDgyTTQ0OCAzMDBoODIiIHN0cm9rZS13aWR0aD0iMiIvPgo8cGF0aCBkPSJNMTUzIDE1M2wzMSAzMU00MTYgNDE2bDMxIDMxTTQ0NyAxNTNsLTMxIDMxTTE4NCA0MTZsLTMxIDMxIiBvcGFjaXR5PSIuNTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+CjwvZz48Y2lyY2xlIGN4PSIzMDAiIGN5PSIzMDAiIHI9IjEwIiBmaWxsPSIjYmI5ODYxIiBvcGFjaXR5PSIuOCIvPgo8L3N2Zz4K" alt=""/><span class="birthday-seal-spark">✦</span></div>
+        <div class="birthday-seal" aria-hidden="true"><span class="birthday-orbit orbit-gold"></span><span class="birthday-orbit orbit-blue"></span><span class="birthday-orbit orbit-fine"></span><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNjAwIj4KPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYmE5YTYzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8Y2lyY2xlIGN4PSIzMDAiIGN5PSIzMDAiIHI9IjIzMCIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuNTUiLz4KPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzAwIiByPSIxNzgiIHN0cm9rZS13aWR0aD0iMS44IiBvcGFjaXR5PSIuNjIiLz4KPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzAwIiByPSIxMDQiIHN0cm9rZS13aWR0aD0iMS44IiBvcGFjaXR5PSIuNzUiLz4KPHBhdGggZD0iTTMwMCA4OGwxOTQgMzM1SDEwNnpNMzAwIDUxMkwxMDYgMTc3aDM4OHoiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iLjU2Ii8+CjxwYXRoIGQ9Ik0zMDAgMTg2bDI4IDg1IDg2IDI5LTg2IDI5LTI4IDg1LTI4LTg1LTg2LTI5IDg2LTI5eiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuOCIvPgo8cGF0aCBkPSJNMzAwIDcwdjgyTTMwMCA0NDh2ODJNNzAgMzAwaDgyTTQ0OCAzMDBoODIiIHN0cm9rZS13aWR0aD0iMiIvPgo8cGF0aCBkPSJNMTUzIDE1M2wzMSAzMU00MTYgNDE2bDMxIDMxTTQ0NyAxNTNsLTMxIDMxTTE4NCA0MTZsLTMxIDMxIiBvcGFjaXR5PSIuNTUiIHN0cm9rZS13aWR0aD0iMS40Ii8+CjwvZz48Y2lyY2xlIGN4PSIzMDAiIGN5PSIzMDAiIHI9IjEwIiBmaWxsPSIjYmI5ODYxIiBvcGFjaXR5PSIuOCIvPgo8L3N2Zz4K" alt=""/><svg class="birthday-core" viewBox="0 0 80 80"><path d="M40 4 50 30 76 40 50 50 40 76 30 50 4 40 30 30Z" fill="#e7ba70"/><path d="M40 4 40 40 4 40 30 30Z" fill="#fff0be"/><path d="M40 4 50 30 76 40 40 40Z" fill="#f3d395"/><path d="M40 40 76 40 50 50 40 76Z" fill="#b28246"/><path d="M4 40 40 40 40 76 30 50Z" fill="#d2a366"/></svg><span class="birthday-seal-spark">✦</span></div>
         <h2 id="birthdayTitle" class="birthday-title"><span class="birthday-line" data-birthday-letters data-story-text="presentation.birthdayFirstLine">Happy</span><span class="birthday-line birthday-gold" data-birthday-letters data-story-text="presentation.birthdaySecondLine">birthday.</span></h2>
         <div class="birthday-recipient"><span class="birthday-dedication" data-story-text="presentation.birthdayToLabel">to</span> <span data-story-text="recipient">my love</span></div>
         <p class="birthday-message" data-story-text="presentation.birthdayMessage">A little universe, made to celebrate you.</p>

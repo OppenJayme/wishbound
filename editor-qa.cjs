@@ -77,7 +77,8 @@ const server = http.createServer((req, res) => {
     } finally { release(); await startupContext.close(); }
   }
   async function checkBirthdayOpening(url, width, recipient, firstLine = 'Happy', secondLine = 'birthday.') {
-    const birthdayContext = await browser.newContext({viewport:{width,height:900},reducedMotion:'no-preference',recordVideo:{dir:'qa/birthday-videos',size:{width,height:900}}});
+    const recording = process.env.RECORD_BIRTHDAY_VIDEO === '1' ? {recordVideo:{dir:'qa/birthday-videos',size:{width,height:900}}} : {};
+    const birthdayContext = await browser.newContext({viewport:{width,height:900},reducedMotion:'no-preference',...recording});
     const birthdayPage = await birthdayContext.newPage();
     birthdayPage.on('pageerror', e => errors.push(e.message));
     await birthdayPage.route('https://**', route => route.abort());
@@ -324,6 +325,11 @@ const server = http.createServer((req, res) => {
     await phone.locator('#introEditGift').click();
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.recipient),'my love','Draft leaked into another browser context');
     assert(await phone.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'));
+    await phone.locator('#giftViewSelect').selectOption('greeting');
+    await phone.locator('[data-story-text="presentation.birthdayMessage"]').click();
+    await phone.locator('#giftTextValue').fill('A universe for Jamie'); await phone.locator('#giftTextForm button[type=submit]').click();
+    assert.equal(await phone.locator('[data-story-text="presentation.birthdayMessage"]').textContent(), 'A universe for Jamie');
+    await phone.screenshot({path:'qa/editor-birthday-mobile-edit.png'});
     await phone.locator('#giftViewSelect').selectOption('reveal');
     await phone.locator('#revealRecipient').click();
     await phone.locator('#giftTextValue').fill('Jamie');await phone.locator('#giftTextForm button[type=submit]').click();
@@ -445,7 +451,7 @@ const server = http.createServer((req, res) => {
     assert.equal(fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8'),originalTemplate);
     await fresh.close();
     assert.deepEqual(errors,[]);
-    console.log('Editor checks passed: portrait replay with normal/reduced motion, repeated replay and standalone gifts, manual browser-only saving on desktop and mobile, first-screen editing, template/draft isolation on reload and new tabs, return to template, read-only network use, inline and edge text, six independent photos, desktop/mobile slot mapping, legacy draft migration, names, letter, crop, invalid uploads, local drafts, private copies, preview, reset, and standalone HTML export on desktop and mobile.');
+    console.log('Editor checks passed: cinematic birthday opening and automatic handoff, personalized greeting exports, still greeting editing on desktop/mobile, greeting skip/Escape/reduced-motion cleanup, no first-paint book flash, portrait replay, manual browser-only saving, template/draft isolation, inline and edge text, six independent photos, legacy draft migration, letter, crop, invalid uploads, preview, reset, and standalone HTML exports.');
   } catch(e) {
     await page.screenshot({path:'qa/editor-failure.png',fullPage:true}).catch(()=>{}); throw e;
   } finally { await browser.close(); await new Promise(resolve=>server.close(resolve)); }
