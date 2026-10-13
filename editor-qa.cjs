@@ -402,7 +402,10 @@ const server = http.createServer((req, res) => {
     assert.equal(await newPage.locator('#introTitle').textContent(),'My locally edited wish');
     // Reset restores this file's embedded content, rather than the public sample.
     await localPage.goto(pathToFileURL(localFile).href);await localPage.locator('#introEditGift').click();
+    console.log('Before local reset', await localPage.evaluate(()=>({url:location.href, defaults:WISHBOUND.defaults.presentation.introTitle,current:WISHBOUND.story.presentation.introTitle})));
     await localPage.locator('#giftResetButton').click();await localPage.locator('#giftConfirmReset').click();
+    console.log('After local reset', await localPage.evaluate(()=>({defaults:WISHBOUND.defaults.presentation.introTitle,current:WISHBOUND.story.presentation.introTitle})));
+    assert.equal(await localPage.locator('#introTitle').textContent(),'A wish for Alex','Reset did not restore original embedded content');
     await localPage.locator('#giftSaveButton').click();await localPage.reload();await localPage.locator('#introEditGift').waitFor({state:'visible'});
     assert.equal(await localPage.locator('#introTitle').textContent(),'A wish for Alex');
     assert.equal(await localPage.evaluate(()=>WISHBOUND.story.reveal.portrait),portrait);
