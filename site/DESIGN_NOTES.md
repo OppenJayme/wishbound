@@ -44,7 +44,7 @@ Replaying from a later chapter preserves the reading position and uses a recedin
 
 ## Motion implementation
 
-The small captain charm has a gentle head tilt, a brief blink, and an occasional Electro spark. Its animation lives inside the SVG so both the wish portal and book keepsake share it, including in the portable and exported gifts. Reduced-motion preferences keep the charm still, with its eye open and the spark hidden.
+The small captain charm has a gentle head tilt, a brief blink, and an occasional Electro spark. Its animation lives inside the SVG so both the wish portal and book keepsake share it, including in the portable and exported gifts. Each location uses a picture source to select a separate still SVG for reduced-motion preferences, with its eye open and the spark hidden. This also works in browsers that do not pass motion preferences into SVG image styles.
 
 The entrance uses Canvas 2D for projected clouds, comet geometry, and trails. Cloud lighting is prepared on offscreen canvases and reused during the animation. Pixel density is capped to limit rendering cost.
 
