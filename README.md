@@ -30,7 +30,7 @@ The opening reveal and Chapter 1 share one portrait and crop. Editing either por
 
 Keep headings and paragraphs short enough to fit the book. The default wording is romantic, so read through every chapter when adapting it for a different recipient.
 
-The birthday greeting shows the recipient's name with gold lettering, constellation rings, and starlight, then continues to the wish automatically after about four seconds. **Let the magic begin** skips ahead. **Read the book** and Escape skip the entrance. Preview and downloaded gifts include the greeting; replaying a wish goes straight to the wish. Reduced-motion preferences skip the animated greeting.
+The birthday greeting shows the recipient's name with gold lettering, constellation rings, and starlight, then continues to the wish automatically after about four seconds. **Step into your story** skips ahead. **Read the book** and Escape skip the entrance. Preview and downloaded gifts include the greeting; replaying a wish goes straight to the wish. Reduced-motion preferences skip the animated greeting.
 
 ## Drafts and sharing
 
@@ -61,7 +61,7 @@ The separate `index.html` is useful when editing the source. For complete HTML d
 
 ## For developers
 
-The website uses plain HTML, CSS, and JavaScript. Edit `story-config.js` for default content, or the source files for layout and behavior. After source changes, run this from the repository root, where `package.json` is located:
+The website uses plain HTML, CSS, and JavaScript. Edit `site/story-config.js` for default names, chapter copy, photos, letter, and audio. Edit the `presentation` defaults in `site/gift-state.js` for greeting text, headings, button labels, and surrounding messages. Keep the existing field names so saved drafts remain compatible. After source changes, run this from the repository root, where `package.json` is located:
 
 ```sh
 npm run preview:build
@@ -69,7 +69,20 @@ npm run preview:build
 
 This requires Node.js but no dependency installation. It regenerates the portable template with the editor included.
 
-The included GitHub Actions workflow rebuilds the HTML, checks the editor, exported gifts, and source/portable book layouts, and deploys it on pushes to `main`. To enable hosting in your own repository, choose **Settings → Pages → Source → GitHub Actions**, then run the deployment workflow. GitHub Pages is free for public repositories; private repositories require an eligible paid plan. The published Pages website is public even when its source repository is private.
+To run the same browser checks used before deployment, install the development dependency and run:
+
+```sh
+npm install
+npm run test:editor
+npm run test:layout
+npm run test:media
+npm run test:ending
+```
+
+These checks require Google Chrome. Set `CHROME_PATH` if it is not at the default Windows location; the GitHub workflow sets this for its Linux runner. `test:ending` checks the closing animation, two-second music fade, and replay without losing personalization. `test:media` checks uploads, start scenes, exported music, and the pull-sound handoff. Screenshots go to the ignored `qa/` folder.
+
+
+The included GitHub Actions workflow rebuilds the HTML, checks the editor, exported gifts, source/portable book layouts, soundtrack playback, and book closing/replay, and deploys it on pushes to `main`. To enable hosting in your own repository, choose **Settings → Pages → Source → GitHub Actions**, then run the deployment workflow. GitHub Pages is free for public repositories; private repositories require an eligible paid plan. The published Pages website is public even when its source repository is private.
 
 See the [website reference](site/README.md) for file responsibilities and developer checks, and the [design notes](site/DESIGN_NOTES.md) for the visual theme.
 
@@ -87,7 +100,7 @@ In **Edit your gift** mode, use **♫ Music & background** in the editor toolbar
 
 Adding, replacing, removing, and configuring music is available only while editing. Preview and gift viewing keep play/pause controls for the selected soundtrack; they cannot open the upload/settings panel.
 
-Settings and uploaded files stay in this browser when storage is available; they do not change the public template. Sharing the downloaded gift also shares its music. Include audio you have permission to redistribute. No soundtrack is bundled by default.
+Settings and uploaded files stay in this browser when storage is available; they do not change the public template. Sharing the downloaded gift also shares its music. Include audio you have permission to redistribute. No looping background soundtrack is bundled by default; the wish has its own included pull sound.
 
 For a default soundtrack in your own repository, put a file at `site/assets/our-song.mp3` and edit the `music` section in `site/story-config.js`:
 
@@ -106,7 +119,11 @@ Use `"book"` for `startAt` to begin on entering or turning the book. `volume` is
 
 Music follows the active scene while editing. Returning to the birthday greeting or opening wish stops it; a book-only track stays silent in the portrait editor. Starting Preview stops editor playback and begins a fresh soundtrack at the selected portrait or book moment. A track auditioned in settings stops on closing the panel if its selected scene is not active. Editing text within the book keeps its background music playing, and normal portrait-to-book playback remains continuous.
 
-The **Make your wish** button plays the supplied `assets/five-star-pull.m4a` once, restarting it for each replay. The descending star takes 1.3 seconds less than the previous baseline: portrait reveal begins at 7.395 seconds and the canvas finishes at 10.355 seconds. The pull sound finishes naturally even if the canvas finishes first. Background music stays quiet until the pull sound finishes, then fades in for the selected scene. Skip, Escape, entering the book, and scene cancellation stop and reset the pull sound. Reduced motion skips this long sound along with the animated pull. The portable preview and downloaded gifts include it. Edit `wishSound.src`, `wishSound.volume` (0–100), or `wishSound.enabled` in `site/story-config.js` to replace, adjust, or disable it, then rebuild.
+## Wish sound
+
+The **Make your wish** button plays the supplied `assets/five-star-pull.m4a` once, restarting it for each replay. The descending star takes a little over one second: the portrait appears at about 7.4 seconds and the canvas finishes at about 10.4 seconds. The pull sound finishes naturally even if the canvas finishes first. Background music stays quiet until the pull sound finishes, then fades in for the selected scene. Skip, Escape, entering the book, and scene cancellation stop and reset the pull sound. Reduced motion skips this long sound along with the animated pull. The portable preview and downloaded gifts include it. Edit `wishSound.src`, `wishSound.volume` (0–100), or `wishSound.enabled` in `site/story-config.js` to replace, adjust, or disable it, then rebuild.
+
+## Animated letter and sunset ending
 
 The sealed letter opens with a brief wax-seal release and paper unfolding. Editable greetings, paragraphs, and signatures remain normal readable text. Close or Escape works immediately; reduced motion shows the letter without the animation.
 
@@ -114,6 +131,10 @@ The final chapter features a seated couple at sunset with a constellation that l
 
 At the final chapter, **Close the book** folds the pages and cover shut, fades the soundtrack out over two seconds before stopping it, and offers **Replay from the beginning**. Replay starts with the birthday greeting and wish while keeping personalized words and photos. Phones use a short cover transition; reduced motion closes immediately. The ending button labels and closing note are editable in Details & text through `presentation.endingCloseLabel`, `endingReplayLabel`, and `endingMessage`.
 
+## Creator credit
+
 The public template includes a small **Made by OppenJayme** link to the creator profile. In Download gift, **Include the Made by OppenJayme link** is checked by default; uncheck it to omit the credit from your personal file. This does not change the public template. Editable gifts remember whether their embedded credit was included and can add or remove it again on the next download.
 
-The public template uses its own sample wording for the birthday greeting, wish, chapters, captions, letter, and ending. Existing field names remain compatible with older drafts: entering Edit your gift restores saved personal words, and previously downloaded gifts retain their embedded text. Edit story-config.js and the presentation defaults in gift-state.js to change future template wording.
+## Template wording and your own gift
+
+The public template uses its own sample wording for the birthday greeting, wish, chapters, captions, letter, and ending. Existing field names remain compatible with older drafts: entering Edit your gift restores saved personal words, and previously downloaded gifts retain their embedded text. Edit `site/story-config.js` and the presentation defaults in `site/gift-state.js` to change future template wording.
