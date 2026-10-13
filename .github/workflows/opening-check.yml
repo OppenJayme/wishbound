@@ -1,0 +1,30 @@
+name: Check opening first paint
+on:
+  push:
+    branches: [fix/opening-flash]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Build and check startup, editor, replay, and exported gifts
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          node build-preview.cjs
+          npm install --ignore-scripts --no-save --package-lock=false playwright@1.62.1
+          node editor-qa.cjs
+      - name: Save verification screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opening-check-screenshots
+          path: qa/editor-*.png
+          if-no-files-found: ignore
