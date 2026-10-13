@@ -72,7 +72,7 @@
     for (const id of ['giftToolbar', 'giftPreviewNote']) {
       const node = $(id); if (node.parentElement !== host) host.append(node);
     }
-    $('giftViewSelect').value = !intro.open ? 'book' : intro.dataset.stage === 'ready' ? 'opening' : 'reveal';
+    $('giftViewSelect').value = !intro.open ? 'book' : intro.dataset.welcome === 'editing' ? 'greeting' : intro.dataset.stage === 'ready' ? 'opening' : 'reveal';
   }
   function setEditing(value, preview = false) {
     editing = value; document.body.classList.toggle('is-editing', value);
@@ -104,7 +104,8 @@
   $('giftDemoButton').addEventListener('click', backToTemplate);
   $('giftPreviewDemoButton').addEventListener('click', backToTemplate);
   $('giftViewSelect').addEventListener('change', event => {
-    if (event.target.value === 'opening') window.WISHBOUND_INTRO?.start();
+    if (event.target.value === 'greeting') window.WISHBOUND_INTRO?.greeting();
+    else if (event.target.value === 'opening') window.WISHBOUND_INTRO?.start();
     else if (event.target.value === 'reveal') window.WISHBOUND_INTRO?.reveal();
     else if ($('wishIntro').open) $('skipIntro').click();
   });
@@ -117,7 +118,7 @@
   });
   $('giftPreviewButton').addEventListener('click', () => {
     saveNow(); window.BIRTHDAY_BOOK?.beginning(); setEditing(false, true);
-    if (state.story.reveal.enabled !== false) window.WISHBOUND_INTRO?.start();
+    if (state.story.reveal.enabled !== false) window.WISHBOUND_INTRO?.start(true);
     else if ($('wishIntro').open) $('skipIntro').click();
   });
 

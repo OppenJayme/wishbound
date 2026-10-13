@@ -4,6 +4,9 @@
   const clone = value => JSON.parse(JSON.stringify(value));
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   story.presentation = Object.assign({
+    birthdayOverline: 'THE STARS HAVE A REASON TO CELEBRATE',
+    birthdayFirstLine: 'Happy', birthdaySecondLine: 'birthday.', birthdayToLabel: 'to',
+    birthdayMessage: 'A little universe, made to celebrate you.', birthdayContinueLabel: 'Let the magic begin',
     themeTitle: 'The Alchemist & the Captain', heroPrefix: 'Between', heroAccent: 'stars & seas.',
     heroSubtitle: 'A little universe, bound just for you.', introTitle: 'A wish, just for you.',
     introMessage: 'Some stars find their way to us.\nSome become our whole world.',

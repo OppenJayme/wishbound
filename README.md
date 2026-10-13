@@ -1,6 +1,6 @@
 # wishbound
 
-A Genshin-inspired birthday storybook you can personalize with photos, shared memories, and a letter. It includes an animated five-star wish reveal, page turns, and layouts for desktop and mobile.
+A Genshin-inspired birthday storybook you can personalize with photos, shared memories, and a letter. It opens with a cinematic Happy Birthday greeting, followed by an animated five-star wish reveal, page turns, and layouts for desktop and mobile.
 
 Originally made as a romantic gift, its messages can be adapted for a partner, a friend, or anyone you want to celebrate.
 
@@ -17,7 +17,7 @@ The available space depends on your browser window and display scaling, so diffe
 ## Personalize it without code
 
 1. Open the preview and select **Edit your gift**. This opens your own copy at the very first wish screen, even if you were already reading the book. Your saved draft loads only after entering the editor.
-2. **Click a name or message** to edit it, then select **Apply text**. Use **View** to switch between the opening wish, portrait reveal, and storybook. Use the book's arrows or chapter dots to visit other chapters.
+2. **Click a name or message** to edit it, then select **Apply text**. Use **View** to switch between the birthday greeting, opening wish, portrait reveal, and storybook. The birthday greeting stays still while editing so you can change its words. Use the book's arrows or chapter dots to visit other chapters.
 3. **Click a photo** to upload a JPG, PNG, or WebP image. Adjust its crop, zoom, and position, add a description, and select **Use photo**.
 4. Use **Details & text** for names, chapter labels, reveal settings, and all messages, including the header, footer, and surrounding labels. **Letter** edits the complete letter; separate paragraphs with a blank line. **Photos** gives access to all six independent photo slots, labeled by chapter.
 5. Select **Save draft** to save immediately in this browser. Edits also save automatically. Wait for the **Saved in this browser** confirmation. The public template stays unchanged.
@@ -29,6 +29,8 @@ Uploaded photos are cropped and resized in your browser. Portraits use a 3:4 cro
 Each photo has its own upload and crop. Replacing one does not change another chapter’s photo. Desktop and mobile show the same photo for each matching chapter. Older saved drafts keep their existing photos when shared slots are split.
 
 Keep headings and paragraphs short enough to fit the book. The default wording is romantic, so read through every chapter when adapting it for a different recipient.
+
+The birthday greeting shows the recipient's name with gold lettering, constellation rings, and starlight, then continues to the wish automatically after about four seconds. **Let the magic begin** skips ahead. **Read the book** and Escape skip the entrance. Preview and downloaded gifts include the greeting; replaying a wish goes straight to the wish. Reduced-motion preferences skip the animated greeting.
 
 ## Drafts and sharing
 

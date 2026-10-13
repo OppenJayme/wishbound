@@ -95,7 +95,19 @@
     <button id="introEditGift" data-editor-ui class="editor-launch intro-editor-launch" type="button" hidden>Edit your gift</button>
     <button id="skipIntro" class="intro-skip" type="button"><span data-story-text="presentation.skipLabel">Read the book</span> <span aria-hidden="true">↗</span></button>
     <div class="wish-sky" aria-hidden="true"><div class="sky-orbit orbit-one"></div><div class="sky-orbit orbit-two"></div><div class="sky-dust"></div></div>
-    <div class="intro-invitation" id="introInvitation">
+    <section id="birthdayWelcome" class="birthday-welcome" aria-labelledby="birthdayTitle">
+      <canvas id="birthdayStarlight" class="birthday-starlight" aria-hidden="true"></canvas>
+      <div class="birthday-halo" aria-hidden="true"></div>
+      <div class="birthday-welcome-copy">
+        <span class="birthday-overline" data-story-text="presentation.birthdayOverline">THE STARS HAVE A REASON TO CELEBRATE</span>
+        <div class="birthday-seal" aria-hidden="true"><span class="birthday-orbit orbit-gold"></span><span class="birthday-orbit orbit-blue"></span><span class="birthday-orbit orbit-fine"></span><img src="assets/alchemy-star.svg" alt=""/><span class="birthday-seal-spark">✦</span></div>
+        <h2 id="birthdayTitle" class="birthday-title"><span class="birthday-line" data-birthday-letters data-story-text="presentation.birthdayFirstLine">Happy</span><span class="birthday-line birthday-gold" data-birthday-letters data-story-text="presentation.birthdaySecondLine">birthday.</span></h2>
+        <div class="birthday-recipient"><span class="birthday-dedication" data-story-text="presentation.birthdayToLabel">to</span> <span data-story-text="recipient">my love</span></div>
+        <p class="birthday-message" data-story-text="presentation.birthdayMessage">A little universe, made to celebrate you.</p>
+        <button id="birthdayContinue" class="birthday-continue" type="button"><span data-story-text="presentation.birthdayContinueLabel">Let the magic begin</span><span aria-hidden="true">↗</span></button>
+      </div>
+    </section>
+    <div class="intro-invitation" id="introInvitation" hidden>
       <span class="intro-overline" data-story-text="presentation.introOverline">A BIRTHDAY WISH · FOR YOU</span>
       <div class="wish-portal" aria-hidden="true"><div class="portal-ring"></div><div class="portal-ring ring-inner"></div><span class="portal-star">✦</span><img class="portal-captain" src="assets/captain-charm.svg" alt=""/></div>
       <h2 id="introTitle" data-story-text="presentation.introTitle">A wish, just for you.</h2>
@@ -133,7 +145,7 @@
   <section id="giftToolbar" class="gift-toolbar" data-editor-ui aria-label="Gift editor" hidden>
     <div class="gift-toolbar-top"><strong>Editing your own gift</strong><span id="giftSaveStatus" class="gift-status" role="status" aria-live="polite">Only your copy changes. Saved in this browser.</span></div>
     <div class="gift-toolbar-actions">
-      <label class="gift-view-label" for="giftViewSelect">View <select id="giftViewSelect"><option value="opening">Opening wish</option><option value="reveal">Portrait reveal</option><option value="book">Storybook</option></select></label>
+      <label class="gift-view-label" for="giftViewSelect">View <select id="giftViewSelect"><option value="greeting">Birthday greeting</option><option value="opening">Opening wish</option><option value="reveal">Portrait reveal</option><option value="book">Storybook</option></select></label>
       <button id="giftDetailsButton" type="button">Details &amp; text</button>
       <button id="giftPhotosButton" type="button">Photos</button>
       <button id="giftLetterButton" type="button">Letter</button>
