@@ -155,9 +155,9 @@ body { font-family: var(--type-ui); background: radial-gradient(ellipse at 50% 4
 .page-keepsake img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .keepsake-flower { width: 56px; height: 74px; transform: rotate(11deg); }
 .keepsake-voyage { width: 112px; height: 74px; transform: rotate(4deg); }
-.keepsake-electro { width: 56px; height: 77px; left: auto; right: 12%; transform: rotate(9deg); }
+.envelope .keepsake-electro { width: 44px; height: 64px; bottom: 2px; left: auto; right: 5%; z-index: 3; transform: rotate(9deg); }
 @media (max-width: 900px) {
   .mobile-card .page-keepsake { position: relative; bottom: auto; left: auto; right: auto; flex: none; align-self: flex-end; margin: 16px 4px 0 0; width: 100px; height: 75px; }
   .mobile-card .keepsake-flower { width: 49px; height: 65px; }
-  .mobile-card .keepsake-electro { width: 49px; height: 67px; }
+  .mobile-card .envelope .keepsake-electro { position: absolute; width: 48px; height: 66px; bottom: 4px; left: auto; right: 8px; margin: 0; }
 }
