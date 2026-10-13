@@ -2,7 +2,8 @@
 (() => {
   const state = window.WISHBOUND;
   state.refresh();
-  if (window.WISHBOUND_GIFT) {
+  const localGift = window.WISHBOUND_GIFT === true && window.WISHBOUND_GIFT_EDITABLE === true;
+  if (window.WISHBOUND_GIFT && !localGift) {
     document.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
     return;
   }
@@ -11,7 +12,16 @@
   let editing = false; let textPath; let imagePath; let cropImage; let imageTicket = 0;
   let ownDraft = state.snapshot(); let draftActive = false;
   let saveTimer; let db; let revision = 0; let saving = Promise.resolve();
-  const draftKey = 'current:' + location.pathname.replace(/(?:index|ONE_FILE_PREVIEW)\.html$/i, '');
+  const draftKey = localGift ? 'gift:' + window.WISHBOUND_GIFT_ID : 'current:' + location.pathname.replace(/(?:index|ONE_FILE_PREVIEW)\.html$/i, '');
+  let exportId = localGift ? window.WISHBOUND_GIFT_ID : null;
+  if (localGift) {
+    $('giftSaveButton').textContent = 'Save changes';
+    $('giftSaveButton').title = 'Save changes to this gift only in this browser';
+    $('giftDemoButton').textContent = $('giftPreviewDemoButton').textContent = 'Back to gift';
+    $('giftResetTitle').textContent = 'Restore the downloaded gift?';
+    $('giftResetTitle').nextElementSibling.textContent = 'This replaces your saved edits in this browser with the gift as it was downloaded. Download an updated copy first if you want to keep your changes.';
+    $('giftImageDefault').textContent = 'Use original photo';
+  }
   const status = message => { $('giftSaveStatus').textContent = message; };
   const error = (id, message = '') => { $(id).hidden = !message; $(id).textContent = message; };
 
@@ -77,7 +87,7 @@
   function setEditing(value, preview = false) {
     editing = value; document.body.classList.toggle('is-editing', value);
     document.body.classList.toggle('is-gift-preview', preview);
-    document.body.dataset.giftMode = draftActive ? (preview ? 'preview' : 'draft') : 'template';
+    document.body.dataset.giftMode = preview ? 'preview' : value ? 'draft' : localGift ? 'gift' : 'template';
     $('giftToolbar').hidden = !value; $('giftPreviewNote').hidden = !preview;
     $('editGift').hidden = $('introEditGift').hidden = value || preview;
     syncEditorView(); decorate();
@@ -92,10 +102,16 @@
   }
   function backToTemplate() {
     saveNow(); // Capture the draft before restoring the original demo.
+    if (localGift) {
+      window.BIRTHDAY_BOOK?.beginning(); setEditing(false);
+      if (state.story.reveal.enabled !== false) window.WISHBOUND_INTRO?.start(true);
+      else if ($('wishIntro').open) $('skipIntro').click();
+      return;
+    }
     draftActive = false; state.reset(); window.BIRTHDAY_BOOK?.beginning();
     setEditing(false); window.WISHBOUND_INTRO?.start();
   }
-  document.body.dataset.giftMode = 'template';
+  document.body.dataset.giftMode = localGift ? 'gift' : 'template';
   document.addEventListener('wishbound:refresh', decorate);
   document.addEventListener('wishbound:intro', syncEditorView);
   $('editGift').addEventListener('click', beginEditing);
@@ -114,7 +130,7 @@
     button.disabled = true; button.textContent = 'Saving…';
     status('Saving in this browser…');
     try { await saveNow(); }
-    finally { button.disabled = false; button.textContent = 'Save draft'; }
+    finally { button.disabled = false; button.textContent = localGift ? 'Save changes' : 'Save draft'; }
   });
   $('giftPreviewButton').addEventListener('click', () => {
     saveNow(); window.BIRTHDAY_BOOK?.beginning(); setEditing(false, true);
@@ -249,7 +265,7 @@
   $('giftConfirmReset').addEventListener('click', () => { state.reset(); changed(); $('giftResetDialog').close(); });
 
   const blobData = blob => new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
-  async function exportGift() {
+  async function exportGift(allowEditing) {
     await saveNow();
     let markup = state.template;
     if (!markup.includes('data-wishbound-source="story-config.js"')) {
@@ -271,19 +287,29 @@
     const config = doc.querySelector('script[data-wishbound-source="story-config.js"]');
     if (!config) throw Error('The portable template is unavailable. Please refresh the live preview.');
     const json = JSON.stringify(snapshot).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
-    config.textContent = `document.addEventListener('DOMContentLoaded', () => { window.BIRTHDAY_STORY = ${json}; window.WISHBOUND_GIFT = true; });`;
+    if (allowEditing && !localGift) {
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      exportId = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+    config.textContent = `document.addEventListener('DOMContentLoaded', () => { window.BIRTHDAY_STORY = ${json}; window.WISHBOUND_GIFT = true; window.WISHBOUND_GIFT_EDITABLE = ${allowEditing}; window.WISHBOUND_GIFT_ID = ${JSON.stringify(allowEditing ? exportId : null)}; });`;
     // A gift with its wish disabled opens straight to the book, including first paint.
-    if (snapshot.reveal.enabled === false) doc.getElementById('wishboundStartup')?.setAttribute('data-enabled', 'false');
-    doc.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
+    doc.getElementById('wishboundStartup')?.setAttribute('data-enabled', String(snapshot.reveal.enabled !== false));
+    if (!allowEditing) doc.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
     const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     const blob = new Blob([html], {type:'text/html;charset=utf-8'}); const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); const name = snapshot.recipient.normalize('NFKD').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').slice(0,40) || 'you';
     a.href = url; a.download = 'wishbound-for-' + name.toLowerCase() + '.html'; document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60000); status('Gift downloaded. Open the HTML file to check it before sharing.');
   }
-  $('giftDownloadButton').addEventListener('click', async () => {
-    const button = $('giftDownloadButton'); button.disabled = true; button.textContent = 'Preparing…';
-    try { await exportGift(); } catch (e) { status(e.message || 'Download failed. Please try again.'); }
+  $('giftDownloadButton').addEventListener('click', () => {
+    error('giftDownloadError'); $('giftDownloadDialog').showModal();
+  });
+  $('giftDownloadForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = $('giftConfirmDownload'); button.disabled = true; button.textContent = 'Preparing…';
+    error('giftDownloadError');
+    try { await exportGift($('giftAllowEditing').checked); $('giftDownloadDialog').close(); }
+    catch (e) { error('giftDownloadError', e.message || 'Download failed. Please try again.'); }
     finally { button.disabled = false; button.textContent = 'Download gift'; }
   });
 
@@ -293,6 +319,11 @@
       if (saved?.version === 1 && saved.story && revision === 0) {
         ownDraft = state.clone(saved.story);
         status('Your saved draft is ready. Only your copy changes.');
+        if (localGift) {
+          state.apply(ownDraft); state.refresh();
+          if (state.story.reveal.enabled === false && $('wishIntro').open) $('skipIntro').click();
+          else if (state.story.reveal.enabled !== false && !$('wishIntro').open) window.WISHBOUND_INTRO?.start(true);
+        }
       }
     } catch { status('Download your gift to keep it. Browser saving is unavailable.'); }
     $('editGift').hidden = $('introEditGift').hidden = false;

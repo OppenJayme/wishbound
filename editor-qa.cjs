@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
+const {pathToFileURL} = require('node:url');
 const dir = path.join(__dirname, 'site');
 const mime = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'};
 let giftHtml;
@@ -109,6 +110,14 @@ const server = http.createServer((req, res) => {
       await birthdayPage.screenshot({path:`qa/editor-birthday-handoff-${width}.png`});
       console.log(`Birthday opening passed: ${width}px, gold lettering, projected starlight, automatic handoff, focus, and cleanup.`);
     } finally { await birthdayContext.close(); }
+  }
+  async function downloadGift(target, editable = false) {
+    await target.locator('#giftDownloadButton').click();
+    assert(await target.locator('#giftDownloadDialog').isVisible());
+    await target.locator('#giftAllowEditing').setChecked(editable);
+    const pending = target.waitForEvent('download');
+    await target.locator('#giftConfirmDownload').click();
+    return pending;
   }
   try {
     for (const width of [1440,375]) {
@@ -285,9 +294,7 @@ const server = http.createServer((req, res) => {
     for(const [path,value] of Object.entries(photoValues)) assert.equal(await page.evaluate(path=>WISHBOUND.get(path),path),value,'Photo changed on reload');
     for(const [key,value] of Object.entries(edgeValues)) assert.equal(await page.evaluate(key=>WISHBOUND.story.presentation[key],key),value,'Edge text changed on reload');
     assert.equal(await page.evaluate(()=>WISHBOUND.story.letter.paragraphs.length),4);
-    const pending = page.waitForEvent('download');
-    await page.locator('#giftDownloadButton').click();
-    const download=await pending; assert.equal(download.suggestedFilename(),'wishbound-for-alex-rivera.html');
+    const download=await downloadGift(page); assert.equal(download.suggestedFilename(),'wishbound-for-alex-rivera.html');
     giftHtml=fs.readFileSync(await download.path(),'utf8');
     assert(!giftHtml.includes('id="giftToolbar"'));
     await checkStartup(giftHtml, 1280, 'exported');
@@ -321,6 +328,87 @@ const server = http.createServer((req, res) => {
     await giftPage.locator('#closeLetter').click();
     await giftPage.screenshot({path:'qa/editor-exported-gift.png'});
     await giftContext.close();
+    // Editable gifts must work from an actual local HTML file, entirely offline.
+    await page.locator('#giftDownloadButton').click();
+    await page.locator('#giftDownloadDialog [data-close-editor]').click();
+    assert.equal(await page.locator('#giftDownloadDialog').isVisible(), false);
+    const editableHtml = fs.readFileSync(await (await downloadGift(page, true)).path(),'utf8');
+    const secondGiftHtml = fs.readFileSync(await (await downloadGift(page, true)).path(),'utf8');
+    const localFile = path.join(__dirname,'qa','editable-gift.html');
+    const otherFile = path.join(__dirname,'qa','other-gift.html');
+    fs.writeFileSync(localFile,editableHtml); fs.writeFileSync(otherFile,secondGiftHtml);
+    const localContext = await browser.newContext({viewport:{width:1280,height:900},reducedMotion:'reduce',acceptDownloads:true});
+    const localPage = await localContext.newPage(); localPage.on('pageerror',e=>errors.push(e.message));
+    const localRequests=[];
+    localContext.on('request',r=>{if(/^https?:/.test(r.url()) && !r.url().includes('fonts.')) localRequests.push(r.url());});
+    await localContext.route(/^https?:/,r=>r.abort());
+    await localPage.goto(pathToFileURL(localFile).href);
+    await localPage.locator('#introEditGift').waitFor({state:'visible'});
+    assert.equal(await localPage.evaluate(()=>WISHBOUND.story.recipient),'Alex Rivera');
+    assert.equal(await localPage.locator('#giftDownloadDialog').isVisible(),false,'Download popup interrupted the birthday');
+    const giftId = await localPage.evaluate(()=>WISHBOUND_GIFT_ID);
+    await localPage.locator('#introEditGift').click();
+    assert.equal(await localPage.locator('#giftViewSelect').inputValue(),'opening');
+    await localPage.locator('#introTitle').click(); await localPage.locator('#giftTextValue').fill('My locally edited wish');
+    await localPage.locator('#giftTextForm button[type=submit]').click();
+    await localPage.locator('#giftPhotosButton').click();
+    await localPage.getByRole('button',{name:'Opening wish portrait',exact:true}).click();
+    await localPage.locator('#giftImageFile').setInputFiles(upload);
+    await localPage.locator('#giftImageApply').waitFor({state:'visible'});
+    await localPage.waitForFunction(()=>!document.getElementById('giftImageApply').disabled);
+    await localPage.locator('#giftImageAlt').fill('Local photo'); await localPage.locator('#giftImageApply').click();
+    const localPortrait = await localPage.evaluate(()=>WISHBOUND.story.reveal.portrait);
+    await localPage.locator('#giftSaveButton').click();
+    await localPage.waitForFunction(()=>document.getElementById('giftSaveStatus').textContent==='Saved in this browser.');
+    await localPage.locator('#giftDemoButton').click();
+    assert.equal(await localPage.evaluate(()=>WISHBOUND.story.presentation.introTitle),'My locally edited wish');
+    assert.equal(await localPage.locator('#giftToolbar').isVisible(),false);
+    await localPage.reload(); await localPage.locator('#introEditGift').waitFor({state:'visible'});
+    assert.equal(await localPage.locator('#introTitle').textContent(),'My locally edited wish');
+    assert.equal(await localPage.evaluate(()=>WISHBOUND.story.reveal.portrait),localPortrait);
+    assert.equal(fs.readFileSync(localFile,'utf8'),editableHtml,'Browser save rewrote original file');
+    await localPage.locator('#introEditGift').click();
+    await localPage.screenshot({path:'qa/editor-local-gift.png'});
+    await localPage.locator('#giftDownloadButton').click();
+    await localPage.screenshot({path:'qa/editor-download-dialog.png'});
+    await localPage.locator('#giftDownloadDialog [data-close-editor]').click();
+    const updatedHtml=fs.readFileSync(await (await downloadGift(localPage,true)).path(),'utf8');
+    const updatedFile=path.join(__dirname,'qa','updated-gift.html');fs.writeFileSync(updatedFile,updatedHtml);
+    await localPage.goto(pathToFileURL(updatedFile).href);await localPage.locator('#introEditGift').waitFor({state:'visible'});
+    assert.equal(await localPage.evaluate(()=>WISHBOUND_GIFT_ID),giftId,'Updated copy lost its gift identity');
+    assert.equal(await localPage.locator('#introTitle').textContent(),'My locally edited wish');
+    // A separate gift in the same file origin must not adopt this gift's edits.
+    await localPage.goto(pathToFileURL(otherFile).href);await localPage.locator('#introEditGift').waitFor({state:'visible'});
+    assert.notEqual(await localPage.evaluate(()=>WISHBOUND_GIFT_ID),giftId);
+    assert.equal(await localPage.locator('#introTitle').textContent(),'A wish for Alex');
+    await localPage.goto(pathToFileURL(localFile).href);await localPage.locator('#introEditGift').click();
+    const cleanHtml=fs.readFileSync(await (await downloadGift(localPage,false)).path(),'utf8');
+    assert(!cleanHtml.includes('id="giftToolbar"'));
+    fs.writeFileSync(updatedFile,cleanHtml);
+    await localPage.goto(pathToFileURL(updatedFile).href);
+    assert.equal(await localPage.locator('[data-editor-ui]').count(),0);
+    assert.equal(await localPage.locator('#introTitle').textContent(),'My locally edited wish');
+    // Fresh browser: exported changes travel with the file, saved-only edits do not.
+    const newContext=await browser.newContext({viewport:{width:375,height:812},reducedMotion:'reduce'});
+    const newPage=await newContext.newPage();newPage.on('pageerror',e=>errors.push(e.message));
+    await newContext.route(/^https?:/,r=>r.abort());
+    await newPage.goto(pathToFileURL(localFile).href);await newPage.locator('#introEditGift').waitFor({state:'visible'});
+    assert.equal(await newPage.locator('#introTitle').textContent(),'A wish for Alex');
+    await newPage.locator('#introEditGift').click();await newPage.locator('#giftDownloadButton').click();
+    assert.equal(await newPage.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+    await newPage.screenshot({path:'qa/editor-download-mobile.png'});
+    await newPage.locator('#giftDownloadDialog [data-close-editor]').click();
+    await newPage.goto(pathToFileURL(updatedFile).href);
+    assert.equal(await newPage.locator('#introTitle').textContent(),'My locally edited wish');
+    // Reset restores this file's embedded content, rather than the public sample.
+    await localPage.goto(pathToFileURL(localFile).href);await localPage.locator('#introEditGift').click();
+    await localPage.locator('#giftResetButton').click();await localPage.locator('#giftConfirmReset').click();
+    await localPage.locator('#giftSaveButton').click();await localPage.reload();await localPage.locator('#introEditGift').waitFor({state:'visible'});
+    assert.equal(await localPage.locator('#introTitle').textContent(),'A wish for Alex');
+    assert.equal(await localPage.evaluate(()=>WISHBOUND.story.reveal.portrait),portrait);
+    assert.deepEqual(localRequests,[],'Offline gift tried to fetch content or write over the network');
+    await newContext.close();await localContext.close();
+    console.log('Local gift checks passed: download options, actual file offline editing, text/photo persistence, updated and clean exports, per-gift isolation, reset, and fresh-browser behavior.');
     const fresh=await browser.newContext({viewport:{width:375,height:812},reducedMotion:'reduce',acceptDownloads:true});
     const phone=await fresh.newPage();phone.on('pageerror',e=>errors.push(e.message));
     await phone.goto(base+'/index.html');
@@ -337,8 +425,7 @@ const server = http.createServer((req, res) => {
     await phone.locator('#giftTextValue').fill('Jamie');await phone.locator('#giftTextForm button[type=submit]').click();
     await phone.locator('#giftSaveButton').click();
     await phone.waitForFunction(()=>document.getElementById('giftSaveStatus').textContent==='Saved in this browser.');
-    const sourceDownload=phone.waitForEvent('download');await phone.locator('#giftDownloadButton').click();
-    const sourceGift=fs.readFileSync(await (await sourceDownload).path(),'utf8');
+    const sourceGift=fs.readFileSync(await (await downloadGift(phone)).path(),'utf8');
     assert(sourceGift.includes('"recipient":"Jamie"'));
     assert.equal(await phone.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await phone.screenshot({path:'qa/editor-mobile.png'});
@@ -396,9 +483,7 @@ const server = http.createServer((req, res) => {
     await phone.locator('#giftDemoButton').click();await phone.locator('#introEditGift').click();
     assert(await phone.evaluate(()=>document.getElementById('wishIntro').open&&document.getElementById('wishIntro').dataset.stage==='ready'));
     assert.equal(await phone.evaluate(()=>WISHBOUND.story.reveal.enabled),false);
-    const disabledDownload = phone.waitForEvent('download');
-    await phone.locator('#giftDownloadButton').click();
-    const disabledGift = fs.readFileSync(await (await disabledDownload).path(),'utf8');
+    const disabledGift = fs.readFileSync(await (await downloadGift(phone)).path(),'utf8');
     assert(disabledGift.includes('data-enabled="false"'));
     await checkStartup(disabledGift, 375, 'disabled-export', false);
     // Starting the editor from an already-read demo returns to the first screen.

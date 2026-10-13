@@ -161,6 +161,15 @@
     </div>
   </section>
   <div id="giftPreviewNote" class="gift-preview-note" data-editor-ui hidden><span>Previewing your own gift</span><button id="giftBackButton" class="editor-launch" type="button">Back to editing</button><button id="giftPreviewDemoButton" class="editor-launch" type="button">Back to template</button></div>
+  <dialog id="giftDownloadDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftDownloadTitle"><form id="giftDownloadForm">
+    <h2 id="giftDownloadTitle">Keep your gift</h2>
+    <p>Your words and photos will be included in one HTML file you can open or share.</p>
+    <label class="gift-download-option" for="giftAllowEditing"><input id="giftAllowEditing" type="checkbox" checked aria-describedby="giftDownloadHelp" />Allow editing in this gift</label>
+    <p id="giftDownloadHelp">Includes an Edit button. Changes stay in the browser on that device, so you can reopen the gift without downloading again. Download an updated copy whenever you want to share your changes.</p>
+    <p class="gift-help">Browser saving does not rewrite the original HTML file. Clearing browser data removes saved edits. Uncheck the option for a gift with no editor.</p>
+    <p id="giftDownloadError" class="gift-error" role="alert" hidden></p>
+    <div class="gift-dialog-actions"><button type="button" data-close-editor>Cancel</button><button id="giftConfirmDownload" type="submit">Download gift</button></div>
+  </form></dialog>
   <dialog id="giftTextDialog" class="gift-dialog" data-editor-ui aria-labelledby="giftTextTitle">
     <form id="giftTextForm"><h2 id="giftTextTitle">Edit your words</h2><p id="giftTextHelp">Keep it personal. Shorter text fits the book best.</p>
       <label for="giftTextValue">Your text</label><textarea id="giftTextValue" rows="5" maxlength="5000"></textarea><p id="giftTextError" class="gift-error" role="alert" hidden></p>

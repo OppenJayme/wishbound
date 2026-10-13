@@ -30,6 +30,8 @@ body.is-editing { padding-bottom: 105px; }
 .gift-dialog textarea { resize: vertical; min-height: 110px; }
 .gift-dialog input[type=range] { width: 100%; accent-color: #8d6053; }
 .gift-dialog input[type=checkbox] { accent-color: #8d6053; margin-right: 8px; }
+.gift-dialog .gift-download-option { display: flex; align-items: center; gap: 8px; padding: 13px; border: 1px solid #d4caba; border-radius: 5px; background: #f1e8d8; }
+.gift-download-option input { flex: none; width: 18px; height: 18px; }
 .gift-dialog details { border-top: 1px solid #d4caba; margin-top: 22px; padding-top: 16px; }
 .gift-dialog summary { cursor: pointer; font-weight: 600; }
 .gift-dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
