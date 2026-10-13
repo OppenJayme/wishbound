@@ -114,6 +114,31 @@ body { font-family: var(--type-ui); background: radial-gradient(ellipse at 50% 4
 .dialog-close { top: 14px; right: 17px; width: auto; height: 32px; border-radius: 2px; background: transparent; font-family: var(--type-ui); font-size: 11px; padding-inline: 10px; color: #6d6050; }
 .dialog-close span { margin-left: 8px; font-size: 18px; vertical-align: -1px; }
 .letter-dialog::backdrop { background: #071017b3; backdrop-filter: blur(4px); }
+
+/* A brief seal release and unfolding sheet; the message stays editable HTML. */
+.letter-dialog { perspective: 1200px; }
+.letter-dialog .dialog-close { z-index: 5; }
+.letter-unfold { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; background: linear-gradient(155deg,#f4ead7,#e4d1af); }
+.letter-unfold::before { content: ''; position: absolute; inset: 0; background: linear-gradient(32deg,transparent 49.7%,#b59a7235 50%,transparent 50.3%),linear-gradient(-32deg,transparent 49.7%,#b59a7235 50%,transparent 50.3%); }
+.letter-envelope-flap { position: absolute; inset: 0 0 42%; clip-path: polygon(0 0,100% 0,50% 100%); transform-origin: top center; background: linear-gradient(#fcf5e8,#ddc7a3); filter: drop-shadow(0 7px 6px #80613f35); }
+.letter-release-seal { position: absolute; left: 50%; top: 58%; width: 68px; height: 68px; transform: translate(-50%,-50%); }
+.seal-half { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 32% 25%,#b57278,#773746 68%,#542533); color: #edd2a2; box-shadow: inset 0 0 0 3px #bc807e,inset 0 0 0 6px #672d3c; font: 28px Georgia,serif; }
+.seal-left { clip-path: polygon(0 0,54% 0,48% 32%,55% 50%,46% 70%,52% 100%,0 100%); }
+.seal-right { clip-path: polygon(54% 0,100% 0,100% 100%,52% 100%,46% 70%,55% 50%,48% 32%); }
+.letter-dialog[open] .letter-unfold { animation: letterEnvelopeAway 1.1s cubic-bezier(.22,.61,.36,1) both; }
+.letter-dialog[open] .seal-left { animation: letterSealLeft .55s .08s ease-in both; }
+.letter-dialog[open] .seal-right { animation: letterSealRight .55s .08s ease-in both; }
+.letter-dialog[open] .letter-envelope-flap { animation: letterFlapLift .75s .2s cubic-bezier(.22,.61,.36,1) both; }
+.letter-dialog[open] .dialog-inner { transform-origin: top center; animation: letterPaperUnfold 1.05s .12s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes letterEnvelopeAway { 0%,35% { opacity: 1; } 100% { opacity: 0; visibility: hidden; transform: translateY(18px); } }
+@keyframes letterSealLeft { 0%,20% { transform: none; opacity: 1; } 100% { transform: translate(-34px,18px) rotate(-24deg) scale(.9); opacity: 0; } }
+@keyframes letterSealRight { 0%,20% { transform: none; opacity: 1; } 100% { transform: translate(34px,12px) rotate(22deg) scale(.9); opacity: 0; } }
+@keyframes letterFlapLift { from { transform: rotateX(0); opacity: 1; } to { transform: rotateX(-155deg); opacity: 0; } }
+@keyframes letterPaperUnfold { from { opacity: 0; transform: rotateX(-12deg) translateY(20px); clip-path: inset(0 0 40%); } 55% { opacity: 1; } to { opacity: 1; transform: none; clip-path: inset(0); } }
+@media(prefers-reduced-motion:reduce) {
+  .letter-dialog .letter-unfold { display: none; }
+  .letter-dialog[open] .dialog-inner { animation: none; }
+}
 @media (min-width: 901px) and (max-width: 1100px) {
   .page h2 { font-size: 2.5em; }
   .letter-right { padding: 8% 10%; }
@@ -164,3 +189,41 @@ body { font-family: var(--type-ui); background: radial-gradient(ellipse at 50% 4
   .mobile-card .keepsake-flower { width: 49px; height: 65px; }
   .mobile-card .envelope .keepsake-electro { position: absolute; width: 48px; height: 66px; bottom: 4px; left: auto; right: 8px; margin: 0; }
 }
+
+/* A shared sunset and a constellation that appears only on the last chapter. */
+.book .constellation-page,.mobile-card .constellation-page{justify-content:center;gap:.55em;text-align:center;padding:7% 8%}
+.book .constellation-page h2,.mobile-card .constellation-page h2{font-size:2.35em;line-height:1.08;margin:0 0 .12em;white-space:normal}
+.finale-landscape{position:relative;flex:0 1 auto;width:100%;aspect-ratio:1000/527;overflow:hidden;border:1px solid #b9955d88;box-shadow:0 7px 20px #46301d20;background:#d7a071}
+.finale-sunset{display:block;width:100%;height:100%;object-fit:contain}
+.finale-constellation{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.finale-star-lines{fill:none;stroke:#fff1bf;stroke-width:1.1;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:900;stroke-dashoffset:900;opacity:.75}
+.finale-star{fill:#fff9dc;opacity:0;filter:drop-shadow(0 0 4px #fff3b9)}
+.finale-active .finale-star{animation:finaleStarLight .8s var(--star-delay) ease both}
+.finale-active .finale-star-lines{animation:finaleConstellationDraw 2.2s .6s cubic-bezier(.22,.61,.36,1) both}
+.finale-names{font:italic 1.2em/1.3 var(--type-display);color:#775633;overflow-wrap:anywhere}
+.finale-ampersand{color:#a18551;padding:0 .25em}
+.book .constellation-page p,.mobile-card .constellation-page p{font-size:.96em;line-height:1.45;margin:0;max-width:35ch;align-self:center}
+.book .constellation-page .finale-message,.mobile-card .constellation-page .finale-message{font-size:1.12em;line-height:1.35;color:#815f38;margin-top:.12em}
+.finale-active .finale-message{animation:finaleClosingWords .8s 2.1s ease both}
+.finale-complete .finale-star{animation:none;opacity:1;filter:none}
+.finale-complete .finale-star-lines{animation:none;stroke-dashoffset:0}
+.finale-complete .finale-message{animation:none;opacity:1;transform:none}
+@keyframes finaleStarLight{from{opacity:0}to{opacity:1}}
+@keyframes finaleConstellationDraw{from{stroke-dashoffset:900}to{stroke-dashoffset:0}}
+@keyframes finaleClosingWords{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.finale-active .finale-star,.finale-active .finale-star-lines,.finale-active .finale-message{animation:none}.finale-star{opacity:1}.finale-star-lines{stroke-dashoffset:0}}
+@media(max-width:900px){.mobile-card .constellation-page{padding:34px 24px;gap:14px;min-height:500px}.mobile-card .constellation-page h2{font-size:2.1em}.mobile-card .constellation-page .finale-message{max-width:28ch;align-self:center}}
+
+.story-ending{position:relative;width:min(440px,calc(100% - 36px));margin:20px auto 6px;text-align:center;color:#d6c4a1}
+.story-ending[hidden],.story-ending [hidden]{display:none!important}
+.ending-button{border:1px solid #ceb17b88;border-radius:999px;padding:12px 24px;background:linear-gradient(#ece3d3,#daceb7);color:#34414a;box-shadow:inset 0 0 0 2px #fff7e855,0 6px 20px #040f1925;font:500 13px var(--type-ui);cursor:pointer}
+.ending-button:hover{background:#f6eddf;box-shadow:0 0 18px #dbc08722}
+.ending-button:focus-visible{outline:2px solid #e3c58b;outline-offset:4px}
+.ending-button:disabled{opacity:.6;cursor:default}
+.story-ending p{font:italic 20px/1.4 var(--type-display);margin:0 0 12px}
+.ending-status{display:block;font:12px/1.5 var(--type-ui);color:#bcb6a7;margin-top:8px}
+
+.creator-credit{position:relative;z-index:2;text-align:center;padding:0 20px 20px;font:11px/1.4 var(--type-ui);color:#a7acaa}
+.creator-credit a{color:inherit;text-decoration:none;text-underline-offset:3px}
+.creator-credit a:hover{text-decoration:underline;color:#dec58c}
+.creator-credit a:focus-visible{outline:2px solid #dec58c;outline-offset:4px;border-radius:2px}

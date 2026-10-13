@@ -18,7 +18,8 @@
     letterOverline: 'A LETTER FOR YOU', letterOccasion: 'On your birthday', letterSignature: 'All my love,',
     replayLabel: 'Replay the wish', portraitReplayLabel: 'Replay wish', skipLabel: 'Read the book', startWishLabel: 'Make your wish',
     enterBookLabel: 'Open your story', closeLetterLabel: 'Close', readLetterLabel: 'Read your letter',
-    makeWishLabel: 'Make a wish'
+    makeWishLabel: 'Make a wish', endingCloseLabel: 'Close the book',
+    endingReplayLabel: 'Replay from the beginning', endingMessage: 'A little universe, ready to begin again.'
   }, story.presentation);
   // Keep the original indices so older drafts can be restored.
   story.photos[3] = story.reveal.portrait;

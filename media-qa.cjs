@@ -17,7 +17,7 @@ const server=http.createServer((req,res)=>{
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
  const base=`http://127.0.0.1:${server.address().port}`;
- const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+ const browser=await chromium.launch({executablePath:process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
  try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -104,7 +104,10 @@ const server=http.createServer((req,res)=>{
  await animated.waitForFunction(()=>document.getElementById('wishIntro').dataset.stage==='revealed');
  await animated.waitForFunction(()=>Math.abs(document.getElementById('visitorMusicAudio').volume-.25)<.005);
  assert.deepEqual(errors,[]);
- console.log('PASS: full animated wish stays silent until the portrait, then fades in.');
+ await animated.locator('#replayPortraitWish').click();
+ await animated.locator('#skipIntro').click();
+ await animated.waitForFunction(()=>{const a=document.getElementById('visitorMusicAudio');return !a.paused&&Math.abs(a.volume-.25)<.005});
+ console.log('PASS: animated wish sound hands off to background music, including when skipped into the book.');
  await normal.close();
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1});

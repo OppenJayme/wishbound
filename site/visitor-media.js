@@ -16,7 +16,8 @@
   if (!['storm','alchemy','crimson'].includes(prefs.theme)) prefs.theme = 'storm';
   let musicBlob = null, backgroundBlob = null, musicUrl = '', backgroundUrl = '';
   if (!['portrait','book'].includes(prefs.startAt)) prefs.startAt = 'portrait';
-  let bookOpened = false, manuallyPaused = false, fadeFrame = 0, playbackTicket = 0;
+  let bookOpened = false, manuallyPaused = false, fadeFrame = 0, fadeTimer = 0, playbackTicket = 0;
+  let pullPlaying = false;
   const fadeMs = Number.isFinite(+config.fadeMs) ? Math.max(0, Math.min(5000, +config.fadeMs)) : 1200;
   let defaultMusic = validAudio(media.music) ? media.music : validAudio(config.src) ? config.src : '';
   let defaultImage = typeof media.background === 'string' && media.background.startsWith('data:image/') ? media.background : '';
@@ -96,17 +97,18 @@
     $('visitorMusicStart').value = prefs.startAt;
     revealControls.hidden = !audio.getAttribute('src');
     $('visitorMusicPlay').hidden = !audio.getAttribute('src');
-    const audible = playing && audio.volume > 0;
+    const audible = playing;
     $('visitorRevealMusic').textContent = audible ? 'Pause music' : 'Play music';
     $('visitorRevealMusic').setAttribute('aria-label', audible ? 'Pause background music' : 'Play background music');
     for (const input of document.querySelectorAll('input[name="visitorTheme"]')) input.checked = input.value === prefs.theme;
   }
-  function cancelFade() { cancelAnimationFrame(fadeFrame); fadeFrame = 0; }
-  function fadeToVolume() {
+  function cancelFade() { cancelAnimationFrame(fadeFrame); clearTimeout(fadeTimer); fadeFrame = fadeTimer = 0; }
+  function fadeToVolume(to = pullPlaying ? 0 : prefs.volume / 100, duration = fadeMs, complete = null) {
     cancelFade();
-    const from = audio.volume, to = prefs.volume / 100, began = performance.now();
+    const from = audio.volume, began = performance.now();
+    if (complete) fadeTimer = setTimeout(complete,duration);
     function tick(now) {
-      const p = fadeMs ? Math.min(1, (now - began) / fadeMs) : 1;
+      const p = duration ? Math.min(1, (now - began) / duration) : 1;
       audio.volume = from + (to - from) * p * p * (3 - 2 * p);
       if (p < 1 && !audio.paused) fadeFrame = requestAnimationFrame(tick);
       else { fadeFrame = 0; syncButtons(); }
@@ -141,7 +143,7 @@
       syncButtons();
     });
   }
-  function toggle() { (!audio.paused && audio.volume > 0) ? pause(true) : play(); }
+  function toggle() { !audio.paused ? pause(true) : play(); }
   function applyBackground(blobOrData) {
     if (backgroundUrl) URL.revokeObjectURL(backgroundUrl);
     backgroundUrl = '';
@@ -207,6 +209,17 @@
     status('Custom background removed.');
   };
   const canAutoStart = () => prefs.enabled && !manuallyPaused;
+  document.addEventListener('wishbound:ending', () => {
+    bookOpened = false;
+    playbackTicket++;
+    if (audio.paused) return;
+    fadeToVolume(0,2000,()=>{ audio.volume=0; pause(); });
+  });
+  document.addEventListener('wishbound:pullsound', event => {
+    pullPlaying = event.detail.playing;
+    if (pullPlaying) { cancelFade(); audio.volume = 0; }
+    else if (!audio.paused && (appropriateScene() || bookOpened) && canAutoStart()) fadeToVolume();
+  });
   document.addEventListener('click', e => {
     if (!canAutoStart()) return;
     if (e.target.closest('#enterBook,#skipIntro,#cornerNext,#nextBtn,.cover')) {

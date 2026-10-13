@@ -11,6 +11,7 @@
   const textDialog = $('giftTextDialog'); const imageDialog = $('giftImageDialog');
   let editing = false; let textPath; let imagePath; let cropImage; let imageTicket = 0;
   let ownDraft = state.snapshot(); let draftActive = false;
+  $('giftIncludeCredit').checked = !!document.getElementById('creatorCredit');
   let saveTimer; let db; let revision = 0; let saving = Promise.resolve();
   const draftKey = localGift ? 'gift:' + window.WISHBOUND_GIFT_ID : 'current:' + location.pathname.replace(/(?:index|ONE_FILE_PREVIEW)\.html$/i, '');
   let exportId = localGift ? window.WISHBOUND_GIFT_ID : null;
@@ -266,7 +267,7 @@
   $('giftConfirmReset').addEventListener('click', () => { state.reset(); changed(); $('giftResetDialog').close(); });
 
   const blobData = blob => new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
-  async function exportGift(allowEditing) {
+  async function exportGift(allowEditing, includeCredit) {
     await saveNow();
     let markup = state.template;
     if (!markup.includes('data-wishbound-source="story-config.js"')) {
@@ -296,6 +297,12 @@
     // A gift with its wish disabled opens straight to the book, including first paint.
     doc.getElementById('wishboundStartup')?.setAttribute('data-enabled', String(snapshot.reveal.enabled !== false));
     if (!allowEditing) doc.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
+    if (!includeCredit) doc.getElementById('creatorCredit')?.remove();
+    else if (!doc.getElementById('creatorCredit')) {
+      const credit = doc.createElement('div'); credit.id='creatorCredit'; credit.className='creator-credit';
+      const link = doc.createElement('a'); link.href='https://github.com/OppenJayme'; link.target='_blank'; link.rel='noopener noreferrer'; link.textContent='Made by OppenJayme ↗';
+      credit.append(link); doc.querySelector('.footer').after(credit);
+    }
     if (window.WISHBOUND_MEDIA?.exportToDocument) await window.WISHBOUND_MEDIA.exportToDocument(doc);
     const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     const blob = new Blob([html], {type:'text/html;charset=utf-8'}); const url = URL.createObjectURL(blob);
@@ -310,7 +317,7 @@
     event.preventDefault();
     const button = $('giftConfirmDownload'); button.disabled = true; button.textContent = 'Preparing…';
     error('giftDownloadError');
-    try { await exportGift($('giftAllowEditing').checked); $('giftDownloadDialog').close(); }
+    try { await exportGift($('giftAllowEditing').checked, $('giftIncludeCredit').checked); $('giftDownloadDialog').close(); }
     catch (e) { error('giftDownloadError', e.message || 'Download failed. Please try again.'); }
     finally { button.disabled = false; button.textContent = 'Download gift'; }
   });

@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 (() => {
   const intro = document.getElementById('wishIntro');
   const canvas = document.createElement('canvas');
@@ -7,14 +7,27 @@
   document.querySelector('.wish-sky').append(canvas);
   const ctx = canvas.getContext('2d');
   const tempo = 1.85;
-  const timing = Object.freeze({manifest: 3900 * tempo, reveal: 4700 * tempo, finish: 6300 * tempo});
+  const descentOffset = -1300 / tempo;
+  const timing = Object.freeze({manifest: 3900 * tempo - 1300, reveal: 4700 * tempo - 1300, finish: 6300 * tempo - 1300});
+  const soundConfig = window.BIRTHDAY_STORY.wishSound || {};
+  const sound = document.createElement('audio');
+  sound.id = 'wishPullAudio'; sound.preload = 'auto'; sound.loop = false;
+  const soundSrc = String(soundConfig.src || '');
+  if (/^(?:assets\/|\.\/assets\/|https?:\/\/|data:audio\/)/i.test(soundSrc)) sound.src = soundSrc;
+  sound.volume = Number.isFinite(+soundConfig.volume) ? Math.max(0, Math.min(100, +soundConfig.volume)) / 100 : .7;
+  document.body.append(sound);
+  const soundState = playing => document.dispatchEvent(new CustomEvent('wishbound:pullsound', {detail:{playing}}));
+  sound.addEventListener('play', () => soundState(true));
+  sound.addEventListener('pause', () => soundState(false));
+  sound.addEventListener('ended', () => soundState(false));
+  sound.addEventListener('error', () => soundState(false));
   // Give only the final descent and portrait approach more screen time.
   // Keep the earlier cloud portal and blue-to-gold flyby at their familiar pace.
   function sceneTime(elapsed) {
     if(elapsed<2800)return elapsed;
-    if(elapsed<3900)return 2800+(elapsed-2800)*500/1100;
-    if(elapsed<4700)return 3300+(elapsed-3900)*600/800;
-    return elapsed-800;
+    if(elapsed<3900+descentOffset)return 2800+(elapsed-2800)*500/(1100+descentOffset);
+    if(elapsed<4700+descentOffset)return 3300+(elapsed-3900-descentOffset)*600/800;
+    return elapsed-800-descentOffset;
   }
   intro.style.setProperty('--wish-tempo', tempo);
   let frame = 0, width = 0, height = 0;
@@ -31,7 +44,12 @@
     canvas.width = Math.round(width*dpr); canvas.height = Math.round(height*dpr);
     ctx?.setTransform(dpr,0,0,dpr,0,0);
   }
-  function stop() {
+  function stop(resetSound = true) {
+    if (resetSound) {
+      sound.pause();
+      if (sound.getAttribute('src')) sound.currentTime = 0;
+      soundState(false);
+    }
     cancelAnimationFrame(frame); frame = 0;
     canvas.dataset.active = 'false'; canvas.dataset.camera = 'rest';
     ctx?.clearRect(0,0,width,height);
@@ -343,11 +361,16 @@
   }
   function play() {
     stop();if(!ctx||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    if (soundConfig.enabled !== false && sound.getAttribute('src')) {
+      soundState(true);
+      sound.play().catch(() => { soundState(false); sound.dataset.state='unavailable'; });
+    }
     resize();const began=performance.now();canvas.dataset.active='true';canvas.dataset.startedAt=began;
     function draw(now) {
       const renderBegan=performance.now();
       const elapsed=now-began,t=sceneTime(elapsed/tempo);
-      if(!intro.open||!['wishing','manifesting','revealed'].includes(intro.dataset.stage)||elapsed>timing.finish){stop();return;}
+      if(!intro.open||!['wishing','manifesting','revealed'].includes(intro.dataset.stage)){stop();return;}
+      if(elapsed>timing.finish){stop(false);return;}
       if(width!==innerWidth||height!==innerHeight)resize();
       canvas.dataset.phase=t<900?'portal':t<3300?'meteor':t<3900?'portrait-bridge':'portrait-reveal';
       canvas.dataset.camera=t<2050?'front':t<2800?'flyby':t<3300?'descent':'reveal';

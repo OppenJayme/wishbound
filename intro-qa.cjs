@@ -12,7 +12,7 @@ const dir = path.join(__dirname, 'site');
   if(process.argv.includes('--wish')) {
     for(const width of [1440,375]) {
       await page.setViewportSize({width,height:900});
-      for(const elapsed of [500,1300,1800,2400,3200,3600,4100,4900]) {
+      for(const elapsed of [500,1300,1800,2400,3200,3600,4250,5100]) {
         // Each capture starts a fresh wish so screenshot latency cannot skip a stage.
         await page.goto(pathToFileURL(path.join(dir,'index.html')).href);
         await page.evaluate(()=>document.fonts.ready);
@@ -28,9 +28,10 @@ const dir = path.join(__dirname, 'site');
         });
         await page.screenshot({path:`qa/wish-${width}-${elapsed}.png`});
         if(painted.active!=='true'||painted.visible<100) throw Error(`Wish did not render at ${width}, ${elapsed}: ${JSON.stringify(painted)}, phase=${await page.locator('.wish-canvas').getAttribute('data-phase')}, errors=${JSON.stringify(errors)}`);
-        const expectedStage=elapsed<3900?'wishing':elapsed<4700?'manifesting':'revealed';
+        const extra=-1300/1.85;
+        const expectedStage=elapsed<3900+extra?'wishing':elapsed<4700+extra?'manifesting':'revealed';
         if(painted.stage!==expectedStage) throw Error(`Wish clock drift at ${width}, ${elapsed}: ${painted.stage}, expected ${expectedStage}`);
-        const expectedCamera=elapsed<2050?'front':elapsed<2800?'flyby':elapsed<3900?'descent':'reveal';
+        const expectedCamera=elapsed<2050?'front':elapsed<2800?'flyby':elapsed<3900+extra?'descent':'reveal';
         if(painted.camera!==expectedCamera) throw Error(`Camera phase drift at ${width}, ${elapsed}: ${painted.camera}, expected ${expectedCamera}`);
         if(painted.renderer!=='perspective-3d'||painted.meshFaces!==16) throw Error(`3D star mesh missing at ${width}, ${elapsed}`);
       }

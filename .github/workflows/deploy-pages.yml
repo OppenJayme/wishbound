@@ -44,13 +44,20 @@ jobs:
         env:
           CHROME_PATH: /usr/bin/google-chrome
         run: |
-          npm install --ignore-scripts --no-save --package-lock=false playwright@1.62.1
+          npm install --ignore-scripts --package-lock=false
           node editor-qa.cjs
 
       - name: Check book layouts on laptops, monitors, and phones
         env:
           CHROME_PATH: /usr/bin/google-chrome
         run: node viewport-qa.cjs
+
+      - name: Check soundtrack and book ending
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          node media-qa.cjs
+          node ending-qa.cjs
 
       - name: Save editor screenshots
         if: always()
@@ -60,6 +67,8 @@ jobs:
           path: |
             qa/editor-*.png
             qa/viewport-*.png
+            qa/book-closing.png
+            qa/book-closed-*.png
           if-no-files-found: ignore
 
       - name: Configure GitHub Pages

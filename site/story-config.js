@@ -2,6 +2,11 @@
 window.BIRTHDAY_STORY = {
   "recipient": "my love",
   "signoff": "your favorite person",
+  "wishSound": {
+    "src": "assets/five-star-pull.m4a",
+    "volume": 70,
+    "enabled": true
+  },
   "music": {
     "src": "",
     "startAt": "portrait",
@@ -114,7 +119,7 @@ window.BIRTHDAY_STORY = {
     "to_be": "To be",
     "continued": "continued...",
     "another_birthday_another_reminder_that": "Another birthday, another reminder that loving you is still one of my favorite things.",
-    "and_we_still_have_so": "and we still have so many pages left",
+    "and_we_still_have_so": "Our next chapter is still unwritten.",
     "the_best_part": "The best part?",
     "there_are_still_so_many": "There are still so many stars to follow and seas to cross together.",
     "love_you_always": "love you, always",

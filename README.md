@@ -73,7 +73,7 @@ The included GitHub Actions workflow rebuilds the HTML, checks the editor, expor
 
 See the [website reference](site/README.md) for file responsibilities and developer checks, and the [design notes](site/DESIGN_NOTES.md) for the visual theme.
 
-wishbound uses original placeholder illustrations inspired by Albedo and Beidou. No official game artwork or audio is included.
+wishbound uses original placeholder illustrations inspired by Albedo and Beidou. The wish uses the supplied five-star pull audio. The sunset ending uses the supplied game screenshot, edited to add a seated couple.
 
 ## Optional music and backgrounds
 
@@ -105,3 +105,13 @@ For a default soundtrack in your own repository, put a file at `site/assets/our-
 Use `"book"` for `startAt` to begin on entering or turning the book. `volume` is 0–100; `fadeMs` is 0–5000 milliseconds. An empty `src` leaves the soundtrack optional. Visitor choices override these defaults. Run `npm run preview:build` after changing the file or settings. Local audio under `assets/` is embedded in the portable preview, subject to the 15 MB limit. HTTPS tracks remain external in the preview; gift downloads try to embed them and require the audio host to allow browser access. For reliable offline sharing, upload the track through **Music & background** or use a local asset.
 
 Music follows the active scene while editing. Returning to the birthday greeting or opening wish stops it; a book-only track stays silent in the portrait editor. Starting Preview stops editor playback and begins a fresh soundtrack at the selected portrait or book moment. A track auditioned in settings stops on closing the panel if its selected scene is not active. Editing text within the book keeps its background music playing, and normal portrait-to-book playback remains continuous.
+
+The **Make your wish** button plays the supplied `assets/five-star-pull.m4a` once, restarting it for each replay. The descending star takes 1.3 seconds less than the previous baseline: portrait reveal begins at 7.395 seconds and the canvas finishes at 10.355 seconds. The pull sound finishes naturally even if the canvas finishes first. Background music stays quiet until the pull sound finishes, then fades in for the selected scene. Skip, Escape, entering the book, and scene cancellation stop and reset the pull sound. Reduced motion skips this long sound along with the animated pull. The portable preview and downloaded gifts include it. Edit `wishSound.src`, `wishSound.volume` (0–100), or `wishSound.enabled` in `site/story-config.js` to replace, adjust, or disable it, then rebuild.
+
+The sealed letter opens with a brief wax-seal release and paper unfolding. Editable greetings, paragraphs, and signatures remain normal readable text. Close or Escape works immediately; reduced motion shows the letter without the animation.
+
+The final chapter features a seated couple at sunset with a constellation that lights up and draws its connecting lines. Names use `recipient` and `signoff`; the closing message uses `copy.and_we_still_have_so`. Click those words while editing or use Details & text to personalize them. The artwork is `site/assets/sunset-couple.png`, based on the supplied screenshot with a short-haired girl and her companion added. The complete scene is embedded in the portable preview and downloaded gifts. Animation runs when the final chapter opens and is still with reduced motion.
+
+At the final chapter, **Close the book** folds the pages and cover shut, fades the soundtrack out over two seconds before stopping it, and offers **Replay from the beginning**. Replay starts with the birthday greeting and wish while keeping personalized words and photos. Phones use a short cover transition; reduced motion closes immediately. The ending button labels and closing note are editable in Details & text through `presentation.endingCloseLabel`, `endingReplayLabel`, and `endingMessage`.
+
+The public template includes a small **Made by OppenJayme** link to the creator profile. In Download gift, **Include the Made by OppenJayme link** is checked by default; uncheck it to omit the credit from your personal file. This does not change the public template. Editable gifts remember whether their embedded credit was included and can add or remove it again on the next download.

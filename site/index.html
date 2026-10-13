@@ -92,10 +92,17 @@
       </div>
       <button class="nav-btn nav-next" type="button" id="nextBtn" aria-label="Next pages"><span aria-hidden="true">→</span></button>
     </div>
+    <section class="story-ending" id="storyEnding" aria-label="Story ending" hidden>
+      <button class="ending-button" id="closeStory" type="button">Close the book</button>
+      <div id="closedStory" hidden><p data-story-text="presentation.endingMessage">A little universe, ready to begin again.</p><button class="ending-button" id="restartStory" type="button">Replay from the beginning</button></div>
+      <span class="ending-status" id="endingStatus" role="status" aria-live="polite"></span>
+    </section>
     <div class="bottom-hint" data-story-text="presentation.bottomHint">Use the arrows to turn the page</div>
   </main>
 
   <footer class="footer"><span data-story-text="presentation.footerNote">An original keepsake of alchemy, starlight, and sea.</span><span><span data-story-text="presentation.footerDedication">ONLY YOU &amp; ME</span> <span class="footer-heart">♥</span></span></footer>
+
+  <div class="creator-credit" id="creatorCredit"><a href="https://github.com/OppenJayme" target="_blank" rel="noopener noreferrer">Made by OppenJayme <span aria-hidden="true">↗</span></a></div>
 
   <dialog id="wishIntro" class="wish-intro" aria-labelledby="introTitle" data-stage="ready">
     <button id="introEditGift" data-editor-ui class="editor-launch intro-editor-launch" type="button" hidden>Edit your gift</button>
@@ -136,6 +143,10 @@
   </dialog>
 
   <dialog id="letterDialog" class="letter-dialog" aria-labelledby="letterTitle">
+    <div class="letter-unfold" aria-hidden="true">
+      <div class="letter-envelope-flap"></div>
+      <div class="letter-release-seal"><span class="seal-half seal-left">✦</span><span class="seal-half seal-right">✦</span></div>
+    </div>
     <button class="dialog-close" id="closeLetter" type="button" aria-label="Close letter"><span data-story-text="presentation.closeLetterLabel">Close</span> <span aria-hidden="true">×</span></button>
     <div class="dialog-inner">
       <div class="letter-heading"><span class="overline" data-story-text="presentation.letterOverline">A LETTER FOR YOU</span><span class="letter-occasion" data-story-text="presentation.letterOccasion">On your birthday</span></div>
@@ -167,6 +178,7 @@
     <h2 id="giftDownloadTitle">Keep your gift</h2>
     <p>Your words and photos will be included in one HTML file you can open or share.</p>
     <label class="gift-download-option" for="giftAllowEditing"><input id="giftAllowEditing" type="checkbox" checked aria-describedby="giftDownloadHelp" />Allow editing in this gift</label>
+    <label class="gift-download-option" for="giftIncludeCredit"><input id="giftIncludeCredit" type="checkbox" checked />Include the “Made by OppenJayme” link</label>
     <p id="giftDownloadHelp">Includes an Edit button. Changes stay in the browser on that device, so you can reopen the gift without downloading again. Download an updated copy whenever you want to share your changes.</p>
     <p class="gift-help">Browser saving does not rewrite the original HTML file. Clearing browser data removes saved edits. Uncheck the option for a gift with no editor.</p>
     <p id="giftDownloadError" class="gift-error" role="alert" hidden></p>

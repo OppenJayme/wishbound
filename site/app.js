@@ -171,13 +171,19 @@ const pages = {
     </div>`,
 
   endingLeft: `
-    <div class="page last-page parchment-chapter">
+    <div class="page last-page parchment-chapter constellation-page">
       <div class="tiny-cap">${storyText('copy.the_next_adventure_awaits')}</div>
-      <div class="last-glyph">∞</div>
-      <h2>${storyText('copy.to_be')}<br/><span class="emphasis">${storyText('copy.continued')}</span></h2>
-      <div class="small-heart">♥</div>
+      <h2>${storyText('copy.to_be')} <span class="emphasis">${storyText('copy.continued')}</span></h2>
+      <div class="finale-landscape">
+        <img class="finale-sunset" src="assets/sunset-couple.png" alt="Two people sitting together on a grassy edge, watching a golden sunset over the water and distant city." />
+        <svg class="finale-constellation" viewBox="0 0 1000 527" aria-hidden="true">
+          <path class="finale-star-lines" d="M360 112 L400 68 L466 115 L529 68 L580 112 L546 165 L466 209 L394 163 Z M400 68 L466 115 L529 68 M394 163 L466 115 L546 165" />
+          ${[[360,112],[400,68],[466,115],[529,68],[580,112],[546,165],[466,209],[394,163]].map(([x,y],i)=>`<circle class="finale-star" cx="${x}" cy="${y}" r="4" style="--star-delay:${i*.16}s"/>`).join('')}
+        </svg>
+      </div>
+      <div class="finale-names">${storyText('recipient')} <span class="finale-ampersand" aria-hidden="true">&amp;</span> ${storyText('signoff')}</div>
       <p>${storyText('copy.another_birthday_another_reminder_that')}</p>
-      <div class="script">${storyText('copy.and_we_still_have_so')}</div>
+      <div class="script finale-message">${storyText('copy.and_we_still_have_so')}</div>
       ${pageLabel(11)}
     </div>`,
 
@@ -238,6 +244,8 @@ let current = 0;
 let isTurning = false;
 let requested = 0;
 let sourceCurrent = 0;
+let endingMode = '';
+const endingAnimations = new Set();
 const total = sheetConfig.length + 1;
 
 document.getElementById('leftBoard').innerHTML = pages.leftBase;
@@ -304,7 +312,29 @@ function render() {
   bookEl.classList.toggle('is-turning', isTurning);
   document.getElementById('leftBoard').inert = current !== 0;
   document.getElementById('rightBoard').inert = current !== total - 1;
+  document.getElementById('storyEnding').hidden = current !== total - 1 && !endingMode;
+  document.getElementById('closeStory').hidden = endingMode === 'closed';
+  document.getElementById('closeStory').disabled = isTurning || endingMode === 'closing';
+  document.getElementById('closeStory').textContent = STORY.presentation.endingCloseLabel;
+  document.getElementById('restartStory').textContent = STORY.presentation.endingReplayLabel;
+  document.getElementById('closedStory').hidden = endingMode !== 'closed';
+  if (endingMode === 'closing') {
+    prevBtn.disabled = nextBtn.disabled = true;
+    dots.forEach(dot => { dot.disabled = true; });
+  } else dots.forEach(dot => { dot.disabled = false; });
+  document.querySelectorAll('.constellation-page').forEach(page => {
+    const active = current === total - 1 && !isTurning;
+    page.classList.toggle('finale-active', active);
+    if (!active) page.classList.remove('finale-complete');
+  });
 }
+
+document.addEventListener('animationend', event => {
+  if (event.animationName === 'finaleClosingWords' && event.target.matches('.finale-message')) {
+    // Release temporary animation layers on the rotated back face of the page.
+    event.target.closest('.constellation-page').classList.add('finale-complete');
+  }
+});
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mobileMode = () => window.matchMedia('(max-width: 900px)').matches;
@@ -395,12 +425,68 @@ async function drainTurns() {
 }
 
 function goTo(target) {
+  if (endingMode === 'closing') return;
+  endingMode = '';
+  document.getElementById('endingStatus').textContent = '';
   requested = Math.max(0, Math.min(total - 1, target));
   render();
   drainTurns();
 }
 
 function turn(direction) { goTo(requested + direction); }
+
+async function endingAnimation(element, frames, duration, delay = 0) {
+  const animation = element.animate(frames, {duration, delay, easing:'cubic-bezier(.3,.05,.2,1)', fill:'both'});
+  endingAnimations.add(animation);
+  await animation.finished.catch(() => {});
+}
+
+async function closeStory() {
+  if (isTurning || endingMode || current !== total - 1) return;
+  endingMode = 'closing'; isTurning = true;
+  render();
+  document.getElementById('endingStatus').textContent = 'Closing your story.';
+  window.BIRTHDAY_WISH?.stop();
+  document.dispatchEvent(new CustomEvent('wishbound:ending'));
+  bookEl.style.setProperty('--tilt-x','0deg'); bookEl.style.setProperty('--tilt-y','0deg');
+  bookEl.classList.remove('is-open');
+  if (!reduceMotion()) {
+    if (mobileMode()) {
+      await endingAnimation(mobileBookEl,[{opacity:1,transform:'none'},{opacity:0,transform:'translateY(12px) rotateY(-12deg) scale(.96)'}],450);
+    } else {
+      await Promise.all(sheets.map((sheet,index) => {
+        sheet.style.display = 'block'; sheet.inert = true;
+        return endingAnimation(sheet,[
+          {transform:'rotateY(-180deg)',zIndex:String(20+index),offset:0},
+          {transform:'rotateY(-90deg)',zIndex:String(20+index),offset:.5},
+          {transform:'rotateY(-89.8deg)',zIndex:String(40-index),offset:.501},
+          {transform:'rotateY(0deg)',zIndex:String(40-index),offset:1}
+        ],900,(sheets.length-1-index)*70);
+      }));
+      getComputedStyle(bookEl).transform;
+      await Promise.all(bookEl.getAnimations().map(animation=>animation.finished.catch(()=>{})));
+    }
+  }
+  endingAnimations.forEach(animation=>animation.cancel()); endingAnimations.clear();
+  current = requested = sourceCurrent = 0; isTurning = false;
+  endingMode = 'closed'; render();
+  if (mobileMode() && !reduceMotion()) {
+    await endingAnimation(mobileBookEl,[{opacity:0,transform:'translateY(8px) scale(.98)'},{opacity:1,transform:'none'}],400);
+    endingAnimations.forEach(animation=>animation.cancel()); endingAnimations.clear();
+  }
+  document.getElementById('endingStatus').textContent = 'Your book is closed. Replay from the beginning whenever you like.';
+  document.getElementById('restartStory').focus({preventScroll:true});
+}
+document.getElementById('closeStory').addEventListener('click',closeStory);
+document.getElementById('restartStory').addEventListener('click',()=>{
+  if (endingMode !== 'closed') return;
+  endingMode = ''; render();
+  document.getElementById('endingStatus').textContent = '';
+  window.WISHBOUND_INTRO?.start(true);
+});
+const cancelEndingMotion = () => { if (endingMode === 'closing') endingAnimations.forEach(animation=>animation.cancel()); };
+window.addEventListener('resize',cancelEndingMotion);
+window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',cancelEndingMotion);
 
 prevBtn.addEventListener('click', () => turn(-1));
 nextBtn.addEventListener('click', () => turn(1));
