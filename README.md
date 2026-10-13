@@ -50,7 +50,7 @@ If available, select **Use this template → Create a new repository** on GitHub
 To work locally, select **Code → Download ZIP**, extract it, and open:
 
 ```text
-albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/ONE_FILE_PREVIEW.html
+site/ONE_FILE_PREVIEW.html
 ```
 
 This portable template includes the editor. You can personalize and download a gift without installing anything. Browser draft storage availability may vary for locally opened files.
@@ -69,6 +69,6 @@ This requires Node.js but no dependency installation. It regenerates the portabl
 
 The included GitHub Actions workflow rebuilds the HTML, checks the editor and exported gift, and deploys it on pushes to `main`. To enable hosting in your own repository, choose **Settings → Pages → Source → GitHub Actions**, then run the deployment workflow. GitHub Pages is free for public repositories; private repositories require an eligible paid plan. The published Pages website is public even when its source repository is private.
 
-See the [website reference](albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/README.md) for file responsibilities and developer checks, and the [design notes](albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou/DESIGN_NOTES.md) for the visual theme.
+See the [website reference](site/README.md) for file responsibilities and developer checks, and the [design notes](site/DESIGN_NOTES.md) for the visual theme.
 
 wishbound uses original placeholder illustrations inspired by Albedo and Beidou. No official game artwork or audio is included.

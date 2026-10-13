@@ -1,5 +1,5 @@
 {
-  "name": "birthday-codex",
+  "name": "wishbound",
   "private": true,
   "scripts": {
     "preview:build": "node build-preview.cjs",

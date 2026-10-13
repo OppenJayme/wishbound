@@ -32,7 +32,7 @@ jobs:
 
       - name: Build portable HTML preview
         env:
-          SITE_SOURCE: albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou
+          SITE_SOURCE: site
         run: |
           node build-preview.cjs
           mkdir -p _site

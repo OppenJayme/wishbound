@@ -1,6 +1,6 @@
 # wishbound — website reference
 
-For downloading, previewing, personalizing, and sharing the gift, start with the [main README](../../README.md). This reference covers deeper edits and optional developer checks.
+For downloading, previewing, personalizing, and sharing the gift, start with the [main README](../README.md). This reference covers deeper edits and optional developer checks.
 
 ## File responsibilities
 

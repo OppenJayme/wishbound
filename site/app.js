@@ -1,5 +1,5 @@
 /*
- * FOR YOU, ALWAYS — Albedo + Beidou-inspired interactive birthday codex.
+ * WISHBOUND — Albedo + Beidou-inspired interactive birthday storybook.
  * All copy and image paths are near the top so you can personalize easily.
  */
 'use strict';

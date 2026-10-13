@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
-const dir = path.join(__dirname, 'albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou');
+const dir = path.join(__dirname, 'site');
 const mime = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'};
 let giftHtml;
 const server = http.createServer((req, res) => {

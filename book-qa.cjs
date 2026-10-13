@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
 const { pathToFileURL } = require('url');
-const dir = path.join(__dirname, 'albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou');
+const dir = path.join(__dirname, 'site');
 async function dismissIntro(page) {
   if(await page.locator('#wishIntro').evaluate(d=>d.open)) {
     await page.locator('#skipIntro').click();

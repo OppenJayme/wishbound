@@ -1,7 +1,7 @@
 // Regenerate the portable gift after changing the story, CSS, or JavaScript.
 const fs = require('fs');
 const path = require('path');
-const dir = path.join(__dirname, 'albedo-beidou-birthday-codex-v4/birthday_codex_albedo_beidou');
+const dir = path.join(__dirname, 'site');
 const imageTypes = {svg:'image/svg+xml',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp'};
 const embed = text => text.replace(/assets\/[a-z0-9_./-]+\.(svg|png|jpg|jpeg|webp)/gi, (name, extension) => {
   const file = path.resolve(dir, name);
