@@ -124,9 +124,8 @@ const pages = {
       <span class="tiny-cap">${storyText('copy.chapter_four_a_sealed_letter')}</span>
       <h2>${storyText('copy.i_wrote_you')}<br/><span class="emphasis">${storyText('copy.something_sincere')}</span></h2>
       <p>${storyText('copy.some_feelings_deserve_more_than')}</p>
-      <div class="envelope" aria-hidden="true"><div class="wax-seal">✦</div></div>
+      <div class="envelope" aria-hidden="true"><div class="wax-seal">✦</div>${pageKeepsake('electro', 'assets/electro-tassel.svg')}</div>
       <button class="reveal-btn open-letter" type="button">${storyText('presentation.readLetterLabel')} <span aria-hidden="true">↗</span></button>
-      ${pageKeepsake('electro', 'assets/electro-tassel.svg')}
       ${pageLabel(7)}
     </div>`,
 
