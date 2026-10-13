@@ -14,7 +14,7 @@ const {pathToFileURL}=require('node:url');
   for(const width of [1440,1280,900,768,430,375,320]) {
    await page.setViewportSize({width,height:1000});
    for(let index=1;index<=4;index++) {
-    await page.locator('.page-dot').nth(index).click();await page.waitForFunction(i=>current===i&&!isTurning,index);
+    await page.locator('.page-dot').nth(index).click();await page.waitForFunction(i=>document.querySelectorAll('.page-dot')[i].getAttribute('aria-current')==='step'&&!document.getElementById('book').classList.contains('is-turning'),index);
     const problems=await page.evaluate(()=>{
      const pages=innerWidth<=900?[...document.querySelectorAll('.mobile-card.active .page')]:[...document.querySelectorAll('.face[aria-hidden="false"] .page')];
      const bad=[];
