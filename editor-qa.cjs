@@ -62,13 +62,15 @@ const server = http.createServer((req, res) => {
       await startupPage.waitForLoadState('load');
       assert.equal(await startupPage.evaluate(() => document.documentElement.hasAttribute('data-wishbound-starting')), false);
       assert.equal(await startupPage.evaluate(() => document.getElementById('wishIntro').matches(':modal')), enabled);
-      assert.equal(await startupPage.locator('#main').evaluate(el => getComputedStyle(el).opacity), '1');
       if (enabled) {
         await startupPage.locator('#skipIntro').click();
         await startupPage.waitForFunction(() => !document.getElementById('wishIntro').open);
+        await startupPage.waitForFunction(() => getComputedStyle(document.getElementById('main')).opacity === '1');
         assert(await startupPage.locator('#main').isVisible());
         await startupPage.locator('#replayIntro').click();
         assert(await startupPage.evaluate(() => document.getElementById('wishIntro').matches(':modal')));
+      } else {
+        assert.equal(await startupPage.locator('#main').evaluate(el => getComputedStyle(el).opacity), '1');
       }
       console.log(`First-paint startup passed: ${label}, ${width}px, ${frames.length} delayed frames, wish ${enabled ? 'enabled' : 'disabled'}.`);
     } finally { release(); await startupContext.close(); }
