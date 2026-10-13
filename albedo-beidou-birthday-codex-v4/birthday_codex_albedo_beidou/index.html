@@ -11,6 +11,9 @@
     html[data-wishbound-starting] { background: #0c1b29; }
     html[data-wishbound-starting] body > :not(#wishIntro) { opacity: 0; pointer-events: none; }
     html[data-wishbound-starting] #wishIntro { display: grid; place-items: center; z-index: 10; pointer-events: none; }
+    @media (prefers-reduced-motion: no-preference) {
+      html[data-wishbound-starting] .birthday-welcome-copy { opacity: 0; }
+    }
   </style>
   <script id="wishboundStartup">
     if (document.currentScript.dataset.enabled !== 'false') {

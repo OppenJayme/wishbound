@@ -24,8 +24,8 @@ const server = http.createServer((req, res) => {
   const originalTemplate=fs.readFileSync(path.join(dir,'ONE_FILE_PREVIEW.html'),'utf8');
   fs.mkdirSync('qa', {recursive:true});
   // Hold startup for longer than the reported flash and inspect actual painted frames.
-  async function checkStartup(markup, width, label, enabled = true) {
-    const startupContext = await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+  async function checkStartup(markup, width, label, enabled = true, reducedMotion = 'reduce') {
+    const startupContext = await browser.newContext({viewport:{width,height:900},reducedMotion});
     const startupPage = await startupContext.newPage();
     startupPage.on('pageerror', e => errors.push(e.message));
     let release;
@@ -55,6 +55,7 @@ const server = http.createServer((req, res) => {
         assert(frames.every(frame => frame.starting && frame.book === '0' && frame.wish === 'grid' && !frame.modal), 'The book flashed during delayed startup: '+JSON.stringify(frames));
         assert(await startupPage.locator('#birthdayWelcome').isVisible());
         assert(await startupPage.locator('#birthdayTitle').textContent().then(text => text.includes('Happy') && text.includes('birthday.')));
+        if (reducedMotion === 'no-preference') assert.equal(await startupPage.locator('.birthday-welcome-copy').evaluate(el => getComputedStyle(el).opacity), '0', 'The complete title flashed before its animation');
       } else {
         assert(frames.every(frame => !frame.starting && frame.book === '1' && frame.wish === 'none'), 'A disabled wish appeared during startup');
       }
@@ -114,6 +115,7 @@ const server = http.createServer((req, res) => {
       await checkStartup(fs.readFileSync(path.join(dir,'index.html'),'utf8'), width, 'source');
       await checkStartup(originalTemplate, width, 'portable');
     }
+    await checkStartup(originalTemplate, 1440, 'animated', true, 'no-preference');
     await page.goto(base + '/ONE_FILE_PREVIEW.html');
     assert.equal(await page.evaluate(()=>document.body.dataset.giftMode),'template');
     await page.locator('#introEditGift').click();
