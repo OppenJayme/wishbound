@@ -3,13 +3,28 @@
     <linearGradient id="hair" x2=".8" y2="1"><stop stop-color="#493036"/><stop offset="1" stop-color="#211d29"/></linearGradient>
     <linearGradient id="coat" x2=".7" y2="1"><stop stop-color="#b05e65"/><stop offset="1" stop-color="#722e46"/></linearGradient>
     <linearGradient id="brass" x2="1" y2="1"><stop stop-color="#f2d8a1"/><stop offset="1" stop-color="#b58c55"/></linearGradient>
+    <filter id="electro-soft" x="-75%" y="-75%" width="250%" height="250%"><feGaussianBlur stdDeviation="1.5"/></filter>
   </defs>
+  <style>
+    .captain-head { transform-origin: 70px 110px; animation: captainTilt 11s ease-in-out infinite; }
+    .captain-eye-open { transform-box: fill-box; transform-origin: center; animation: captainBlink 7.8s ease-in-out infinite; }
+    .captain-eye-closed { opacity: 0; animation: captainLid 7.8s ease-in-out infinite; }
+    .captain-electro { opacity: 0; transform-origin: 12px 94px; animation: captainSpark 10s ease-in-out infinite; }
+    @keyframes captainTilt { 0%, 28%, 78%, 100% { transform: rotate(0deg); } 44% { transform: rotate(-2.4deg); } 60% { transform: rotate(1.2deg); } }
+    @keyframes captainBlink { 0%, 43%, 47%, 100% { transform: scaleY(1); } 44%, 46% { transform: scaleY(.04); } }
+    @keyframes captainLid { 0%, 43%, 47%, 100% { opacity: 0; } 44%, 46% { opacity: 1; } }
+    @keyframes captainSpark { 0%, 70%, 88%, 100% { opacity: 0; transform: scale(.75); } 76% { opacity: .85; transform: scale(1); } 81% { opacity: .5; transform: scale(1.08); } }
+    @media (prefers-reduced-motion: reduce) {
+      .captain-head, .captain-eye-open, .captain-eye-closed, .captain-electro { animation: none; }
+    }
+  </style>
   <ellipse cx="70" cy="157" rx="40" ry="5" fill="#0c1728" opacity=".3"/>
   <path d="M26 66C18 102 18 137 27 150L46 143 101 148C117 116 117 86 110 61Z" fill="url(#hair)" stroke="#dab58a" stroke-width="1.5"/>
   <path d="M41 110Q70 101 99 110L116 142Q71 163 23 142Z" fill="url(#coat)" stroke="#dfbd8b" stroke-width="1.7"/>
   <path d="M56 100 54 112 70 123 85 112 83 99" fill="#e6bb9c"/>
   <path d="M49 113 59 131 70 121 82 130 94 113 90 148H50Z" fill="#2c2833"/>
   <path d="M48 112 55 140M94 112 87 140M41 146Q70 155 99 146" fill="none" stroke="url(#brass)" stroke-width="3"/>
+  <g class="captain-head">
   <path d="M26 64Q23 22 67 15 111 17 115 63L106 89H34Z" fill="url(#hair)" stroke="#d4ac82" stroke-width="1.5"/>
   <path d="M36 57Q37 42 52 34L94 42Q108 56 103 78 99 104 70 111 42 104 36 79Z" fill="#efd0b0"/>
   <path d="M31 59Q44 13 79 26L109 46 103 73Q87 65 74 44 52 61 31 59Z" fill="url(#hair)"/>
@@ -17,14 +32,21 @@
   <path d="M40 62 99 73" stroke="#3b2634" stroke-width="2.5"/>
   <path d="M77 68Q86 63 99 69L96 81Q86 89 77 80Z" fill="#382638" stroke="#b78863" stroke-width="1.3"/>
   <path d="M47 72Q54 66 63 72" fill="none" stroke="#4c2939" stroke-width="2.2" stroke-linecap="round"/>
-  <ellipse cx="56" cy="76" rx="5" ry="7" fill="#784967"/><circle cx="58" cy="73" r="2" fill="#fff5df"/>
+  <g class="captain-eye-open"><ellipse cx="56" cy="76" rx="5" ry="7" fill="#784967"/><circle cx="58" cy="73" r="2" fill="#fff5df"/></g>
+  <path class="captain-eye-closed" d="M50 76Q56 80 62 76" fill="none" stroke="#4c2939" stroke-width="2.2" stroke-linecap="round"/>
   <path d="M62 94Q69 100 78 94" fill="none" stroke="#a65f65" stroke-width="2" stroke-linecap="round"/>
   <ellipse cx="46" cy="86" rx="6" ry="3" fill="#c97d78" opacity=".28"/>
   <path d="M99 30 105 23 110 31 105 38Z" fill="url(#brass)"/>
   <path d="M108 37 115 30 119 38 113 44Z" fill="url(#brass)"/>
   <circle cx="104" cy="94" r="3" fill="url(#brass)"/>
+  </g>
   <path d="M70 122 76 130 70 138 64 130Z" fill="url(#brass)"/>
   <path d="M31 129Q17 120 13 112" fill="none" stroke="#efd0b0" stroke-width="9" stroke-linecap="round"/>
   <path d="M9 112 16 106M12 108 10 100" stroke="#efd0b0" stroke-width="4" stroke-linecap="round"/>
   <path d="m9 91 3-7 3 7 7 3-7 3-3 7-3-7-7-3Z" fill="#e5c78e"/>
+  <g class="captain-electro" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m7 80-5 10 6-1-5 12M21 84l5 7-5 1 4 8" stroke="#a863fa" stroke-width="5" filter="url(#electro-soft)"/>
+    <path d="m7 80-5 10 6-1-5 12M21 84l5 7-5 1 4 8" stroke="#d6b2ff" stroke-width="2.1"/>
+    <path d="m12 86 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z" fill="#c18aff" stroke="#f0dcff" stroke-width="1"/>
+  </g>
 </svg>
