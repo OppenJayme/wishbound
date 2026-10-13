@@ -1,0 +1,31 @@
+name: Check project folder names
+on:
+  push:
+    branches: [chore/project-names]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Build from site and check the full gift flow
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          node build-preview.cjs
+          test -s site/ONE_FILE_PREVIEW.html
+          npm install --ignore-scripts --no-save --package-lock=false playwright@1.62.1
+          node editor-qa.cjs
+      - name: Save verification screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renamed-site-check
+          path: qa/editor-*.png
+          if-no-files-found: ignore
